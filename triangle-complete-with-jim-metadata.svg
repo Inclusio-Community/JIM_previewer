@@ -1,0 +1,542 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 250" tabindex="-1" preserveAspectRatio="xMidYMid meet"><style xmlns="http://www.w3.org/1999/xhtml">
+                .triangle {
+                    fill: rgba(37, 99, 235, 0.1);
+                    stroke: #2563eb;
+                    stroke-width: 2;
+                }
+                .vertex {
+                    fill: #dc2626;
+                    stroke: #b91c1c;
+                    stroke-width: 1;
+                }
+                .vertex:hover {
+                    fill: #ef4444;
+                    r: 6;
+                    transition: all 0.2s;
+                }
+                .side {
+                    stroke: #059669;
+                    stroke-width: 2;
+                    opacity: 0.6;
+                }
+                .side:hover {
+                    opacity: 1;
+                    stroke-width: 3;
+                    transition: all 0.2s;
+                }
+                .angle {
+                    fill: none;
+                    stroke: #7c3aed;
+                    stroke-width: 1.5;
+                    opacity: 0.7;
+                }
+                .midpoint {
+                    fill: #f97316;
+                    stroke: #ea580c;
+                    stroke-width: 1;
+                }
+                .midpoint:hover {
+                    fill: #fb923c;
+                    r: 4;
+                    transition: all 0.2s;
+                }
+                .construction.median {
+                    stroke: #7c3aed;
+                    stroke-width: 1.5;
+                    stroke-dasharray: 5,3;
+                    opacity: 0.8;
+                }
+                .construction.altitude {
+                    stroke: #dc2626;
+                    stroke-width: 1.5;
+                    stroke-dasharray: 3,2;
+                    opacity: 0.8;
+                }
+                .construction:hover {
+                    opacity: 1;
+                    stroke-width: 2;
+                    transition: all 0.2s;
+                }
+                .vertex-label {
+                    fill: #374151;
+                    font-family: Arial, sans-serif;
+                    font-size: 14px;
+                    font-weight: bold;
+                }
+                .construction-label {
+                    fill: #6b7280;
+                    font-family: Arial, sans-serif;
+                    font-size: 10px;
+                }
+                .triangle:focus,
+                .vertex:focus,
+                .side:focus,
+                .angle:focus,
+                .midpoint:focus,
+                .construction:focus {
+                    outline: 2px solid #f59e0b;
+                    outline-offset: 2px;
+                }
+            </style>
+
+            <!-- Main triangle polygon -->
+            <polygon id="triangle-001" class="triangle" points="75,200 150,75 225,200" tabindex="0" aria-label="Triangle ABC: isosceles acute triangle, area 9375 square units, perimeter 441.5 units">
+                <title>Triangle ABC: isosceles acute triangle, area 9375 square units, perimeter 441.5 units</title>
+            </polygon>
+
+            <!-- Always visible: Vertices -->
+            <circle id="vertex-a" class="vertex" cx="75" cy="200" r="4" tabindex="0" aria-label="Vertex A at coordinates 75 by 200, interior angle 59 degrees">
+                <title>Vertex A at coordinates 75,200, interior angle 59 degrees</title>
+            </circle>
+
+            <circle id="vertex-b" class="vertex" cx="150" cy="75" r="4" tabindex="0" aria-label="Vertex B at coordinates 150 by 75, interior angle 62 degrees">
+                <title>Vertex B at coordinates 150,75, interior angle 62 degrees</title>
+            </circle>
+
+            <circle id="vertex-c" class="vertex" cx="225" cy="200" r="4" tabindex="0" aria-label="Vertex C at coordinates 225 by 200, interior angle 59 degrees">
+                <title>Vertex C at coordinates 225,200, interior angle 59 degrees</title>
+            </circle>
+
+            <!-- Vertex labels -->
+            <text x="75" y="215" class="vertex-label" text-anchor="middle">A</text>
+            <text x="150" y="65" class="vertex-label" text-anchor="middle">B</text>
+            <text x="225" y="215" class="vertex-label" text-anchor="middle">C</text>
+
+            <!-- Level 2: Interactive sides -->
+            <g class="level-2-elements">
+                <line id="side-ab" class="side" x1="75" y1="200" x2="150" y2="75" tabindex="0" aria-label="Side A B with length 145.8 units">
+                    <title>Side AB with length 145.8 units</title>
+                </line>
+
+                <line id="side-bc" class="side" x1="150" y1="75" x2="225" y2="200" tabindex="0" aria-label="Side B C with length 145.8 units">
+                    <title>Side BC with length 145.8 units</title>
+                </line>
+
+                <line id="side-ca" class="side" x1="225" y1="200" x2="75" y2="200" tabindex="0" aria-label="Side C A with length 150.0 units">
+                    <title>Side CA with length 150.0 units</title>
+                </line>
+            </g>
+
+            <!-- Level 3: Angle arcs -->
+            <g class="level-3-elements">
+                <path id="angle-a" class="angle" d="M 87.2,179.2 A 20,20 0 0,1 95,200" tabindex="0" aria-label="Angle A measures 59 degrees">
+                    <title>Angle A measures 59 degrees</title>
+                </path>
+
+                <!-- Angle at B: 20 units from B along BA and BC, arc bows into triangle -->
+                <path id="angle-b" class="angle" d="M 135.6,97.0 A 20,20 0 0,0 164.4,97.0" tabindex="0" aria-label="Angle B measures 62 degrees">
+                    <title>Angle B measures 62 degrees</title>
+                </path>
+
+                <!-- Angle at C: 20 units from C along CB and CA, arc bows into triangle -->
+                <path id="angle-c" class="angle" d="M 212.8,179.2 A 20,20 0 0,0 205,200" tabindex="0" aria-label="Angle C measures 59 degrees">
+                    <title>Angle C measures 59 degrees</title>
+                </path>
+            </g>
+
+            <!-- Level 4: Construction elements -->
+            <g class="level-4-elements">
+                <!-- Midpoints -->
+                <circle id="midpoint-ab" class="midpoint" cx="112.5" cy="137.5" r="3" tabindex="0" aria-label="Midpoint of side A B">
+                    <title>Midpoint of side AB</title>
+                </circle>
+
+                <circle id="midpoint-bc" class="midpoint" cx="187.5" cy="137.5" r="3" tabindex="0" aria-label="Midpoint of side B C">
+                    <title>Midpoint of side BC</title>
+                </circle>
+
+                <circle id="midpoint-ca" class="midpoint" cx="150" cy="200" r="3" tabindex="0" aria-label="Midpoint of side C A">
+                    <title>Midpoint of side CA</title>
+                </circle>
+
+                <!-- Medians (lines from vertices to opposite side midpoints) -->
+                <line id="median-a" class="construction median" x1="75" y1="200" x2="187.5" y2="137.5" tabindex="0" aria-label="Median from vertex A to midpoint of B C, length 128.7 units">
+                    <title>Median from vertex A to midpoint of BC, length 128.7 units</title>
+                </line>
+
+                <line id="median-b" class="construction median" x1="150" y1="75" x2="150" y2="200" tabindex="0" aria-label="Median from vertex B to midpoint of A C, length 125.0 units">
+                    <title>Median from vertex B to midpoint of AC, length 125.0 units</title>
+                </line>
+
+                <line id="median-c" class="construction median" x1="225" y1="200" x2="112.5" y2="137.5" tabindex="0" aria-label="Median from vertex C to midpoint of A B, length 128.7 units">
+                    <title>Median from vertex C to midpoint of AB, length 128.7 units</title>
+                </line>
+
+                <!-- Altitudes (height lines perpendicular to opposite sides) -->
+                <line id="altitude-a" class="construction altitude" x1="75" y1="200" x2="187.5" y2="137.5" tabindex="0" aria-label="Altitude from vertex A, height 128.7 units">
+                    <title>Altitude from vertex A, height 128.7 units</title>
+                </line>
+
+                <line id="altitude-b" class="construction altitude" x1="150" y1="75" x2="150" y2="200" tabindex="0" aria-label="Altitude from vertex B, height 125.0 units">
+                    <title>Altitude from vertex B, height 125.0 units</title>
+                </line>
+
+                <line id="altitude-c" class="construction altitude" x1="225" y1="200" x2="112.5" y2="137.5" tabindex="0" aria-label="Altitude from vertex C, height 128.7 units">
+                    <title>Altitude from vertex C, height 128.7 units</title>
+                </line>
+
+                <!-- Construction labels -->
+                <text class="construction-label" x="130" y="170">M₁</text>
+                <text class="construction-label" x="170" y="170">M₂</text>
+                <text class="construction-label" x="150" y="210">M₃</text>
+            </g>
+
+        <!-- JIM Metadata -->
+        <metadata data-type="text/jim+json">
+{
+    "version": {
+        "jim": "0.4.1",
+        "document": "1.0.0"
+    },
+    "datasets": [
+        {
+            "title": "Triangle ABC",
+            "description": "An isosceles acute triangle with labeled vertices, sides, angles, and constructionelements.",
+            "representation": {
+                "chartType": "triangle"
+            },
+            "facets": {
+                "vertex": {
+                    "label": "Vertex",
+                    "variableType": "independent",
+                    "measure": "nominal"
+                },
+                "side": {
+                    "label": "Side",
+                    "variableType": "dependent",
+                    "measure": "ratio"
+                },
+                "angle": {
+                    "label": "Angle",
+                    "variableType": "dependent",
+                    "measure": "ratio",
+                    "units": "degrees"
+                },
+                "coordinates": {
+                    "label": "Coordinates"
+                },
+                "triangle": {
+                    "label": "Triangle",
+                    "variableType": "summary",
+                    "measure": "nominal"
+                },
+                "type": {
+                    "label": "Type"
+                },
+                "area": {
+                    "label": "Area",
+                    "units": "square units"
+                },
+                "perimeter": {
+                    "label": "Perimeter",
+                    "units": "units"
+                },
+                "length": {
+                    "label": "Length",
+                    "units": "units"
+                },
+                "midpoint": {
+                    "label": "Midpoint",
+                    "variableType": "object",
+                    "measure": "nominal"
+                },
+                "median": {
+                    "label": "Median",
+                    "variableType": "object",
+                    "measure": "nominal"
+                },
+                "altitude": {
+                    "label": "Altitude",
+                    "variableType": "object",
+                    "measure": "nominal"
+                },
+                "height": {
+                    "label": "Height",
+                    "units": "units"
+                }
+            },
+            "series": [
+                {
+                    "name": "triangle_abc",
+                    "type": "triangle",
+                    "records": [
+                        {
+                            "triangle": "ABC",
+                            "type": "Isosceles Acute Triangle",
+                            "area": 9375,
+                            "perimeter": 441.5
+                        }
+                    ]
+                },
+                {
+                    "name": "vertices",
+                    "type": "vertices",
+                    "records": [
+                        {
+                            "vertex": "A",
+                            "coordinates": [75, 200],
+                            "angle": 59,
+                            "adjacentSides": ["AB", "CA"]
+                        },
+                        {
+                            "vertex": "B",
+                            "coordinates": [150, 75],
+                            "angle": 62,
+                            "adjacentSides": ["AB", "BC"]
+                        },
+                        {
+                            "vertex": "C",
+                            "coordinates": [225, 200],
+                            "angle": 59,
+                            "adjacentSides": ["BC", "CA"]
+                        }
+                    ]
+                },
+                {
+                    "name": "sides",
+                    "type": "sides",
+                    "records": [
+                        {
+                            "side": "AB",
+                            "length": 145.8,
+                            "startVertex": "A",
+                            "endVertex": "B"
+                        },
+                        {
+                            "side": "BC",
+                            "length": 145.8,
+                            "startVertex": "B",
+                            "endVertex": "C"
+                        },
+                        {
+                            "side": "CA",
+                            "length": 150.0,
+                            "startVertex": "C",
+                            "endVertex": "A"
+                        }
+                    ]
+                },
+                {
+                    "name": "angle_markers",
+                    "type": "angle_marker",
+                    "records": [
+                        { "vertex": "A", "angle": 59 },
+                        { "vertex": "B", "angle": 62 },
+                        { "vertex": "C", "angle": 59 }
+                    ]
+                },
+                {
+                    "name": "midpoints",
+                    "type": "midpoint",
+                    "records": [
+                        { "midpoint": "AB", "coordinates": [112.5, 137.5] },
+                        { "midpoint": "BC", "coordinates": [187.5, 137.5] },
+                        { "midpoint": "CA", "coordinates": [150, 200] }
+                    ]
+                },
+                {
+                    "name": "medians",
+                    "type": "median",
+                    "records": [
+                        { "median": "A", "fromVertex": "A", "toMidpoint": "BC", "length": 128.7 },
+                        { "median": "B", "fromVertex": "B", "toMidpoint": "CA", "length": 125.0 },
+                        { "median": "C", "fromVertex": "C", "toMidpoint": "AB", "length": 128.7 }
+                    ]
+                },
+                {
+                    "name": "altitudes",
+                    "type": "altitude",
+                    "records": [
+                        { "altitude": "A", "fromVertex": "A", "toSide": "BC", "height": 128.7 },
+                        { "altitude": "B", "fromVertex": "B", "toSide": "CA", "height": 125.0 },
+                        { "altitude": "C", "fromVertex": "C", "toSide": "AB", "height": 128.7 }
+                    ]
+                }
+            ]
+        }
+    ],
+    "selectors": {
+        "triangle": {
+            "dom": "#triangle-001",
+            "json": "$.datasets[0].series[0].records[0]",
+            "note": "Main triangle polygon summary"
+        },
+        "vertex-a": {
+            "dom": "#vertex-a",
+            "json": "$.datasets[0].series[1].records[0]",
+            "note": "Vertex A circle"
+        },
+        "vertex-b": {
+            "dom": "#vertex-b",
+            "json": "$.datasets[0].series[1].records[1]",
+            "note": "Vertex B circle"
+        },
+        "vertex-c": {
+            "dom": "#vertex-c",
+            "json": "$.datasets[0].series[1].records[2]",
+            "note": "Vertex C circle"
+        },
+        "side-ab": {
+            "dom": "#side-ab",
+            "json": "$.datasets[0].series[2].records[0]",
+            "note": "Side AB line"
+        },
+        "side-bc": {
+            "dom": "#side-bc",
+            "json": "$.datasets[0].series[2].records[1]",
+            "note": "Side BC line"
+        },
+        "side-ca": {
+            "dom": "#side-ca",
+            "json": "$.datasets[0].series[2].records[2]",
+            "note": "Side CA line"
+        },
+        "angle-a": {
+            "dom": "#angle-a",
+            "json": "$.datasets[0].series[3].records[0]",
+            "note": "Angle at vertex A"
+        },
+        "angle-b": {
+            "dom": "#angle-b",
+            "json": "$.datasets[0].series[3].records[1]",
+            "note": "Angle at vertex B"
+        },
+        "angle-c": {
+            "dom": "#angle-c",
+            "json": "$.datasets[0].series[3].records[2]",
+            "note": "Angle at vertex C"
+        },
+        "midpoint-ab": {
+            "dom": "#midpoint-ab",
+            "json": "$.datasets[0].series[4].records[0]",
+            "note": "Midpoint of side AB"
+        },
+        "midpoint-bc": {
+            "dom": "#midpoint-bc",
+            "json": "$.datasets[0].series[4].records[1]",
+            "note": "Midpoint of side BC"
+        },
+        "midpoint-ca": {
+            "dom": "#midpoint-ca",
+            "json": "$.datasets[0].series[4].records[2]",
+            "note": "Midpoint of side CA"
+        },
+        "median-a": {
+            "dom": "#median-a",
+            "json": "$.datasets[0].series[5].records[0]",
+            "note": "Median from vertex A"
+        },
+        "median-b": {
+            "dom": "#median-b",
+            "json": "$.datasets[0].series[5].records[1]",
+            "note": "Median from vertex B"
+        },
+        "median-c": {
+            "dom": "#median-c",
+            "json": "$.datasets[0].series[5].records[2]",
+            "note": "Median from vertex C"
+        },
+        "altitude-a": {
+            "dom": "#altitude-a",
+            "json": "$.datasets[0].series[6].records[0]",
+            "note": "Altitude from vertex A"
+        },
+        "altitude-b": {
+            "dom": "#altitude-b",
+            "json": "$.datasets[0].series[6].records[1]",
+            "note": "Altitude from vertex B"
+        },
+        "altitude-c": {
+            "dom": "#altitude-c",
+            "json": "$.datasets[0].series[6].records[2]",
+            "note": "Altitude from vertex C"
+        }
+    },
+    "behaviors": [
+        {
+            "target": { "selector": "#triangle-001" },
+            "enter": {
+                "announcement": {
+                    "name": "Triangle ABC",
+                    "description": "Isosceles acute triangle with area 9375 square units and perimeter 441.5 units."
+                },
+                "haptic": {
+                    "durations": [0, 200, 100, 200],
+                    "repeatInterval": 500
+                }
+            }
+        },
+        {
+            "target": { "selector": "#vertex-a" },
+            "enter": {
+                "announcement": {
+                    "name": "Vertex A",
+                    "description": "Vertex A at position 75 by 200 with interior angle 59 degrees."
+                },
+                "haptic": { "durations": [0, 200] }
+            }
+        },
+        {
+            "target": { "selector": "#vertex-b" },
+            "enter": {
+                "announcement": {
+                    "name": "Vertex B",
+                    "description": "Vertex B at position 150 by 75 with interior angle 62 degrees."
+                },
+                "haptic": { "durations": [0, 200] }
+            }
+        },
+        {
+            "target": { "selector": "#vertex-c" },
+            "enter": {
+                "announcement": {
+                    "name": "Vertex C",
+                    "description": "Vertex C at position 225 by 200 with interior angle 59 degrees."
+                },
+                "haptic": { "durations": [0, 200] }
+            }
+        },
+        {
+            "target": { "selector": "#side-ab" },
+            "enter": {
+                "announcement": {
+                    "name": "Side AB",
+                    "description": "Side AB with length 145.8 units."
+                },
+                "haptic": { "durations": [0, 150] }
+            }
+        },
+        {
+            "target": { "selector": "#side-bc" },
+            "enter": {
+                "announcement": {
+                    "name": "Side BC",
+                    "description": "Side BC with length 145.8 units."
+                },
+                "haptic": { "durations": [0, 150] }
+            }
+        },
+        {
+            "target": { "selector": "#side-ca" },
+            "enter": {
+                "announcement": {
+                    "name": "Side CA",
+                    "description": "Side CA with length 150.0 units."
+                },
+                "haptic": { "durations": [0, 150] }
+            }
+        }
+    ],
+    "provenance": {
+        "notes": [
+            "Created by Dan Gardner, 2025",
+            "Based on JIM spec v0.4.1"
+        ]
+    },
+    "tags": {
+        "keywords": ["triangle", "geometry", "isosceles", "SVG", "accessible"]
+    }
+}
+        </metadata>
+        </svg>

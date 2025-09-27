@@ -1,0 +1,1516 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JIM Metadata Viewer - Accessible SVG Analysis Tool</title>
+    <style>
+        * { box-sizing: border-box; }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: #f5f7fa;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            color: #1e293b;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #64748b;
+            margin-bottom: 30px;
+        }
+
+        .skip-link {
+            position: absolute;
+            top: -40px;
+            left: 6px;
+            background: #1e40af;
+            color: white;
+            padding: 8px;
+            text-decoration: none;
+            border-radius: 4px;
+        }
+
+        .skip-link:focus {
+            top: 6px;
+        }
+
+        .input-section {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .file-input-wrapper {
+            margin-bottom: 15px;
+        }
+
+        .file-input-wrapper label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #334155;
+        }
+
+        input[type="file"] {
+            width: 100%;
+            padding: 10px;
+            border: 2px dashed #cbd5e1;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        input[type="file"]:hover {
+            border-color: #3b82f6;
+        }
+
+        input[type="file"]:focus {
+            outline: 2px solid #3b82f6;
+            outline-offset: 2px;
+        }
+
+        .file-help {
+            font-size: 14px;
+            color: #64748b;
+            margin-top: 5px;
+        }
+
+        .viewer-section {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            min-height: 400px;
+        }
+
+        .info-panel {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: white;
+            padding: 16px 20px;
+            min-width: 280px;
+            max-width: 400px;
+            max-height: calc(100vh - 40px);
+            overflow-y: auto;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            display: none;
+            z-index: 1000;
+        }
+
+        .info-panel.visible {
+            display: block;
+        }
+
+        .info-panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .info-panel-header h3 {
+            margin: 0;
+            font-size: 16px;
+            color: #1e293b;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            color: #94a3b8;
+            padding: 0;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .close-btn:hover, .close-btn:focus {
+            color: #1e293b;
+            outline: 2px solid #3b82f6;
+            border-radius: 4px;
+        }
+
+        .info-content {
+            font-size: 14px;
+            color: #475569;
+        }
+
+        .info-content div {
+            margin-bottom: 8px;
+        }
+
+        .info-content strong {
+            color: #1e293b;
+        }
+
+        .info-content code {
+            background: #f1f5f9;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 13px;
+        }
+
+        .announcement {
+            background: #f0f9ff;
+            border-left: 3px solid #3b82f6;
+            padding: 8px 12px;
+            margin-top: 12px;
+            border-radius: 4px;
+        }
+
+        #visualization {
+            width: 100%;
+            min-height: 400px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #visualization svg {
+            max-width: 100%;
+            height: auto;
+        }
+
+        .empty-state {
+            text-align: center;
+            color: #94a3b8;
+            padding: 60px 20px;
+        }
+
+        .empty-state svg {
+            width: 64px;
+            height: 64px;
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+
+        /* Minimal fallback styles */
+        svg * {
+            cursor: pointer;
+        }
+
+        svg *:focus {
+            outline: 2px solid #f59e0b;
+            outline-offset: 2px;
+        }
+
+        .metadata-summary {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            padding: 16px;
+            margin-bottom: 20px;
+        }
+
+        .metadata-summary h3 {
+            margin: 0 0 12px 0;
+            font-size: 14px;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .metadata-item {
+            display: flex;
+            padding: 4px 0;
+        }
+
+        .metadata-item .key {
+            font-weight: 500;
+            color: #475569;
+            min-width: 120px;
+        }
+
+        .metadata-item .value {
+            color: #1e293b;
+        }
+
+        .status-message {
+            background: #fef3c7;
+            border: 1px solid #f59e0b;
+            color: #92400e;
+            padding: 12px 16px;
+            border-radius: 6px;
+            margin: 16px 0;
+        }
+    </style>
+</head>
+<body>
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+    
+    <div class="container">
+        <!-- Screen reader help for SVG navigation -->
+        <div id="svg-sr-help" class="sr-only" aria-live="polite">
+            Visualization area. Press 'i' to jump to the first available list (Spec Compliance and then Orphaned Selectors if present, otherwise SVG Element Inventory). In the SVG Element Inventory, use Tab to move between items and Enter to open details. The Spec Compliance and Orphaned Selectors lists are not interactive.
+        </div>
+        <header role="banner">
+            <h1>JIM Metadata Viewer</h1>
+            <p class="subtitle">Load and explore JSON for Interactive Media (JIM) documents</p>
+        </header>
+
+        <main id="main-content" role="main">
+            <section class="input-section" aria-labelledby="upload-heading">
+                <h2 id="upload-heading" class="sr-only">File Upload</h2>
+                <div class="file-input-wrapper">
+                    <label for="jim-file">Upload SVG or HTML file:</label>
+                    <input type="file" id="jim-file" accept=".svg,.html,.htm" aria-describedby="file-help" />
+                    <div id="file-help" class="file-help">Supported: SVG files (with or without JIM metadata) and HTML files containing SVG elements.</div>
+                </div>
+                <div id="metadata-summary" aria-live="polite"></div>
+                <div id="status-messages" aria-live="polite" aria-atomic="true"></div>
+            </section>
+
+            <section class="viewer-section" aria-labelledby="visualization-heading">
+                <h2 id="visualization-heading">Interactive Visualization</h2>
+                <div id="visualization" aria-live="polite" aria-label="SVG visualization display area">
+                    <div class="empty-state">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                            <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                        </svg>
+                        <p>Upload a document to begin analysis</p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="viewer-section" id="analysis-section" aria-labelledby="analysis-heading" style="display:none;">
+              <h2 id="analysis-heading">Detailed Analysis</h2>
+              <div id="analysis-content"></div>
+            </section>
+        </main>
+
+        <aside id="info-panel" class="info-panel" role="region" aria-labelledby="element-info-heading" tabindex="-1">
+            <div class="info-panel-header">
+                <h3 id="element-info-heading">Element Information</h3>
+                <button class="close-btn" aria-label="Close information panel">&times;</button>
+            </div>
+            <div id="info-content" class="info-content"></div>
+        </aside>
+        <!-- Move the live region outside the info panel for stability and visibility to SRs -->
+        <div id="info-panel-live" class="sr-only" aria-live="polite" aria-atomic="true"></div>
+    </div>
+
+    <script>
+        // Keyboard shortcut: Press 'i' in the visualization area to jump to the inventory list
+        document.addEventListener('DOMContentLoaded', function () {
+            const viz = document.getElementById('visualization');
+            const inventorySection = document.getElementById('analysis-section');
+            if (viz && inventorySection) {
+                viz.setAttribute('tabindex', '0'); // Make visualization focusable
+                viz.addEventListener('keydown', function (e) {
+                    if ((e.key === 'i' || e.key === 'I') && !e.altKey && !e.ctrlKey && !e.metaKey) {
+                        e.preventDefault();
+                        // Try to focus the first inventory item
+                        const firstItem = inventorySection.querySelector('li[tabindex]');
+                        if (firstItem) {
+                            firstItem.focus();
+                        } else {
+                            // If no item, focus the section heading
+                            const heading = inventorySection.querySelector('h4, h5');
+                            if (heading) heading.focus();
+                        }
+                    }
+                });
+            }
+        });
+                // --- Preflight JIM helper: robust, non-destructive normalization and validation ---
+                function preflightJIM(rawJim) {
+                    const errors = [];
+                    const warnings = [];
+                    const fixesApplied = [];
+                    const jim = JSON.parse(JSON.stringify(rawJim || {})); // shallow clone
+
+                    // — Required: version.jim
+                    if (!jim?.version?.jim || typeof jim.version.jim !== 'string') {
+                        errors.push("Missing required property: version.jim (string)");
+                    }
+
+                    // — Normalize datasets
+                    if (!jim.datasets && jim.dataset) {
+                        jim.datasets = [jim.dataset];
+                        warnings.push("Found 'dataset' (singular); normalized to 'datasets[]'.");
+                        fixesApplied.push("dataset→datasets[]");
+                    }
+                    if (jim.datasets && !Array.isArray(jim.datasets)) {
+                        jim.datasets = [jim.datasets];
+                        warnings.push("Found 'datasets' as object; wrapped in an array.");
+                        fixesApplied.push("datasets{ }→datasets[ ]");
+                    }
+                    if (!jim.datasets || jim.datasets.length === 0) {
+                        errors.push("Missing required property: datasets (array with at least one item).");
+                    }
+
+                    // — Required: selectors
+                    if (!jim.selectors || typeof jim.selectors !== 'object' || Array.isArray(jim.selectors)) {
+                        errors.push("Missing required property: selectors (object).");
+                    } else {
+                        for (const [key, sel] of Object.entries(jim.selectors)) {
+                            if (!sel) { errors.push(`Selector '${key}' is null/undefined.`); continue; }
+                            if (sel.jsonPath && !sel.json) {
+                                sel.json = sel.jsonPath;
+                                warnings.push(`Selector '${key}' used 'jsonPath'; normalized to 'json'.`);
+                                fixesApplied.push("jsonPath→json");
+                            }
+                            if (typeof sel.dom !== 'string' || !sel.dom.trim()) {
+                                errors.push(`Selector '${key}' missing 'dom' (string).`);
+                            }
+                            if (typeof sel.json !== 'string' || !sel.json.trim()) {
+                                errors.push(`Selector '${key}' missing 'json' (string).`);
+                            }
+                        }
+                    }
+
+                    // — Optional: behaviors (default to [])
+                    if (!('behaviors' in jim)) {
+                        jim.behaviors = [];
+                        // info note; no warning to avoid noise
+                    } else if (!Array.isArray(jim.behaviors)) {
+                        warnings.push("Behaviors was not an array; normalized to empty array.");
+                        fixesApplied.push("behaviors→[]");
+                        jim.behaviors = [];
+                    }
+
+                    // — Conditional cross-refs (only if behaviors present)
+                    if (Array.isArray(jim.behaviors) && jim.behaviors.length > 0 && jim.selectors) {
+                        const domSet = new Set(Object.values(jim.selectors).map(s => s?.dom).filter(Boolean));
+                        jim.behaviors.forEach((b, i) => {
+                            const tgt = b?.target?.selector;
+                            if (tgt && !domSet.has(tgt)) {
+                                errors.push(`Behavior[${i}] target.selector does not match any selectors.dom: '${tgt}'`);
+                            }
+                        });
+                    }
+
+                    // — Soft checks on datasets[0]
+                    const ds0 = jim.datasets && jim.datasets[0];
+                    if (ds0 && (ds0.series && !Array.isArray(ds0.series))) {
+                        warnings.push("datasets[0].series is not an array.");
+                    }
+                    if (ds0 && !ds0.series) {
+                        warnings.push("datasets[0].series missing; continuing without series.");
+                    }
+
+                    // — Unknown top-level keys (informative, spec-aligned)
+                    // See: https://inclusio-community.github.io/json-image-metadata
+                    const allowedTop = new Set([
+                        'version',
+                        'datasets',
+                        'dataset',
+                        'selectors',
+                        'behaviors',
+                        'metadata',
+                        'name',
+                        'id',
+                        'description',
+                        'license',
+                        'attribution',
+                        'source',
+                        'created',
+                        'modified',
+                        'tags',
+                        'thumbnail',
+                        'links',
+                        'schema',
+                        'notes',
+                        'examples',
+                        'summary',
+                        'credits',
+                        'language',
+                        'publisher',
+                        'contributor',
+                        'related',
+                        'external',
+                        'profile',
+                        'type',
+                        'title',
+                        'status',
+                        'accessibility',
+                        'audience',
+                        'keywords',
+                        'coverage',
+                        'spatial',
+                        'temporal',
+                        'rights',
+                        'identifier',
+                        'isPartOf',
+                        'hasPart',
+                        'references',
+                        'isReferencedBy',
+                        'format',
+                        'extent',
+                        'provenance',
+                        'funding',
+                        'contact',
+                        'seeAlso',
+                        'alternate',
+                        'encoding',
+                        'media',
+                        'data',
+                        'custom',
+                        // Add any other spec keys as needed
+                    ]);
+                    const unknown = Object.keys(jim).filter(k => !allowedTop.has(k));
+                    if (unknown.length) {
+                        warnings.push(`Non-standard top-level fields: ${unknown.join(', ')}`);
+                    }
+
+                    return { ok: errors.length === 0, errors, warnings, fixesApplied, normalizedJim: jim };
+                }
+
+                class JIMViewer {
+    // Robust JSONPath lookup for JIM metadata (supports $.foo[0].bar)
+    getDataFromJSONPath(path) {
+        if (!path || typeof path !== 'string' || !this.jimData) return null;
+        let val = this.jimData;
+        // Remove leading $. and convert [n] to .n for easier splitting
+        const parts = path.replace(/^\$\./, '').replace(/\[(\d+)\]/g, '.$1').split('.');
+        for (const key of parts) {
+            if (val && key in val) val = val[key];
+            else if (Array.isArray(val) && !isNaN(Number(key))) val = val[Number(key)];
+            else return null;
+        }
+        return val;
+    }
+    // Insert the SVG into the visualization container and set up event handlers
+    displayVisualization(svgClone) {
+        const container = document.getElementById('visualization');
+        if (container) {
+            container.innerHTML = '';
+            container.appendChild(svgClone);
+        }
+    }
+
+    // Render the SVG, attach JIM behaviors, and fallback click handler
+    renderVisualization() {
+        const svg = this.currentDoc.querySelector('svg');
+        if (!svg) {
+            this.showError('No SVG found in document');
+            return;
+        }
+        // Clone the SVG to avoid modifying the original document
+        const svgClone = svg.cloneNode(true);
+        // Attach JIM behaviors to elements that have selectors
+        const selectors = this.jimData.selectors || {};
+        Object.entries(selectors).forEach(([key, selector]) => {
+            let element = null;
+            try {
+                element = svgClone.querySelector(selector.dom);
+            } catch (e) {
+                console.warn(`[JIMViewer] Invalid selector for key '${key}' in renderVisualization: '${selector.dom}'`, e);
+                return; // skip this selector
+            }
+            if (element) {
+                this.attachJIMBehavior(element, key);
+            }
+        });
+        // Add fallback handler for ANY SVG element (for elements without JIM mappings)
+        svgClone.addEventListener('click', (e) => {
+            // Only handle if target doesn't already have JIM behavior
+            const targetElement = e.target;
+            if (targetElement instanceof SVGElement && targetElement !== svgClone) {
+                const hasJIM = Object.values(selectors).some(s => {
+                    try {
+                        return targetElement.matches(s.dom);
+                    } catch {
+                        return false;
+                    }
+                });
+                if (!hasJIM) {
+                    this.showNonJIMElementInfo(targetElement, 'click');
+                }
+            }
+        });
+        this.displayVisualization(svgClone);
+    }
+    // Full SVG accessibility and JIM selector validation
+    validateJIMStructure() {
+        const results = {
+            svgInventory: [],
+            errors: [],
+            warnings: [],
+            passed: [],
+            orphanedSelectors: [],
+            facetSummary: null,
+            behaviorSummary: null,
+            selectorSummary: null
+        };
+        const selectors = this.jimData?.selectors || {};
+        const behaviors = this.jimData?.behaviors || [];
+        const facets = this.jimData?.datasets?.[0]?.facets || {};
+        // --- JIM selector validation ---
+        let domValid = 0, jsonValid = 0;
+        if (Object.keys(selectors).length) {
+            // Check for orphaned selectors (not in DOM)
+            Object.entries(selectors).forEach(([key, sel]) => {
+                let el = null;
+                try {
+                    el = this.currentDoc.querySelector(sel.dom);
+                } catch {}
+                if (!el) {
+                    results.orphanedSelectors.push({
+                        key,
+                        selector: sel.dom,
+                        jsonPath: sel.json,
+                        data: this.getDataFromJSONPath(sel.json)
+                    });
+                } else {
+                    domValid++;
+                }
+                if (this.getDataFromJSONPath(sel.json) !== null) {
+                    jsonValid++;
+                }
+            });
+            results.selectorSummary = {
+                domValid,
+                jsonValid,
+                total: Object.keys(selectors).length
+            };
+            // Only push orphanedSelectors warning to warnings, not summary lines
+            if (results.orphanedSelectors.length) {
+                results.warnings.push(`${results.orphanedSelectors.length} JIM selector(s) not found in SVG DOM.`);
+            }
+        }
+        // --- Facet validation ---
+        if (facets && Object.keys(facets).length) {
+            // Check that all record keys in all series have a facet
+            const dataset = this.jimData?.datasets?.[0];
+            if (dataset?.series) {
+                const allRecordKeys = new Set();
+                dataset.series.forEach(s => {
+                    if (Array.isArray(s.records)) {
+                        s.records.forEach(r => Object.keys(r).forEach(k => allRecordKeys.add(k)));
+                    }
+                });
+                const undocumentedKeys = [...allRecordKeys].filter(k => !facets[k]);
+                results.facetSummary = {
+                    missing: undocumentedKeys,
+                    total: allRecordKeys.size
+                };
+                // Do not push facet summary lines to warnings/passed; handled in renderValidationResults
+            }
+        }
+        // --- Behavior validation ---
+        if (Object.keys(selectors).length) {
+            const selectorKeys = Object.keys(selectors);
+            const selectorsWithBehavior = new Set(behaviors.map(b => b.target?.selector).filter(Boolean));
+            const missing = selectorKeys.filter(key => {
+                const dom = selectors[key]?.dom;
+                return dom && !selectorsWithBehavior.has(dom);
+            });
+            results.behaviorSummary = {
+                missing,
+                total: selectorKeys.length,
+                mapped: selectorsWithBehavior.size
+            };
+        }
+        // --- SVG Element Inventory: ALWAYS run ---
+        if (this.currentDoc) {
+            let svg = this.currentDoc.querySelector('svg');
+            if (!svg && this.currentDoc.documentElement?.tagName?.toLowerCase() === 'svg') {
+                svg = this.currentDoc.documentElement;
+            }
+            if (svg) {
+                const jimSelectors = Object.values(selectors).map(s => s.dom);
+                // text nodes
+                svg.querySelectorAll('text').forEach(el => {
+                    const hasJIM = jimSelectors.some(sel => { try { return el.matches(sel); } catch { return false; } });
+                    results.svgInventory.push(this.createInventoryItem(el, hasJIM, 'text'));
+                });
+                // interactive (non-text with a11y attrs)
+                svg.querySelectorAll('*').forEach(el => {
+                    if (el.tagName.toLowerCase() === 'text') return;
+                    const hasA11y = el.hasAttribute('tabindex') || el.hasAttribute('role') ||
+                                    el.hasAttribute('aria-label') || el.hasAttribute('aria-labelledby') || el.hasAttribute('aria-describedby');
+                    if (hasA11y) {
+                        const hasJIM = jimSelectors.some(sel => { try { return el.matches(sel); } catch { return false; } });
+                        results.svgInventory.push(this.createInventoryItem(el, hasJIM, 'interactive'));
+                    }
+                });
+                // groups
+                svg.querySelectorAll('g').forEach(el => {
+                    if (!el.id && !(el.className && el.className.baseVal)) return;
+                    const hasJIM = jimSelectors.some(sel => { try { return el.matches(sel); } catch { return false; } });
+                    results.svgInventory.push(this.createInventoryItem(el, hasJIM, 'group'));
+                });
+            }
+        }
+        return results;
+    }
+    hideInfoPanel() {
+        if (this.infoPanel) {
+            this.infoPanel.classList.remove('visible');
+        }
+        if (this.infoContent) {
+            this.infoContent.innerHTML = '';
+        }
+        // Optionally clear the live region for SR users
+        const liveRegion = document.getElementById('info-panel-live');
+        if (liveRegion) {
+            liveRegion.textContent = '';
+        }
+    }
+    // Returns a default announcement string from a data object, or null if not present
+    getDefaultAnnouncement(data) {
+        if (!data || typeof data !== 'object') return null;
+        // Try to build a simple summary from the object's key-value pairs
+        const parts = [];
+        for (const [key, value] of Object.entries(data)) {
+            if (typeof value === 'object' && value !== null) continue;
+            parts.push(`${key}: ${value}`);
+        }
+        return parts.length ? parts.join(', ') : null;
+    }
+    // Returns the announcement object (name/description) from a behavior, or null if not present
+    getExplicitAnnouncement(behavior) {
+        if (behavior && behavior.enter && behavior.enter.announcement) {
+            return behavior.enter.announcement;
+        }
+        return null;
+    }
+            setupEventListeners() {
+                // File input handler
+                const fileInput = document.getElementById('jim-file');
+                if (fileInput) {
+                    fileInput.addEventListener('change', async (e) => {
+                        const file = e.target.files && e.target.files[0];
+                        if (!file) return;
+                        const ext = file.name.split('.').pop().toLowerCase();
+                        const reader = new FileReader();
+                        reader.onload = (ev) => {
+                            const text = ev.target.result;
+                            this.handleFileLoad(text, ext);
+                        };
+                        reader.readAsText(file);
+                    });
+                }
+
+                // Info panel close button
+                const closeBtn = document.querySelector('.info-panel .close-btn');
+                if (closeBtn) {
+                    closeBtn.addEventListener('click', () => this.hideInfoPanel());
+                }
+            }
+
+            handleFileLoad(text, ext) {
+                // Reset UI/data
+                this.jimData = null;
+                this.currentDoc = null;
+                this.specIssues = null;
+                this.inventoryData = [];
+                this.detailedAnalysis = '';
+                document.getElementById('metadata-summary').innerHTML = '';
+                document.getElementById('visualization').innerHTML = '';
+                document.getElementById('analysis-content').innerHTML = '';
+                document.getElementById('analysis-section').style.display = 'none';
+                this.hideInfoPanel();
+
+                // Parse file
+                let doc;
+                if (ext === 'svg') {
+                    const parser = new DOMParser();
+                    doc = parser.parseFromString(text, 'image/svg+xml');
+                } else if (ext === 'html' || ext === 'htm') {
+                    const parser = new DOMParser();
+                    doc = parser.parseFromString(text, 'text/html');
+                } else {
+                    this.showError('Unsupported file type.');
+                    return;
+                }
+                this.currentDoc = doc;
+
+                // Try to find and parse JIM metadata
+                let jim = null;
+                let jimText = null;
+                // Look for <script type="application/json+jim"> or <metadata id="jim"> or window.JIM_DATA
+                if (ext === 'svg') {
+                    // <script type="application/json+jim">
+                    const script = doc.querySelector('script[type="application/json+jim"]');
+                    if (script) jimText = script.textContent;
+                    // <metadata id="jim">
+                    if (!jimText) {
+                        const meta = doc.querySelector('metadata#jim');
+                        if (meta) jimText = meta.textContent;
+                    }
+                    // <metadata data-type="text/jim+json">
+                    if (!jimText) {
+                        const metaType = doc.querySelector('metadata[data-type="text/jim+json"]');
+                        if (metaType) jimText = metaType.textContent;
+                    }
+                } else if (ext === 'html' || ext === 'htm') {
+                    // <script type="application/json+jim">
+                    const script = doc.querySelector('script[type="application/json+jim"]');
+                    if (script) jimText = script.textContent;
+                }
+                if (jimText) {
+                    console.log('[JIMViewer] Raw JIM text found:', jimText);
+                    try {
+                        jim = JSON.parse(jimText);
+                        console.log('[JIMViewer] Parsed JIM object:', jim);
+                    } catch (e) {
+                        console.error('[JIMViewer] Error parsing JIM JSON:', e, '\nRaw text:', jimText);
+                        this.showError('Invalid JIM JSON in file.');
+                        return;
+                    }
+                } else {
+                    console.warn('[JIMViewer] No JIM metadata found in file.');
+                }
+
+                // Preflight and normalize JIM if present
+                if (jim && Object.keys(jim).length > 0) {
+                    const preflight = preflightJIM(jim);
+                    this.specIssues = {
+                        errors: preflight.errors,
+                        warnings: preflight.warnings,
+                        fixes: preflight.fixesApplied
+                    };
+                    this.jimData = preflight.normalizedJim;
+                    console.log('[JIMViewer] JIM data after preflight:', this.jimData);
+                } else if (jim && Object.keys(jim).length === 0) {
+                    console.warn('[JIMViewer] JIM metadata is present but empty.');
+                    this.specIssues = null;
+                    this.jimData = null;
+                } else {
+                    this.specIssues = null;
+                    this.jimData = null;
+                }
+
+                // Render summary and visualization
+                this.displayMetadataSummary();
+                if (this.currentDoc && (this.jimData || this.currentDoc.querySelector('svg'))) {
+                    this.renderVisualization();
+                }
+            }
+            displayMetadataSummary() {
+                console.log('displayMetadataSummary called, JIM data present:', !!this.jimData);
+                const summary = document.getElementById('metadata-summary');
+                // Show spec compliance box if preflight found errors/warnings
+                let specBox = '';
+                if (this.specIssues && (this.specIssues.errors.length || this.specIssues.warnings.length)) {
+                  const color = this.specIssues.errors.length ? '#fee2e2' : '#fef9c3';
+                  const border = this.specIssues.errors.length ? '#dc2626' : '#f59e0b';
+                  const icon = this.specIssues.errors.length ? '✗' : '⚠';
+                  specBox = `<div style="background:${color};border:1px solid ${border};padding:12px 16px;border-radius:6px;margin-bottom:16px;">
+                    <strong style="color:${border};font-size:15px;">Spec compliance</strong><ul style="margin:8px 0 0 18px;padding:0;">
+                    ${this.specIssues.errors.map(e=>`<li style='color:#dc2626;'>✗ ${e}</li>`).join('')}
+                    ${this.specIssues.warnings.map(w=>`<li style='color:#d97706;'>⚠ ${w}</li>`).join('')}
+                    </ul>
+                    ${this.specIssues.fixes.length ? `<div style='color:#64748b;font-size:12px;margin-top:8px;'>Normalizations: ${this.specIssues.fixes.join(', ')}</div>` : ''}
+                  </div>`;
+                }
+
+                if (!this.jimData) {
+                    // SVG-only mode
+                    const validation = this.validateJIMStructure();
+                    this.inventoryData = validation.svgInventory || [];
+                    console.log('SVG-only mode validation completed, inventory items:', this.inventoryData?.length);
+                    const html = `
+                        ${specBox}
+                        <div class="metadata-summary">
+                            <h3>Document Information</h3>
+                            <div class="metadata-item">
+                                <span class="key">Mode:</span>
+                                <span class="value">SVG Accessibility Inspector</span>
+                            </div>
+                            <div class="metadata-item">
+                                <span class="key">JIM Metadata:</span>
+                                <span class="value" style="color: #d97706;">Not present</span>
+                            </div>
+                            <div class="metadata-item">
+                                <span class="key">Features:</span>
+                                <span class="value">Element inspection, accessibility audit, style analysis</span>
+                            </div>
+                            <h3 style="margin-top: 16px; margin-bottom: 8px;">SVG Accessibility Audit</h3>
+                            ${this.renderAccessibilityAudit()}
+                        </div>
+                    `;
+                    summary.innerHTML = html;
+                    this.detailedAnalysis = this.renderInventoryList(validation);
+                    this.updateDetailedAnalysis();
+                    return;
+                }
+
+                const dataset = this.jimData.datasets?.[0];
+                // Always run validation, even if no dataset
+                const validation = this.validateJIMStructure();
+                this.inventoryData = validation.svgInventory;
+                console.log('JIM mode validation completed, inventory items:', this.inventoryData?.length);
+                let html = '';
+                html = `
+                    ${specBox}
+                    <div class="metadata-summary">
+                        <h3>Document Metadata</h3>
+                        ${dataset ? `
+                            <div class="metadata-item">
+                                <span class="key">Title:</span>
+                                <span class="value">${dataset.title || 'Untitled'}</span>
+                            </div>
+                            <div class="metadata-item">
+                                <span class="key">Type:</span>
+                                <span class="value">${dataset.representation?.chartType || 'Unknown'}</span>
+                            </div>
+                            <div class="metadata-item">
+                                <span class="key">Series:</span>
+                                <span class="value">${dataset.series?.length || 0}</span>
+                            </div>
+                        ` : `
+                            <div class="metadata-item">
+                                <span class="key">Datasets:</span>
+                                <span class="value" style="color: #d97706;">Not present</span>
+                            </div>
+                        `}
+                        <div class="metadata-item">
+                            <span class="key">JIM Version:</span>
+                            <span class="value">${this.jimData.version?.jim || 'Unknown'}</span>
+                        </div>
+                        <h3 style="margin-top: 16px; margin-bottom: 8px;">JIM Validation</h3>
+                        ${this.renderValidationResults(validation)}
+                    </div>
+                `;
+                summary.innerHTML = html;
+                this.detailedAnalysis = this.renderInventoryList(validation);
+                this.updateDetailedAnalysis();
+            }
+        showNonJIMElementInfo(element, eventType) {
+            if (!element) return;
+            let html = '';
+            const tag = element.tagName;
+            const id = element.id ? `#${element.id}` : '';
+            const classes = element.classList.length ? '.' + [...element.classList].join('.') : '';
+            html += `<div><strong>SVG Element:</strong> <code>${tag}${id}${classes}</code></div>`;
+            html += `<div><strong>Event:</strong> <code>${eventType}</code></div>`;
+
+            // Accessibility attributes section
+            html += '<h4 style="margin-top: 12px; padding-top: 12px; border-top: 1px solid #e2e8f0; font-size: 15px; color: #1e293b;">Accessibility Attributes</h4>';
+            html += `<div><strong>aria-label:</strong> ${element.getAttribute('aria-label') || '<span style="color: #94a3b8;">Not present</span>'}</div>`;
+            html += `<div><strong>aria-labelledby:</strong> ${element.getAttribute('aria-labelledby') || '<span style="color: #94a3b8;">Not present</span>'}</div>`;
+            html += `<div><strong>aria-describedby:</strong> ${element.getAttribute('aria-describedby') || '<span style="color: #94a3b8;">Not present</span>'}</div>`;
+            html += `<div><strong>role:</strong> ${element.getAttribute('role') || '<span style="color: #94a3b8;">Not present</span>'}</div>`;
+            html += `<div><strong>tabindex:</strong> ${element.getAttribute('tabindex') !== null ? element.getAttribute('tabindex') : '<span style="color: #94a3b8;">Not present</span>'}</div>`;
+
+            let titleText = null;
+            let descText = null;
+            const titleEl = element.querySelector('title');
+            const titleAttr = element.getAttribute('title');
+            titleText = titleEl ? titleEl.textContent : titleAttr;
+            const descEl = element.querySelector('desc');
+            descText = descEl ? descEl.textContent : null;
+            html += `<div><strong>&lt;title&gt;:</strong> ${titleText || '<span style=\"color: #94a3b8;\">Not present</span>'}</div>`;
+            html += `<div><strong>&lt;desc&gt;:</strong> ${descText || '<span style=\"color: #94a3b8;\">Not present</span>'}</div>`;
+            html += `<div><strong>aria-hidden:</strong> ${element.getAttribute('aria-hidden') || '<span style=\"color: #94a3b8;">Not present</span>'}</div>`;
+            html += `<div><strong>aria-live:</strong> ${element.getAttribute('aria-live') || '<span style=\"color: #94a3b8;">Not present</span>'}</div>`;
+
+            // Computed styles section
+            if (window.getComputedStyle) {
+                const computed = window.getComputedStyle(element);
+                html += '<h4 style="margin-top: 12px; padding-top: 12px; border-top: 1px solid #e2e8f0; font-size: 15px; color: #1e293b;">Computed Styles</h4>';
+                html += `<div><strong>fill:</strong> <span style="color: ${computed.fill};">●</span> ${computed.fill}</div>`;
+                html += `<div><strong>stroke:</strong> <span style="color: ${computed.stroke};">●</span> ${computed.stroke}</div>`;
+                html += `<div><strong>stroke-width:</strong> ${computed.strokeWidth}</div>`;
+                html += `<div><strong>opacity:</strong> ${computed.opacity}</div>`;
+                html += `<div><strong>display:</strong> ${computed.display}</div>`;
+                html += `<div><strong>visibility:</strong> ${computed.visibility}</div>`;
+                html += `<div><strong>cursor:</strong> ${computed.cursor}</div>`;
+                if (element.tagName.toLowerCase() === 'text') {
+                    html += `<div><strong>font-size:</strong> ${computed.fontSize}</div>`;
+                    html += `<div><strong>font-family:</strong> ${computed.fontFamily}</div>`;
+                    html += `<div><strong>font-weight:</strong> ${computed.fontWeight}</div>`;
+                    const textContent = element.textContent.trim();
+                    if (textContent) {
+                        html += `<div style="margin-top: 8px;"><strong>Text Content:</strong> "${textContent}"</div>`;
+                    }
+                }
+            }
+
+            html += `<div style=\"margin-top:8px;color:#888;font-size:13px;\">No JIM selector defined for this element.</div>`;
+            this.infoContent.innerHTML = html;
+            this.infoPanel.classList.add('visible');
+            // Update the live region for SR users after the panel is visible (one-frame delay)
+            const liveRegion = document.getElementById('info-panel-live');
+            if (liveRegion) {
+                let label = `Element info panel opened for SVG element ${tag}${id}`;
+                liveRegion.textContent = '';
+                requestAnimationFrame(() => {
+                    liveRegion.textContent = label;
+                });
+            }
+        }
+        updateDetailedAnalysis() {
+            const section = document.getElementById('analysis-section');
+            const content = document.getElementById('analysis-content');
+            content.innerHTML = this.detailedAnalysis || '<div style="color:#64748b; font-style:italic;">No inventory available.</div>';
+            section.style.display = 'block';
+        }
+        renderValidationSummary(validation) {
+            let html = '';
+            validation.errors.forEach(err => { html += `<div style="color:#dc2626; margin:4px 0;">✗ ${err}</div>`; });
+            validation.warnings.forEach(w => { html += `<div style="color:#d97706; margin:4px 0;">⚠ ${w}</div>`; });
+            validation.passed.forEach(p => { html += `<div style="color:#059669; margin:4px 0;">✓ ${p}</div>`; });
+
+            if (validation.orphanedSelectors?.length) {
+                html += '<div style="margin-top:12px; padding-top:12px; border-top:1px solid #e2e8f0;"><strong>Orphaned Selectors (not in DOM):</strong></div>';
+                validation.orphanedSelectors.forEach(orphan => {
+                    html += `
+                        <div style="background:#eff6ff; border-left:3px solid #3b82f6; padding:8px; margin:8px 0; border-radius:4px; font-size:13px;">
+                            <div><strong>${orphan.key}</strong></div>
+                            <div style="color:#64748b; font-size:12px;">Selector: <code>${orphan.selector}</code></div>
+                            <div style="color:#64748b; font-size:12px;">JSON Path: <code>${orphan.jsonPath}</code></div>
+                            ${orphan.data ? `<div style="margin-top:4px;"><strong>Data:</strong> <code>${JSON.stringify(orphan.data)}</code></div>` : ''}
+                        </div>`;
+                });
+            }
+
+            if (!html) html = '<div style="color:#64748b; font-style:italic;">No validation data available</div>';
+            return html;
+        }
+
+        renderInventoryList(validation) {
+            const inv = validation.svgInventory || [];
+            if (!inv.length) return '';
+
+            const byCategory = {
+                interactive: inv.filter(i => i.category === 'interactive'),
+                text:        inv.filter(i => i.category === 'text'),
+                group:       inv.filter(i => i.category === 'group'),
+            };
+
+            let html = `
+                <h4 style="margin-top:0; margin-bottom:8px; font-size:14px; color:#1e293b;">
+                    SVG Element Inventory
+                    <div class="sr-only">This list is interactive. Use Tab to move between items and Enter to open details. Press 'i' to jump here from the visualization area.</div>
+                </h4>
+            `;
+
+            Object.entries(byCategory).forEach(([category, items]) => {
+                if (!items.length) return;
+                const label = category[0].toUpperCase() + category.slice(1) + ' Elements';
+                html += `<h5 style="margin:8px 0 6px; font-size:13px; color:#374151; font-weight:600;">${label} (${items.length})</h5>`;
+                html += '<ul style="list-style:none; padding:0; margin:0;">';
+
+                items.forEach((item, idx) => {
+                    const jimBadge = item.hasJIM
+                        ? '<span style="background:#10b981;color:#fff;padding:2px 6px;border-radius:3px;font-size:11px;margin-left:8px;">JIM</span>'
+                        : '<span style="background:#94a3b8;color:#fff;padding:2px 6px;border-radius:3px;font-size:11px;margin-left:8px;">No JIM</span>';
+
+                    const clickHandler = `handleInventoryItemClick('${category}', ${idx})`;
+                    html += `
+                        <li tabindex="0" style="background:#f8fafc;border:1px solid #e2e8f0;padding:8px;margin:6px 0;border-radius:4px;font-size:12px;cursor:pointer;"
+                                onclick="${clickHandler}"
+                                onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();${clickHandler};}">
+                            <div><code>${item.selector}</code> ${jimBadge}</div>
+                            ${item.textContent ? `<div style="color:#64748b;margin-top:4px;">Text: \"${item.textContent}\"</div>` : ''}
+                            <div style="margin-top:4px; color:#64748b;">
+                                ${item.accessibility.tabindex !== null ? `tabindex=\"${item.accessibility.tabindex}\" ` : ''}
+                                ${item.accessibility.role ? `role=\"${item.accessibility.role}\" ` : ''}
+                                ${item.accessibility.ariaLabel ? `aria-label ` : ''}
+                                ${item.accessibility.ariaLabelledby ? `aria-labelledby ` : ''}
+                                ${item.accessibility.ariaDescribedby ? `aria-describedby ` : ''}
+                                ${item.accessibility.ariaHidden ? `aria-hidden=\"${item.accessibility.ariaHidden}\" ` : ''}
+                                ${item.accessibility.hasTitle ? '&lt;title&gt; ' : ''}
+                                ${item.accessibility.hasDesc ? '&lt;desc&gt; ' : ''}
+                            </div>
+                            ${item.suggestions?.length ? `<div style=\"color:#d97706; margin-top:4px; font-size:11px;\">💡 ${item.suggestions.join('; ')}</div>` : ''}
+                        </li>`;
+                });
+
+                html += '</ul>';
+            });
+
+            return html;
+        }
+            constructor() {
+                this.jimData = null;
+                this.currentDoc = null;
+                this.infoPanel = document.getElementById('info-panel');
+                this.infoContent = document.getElementById('info-content');
+                this.inventoryData = [];
+                this.detailedAnalysis = '';
+                this.setupEventListeners();
+            }
+
+            renderAccessibilityAudit() {
+                if (!this.currentDoc) return '<div style="color: #64748b; font-style: italic;">No document to audit</div>';
+
+                let svg = this.currentDoc.querySelector('svg');
+                if (!svg && this.currentDoc.documentElement && this.currentDoc.documentElement.tagName.toLowerCase() === 'svg') {
+                    svg = this.currentDoc.documentElement;
+                }
+
+                if (!svg) return '<div style="color: #dc2626;">No SVG found in document</div>';
+
+                const allElements = svg.querySelectorAll('*');
+                let interactiveCount = 0;
+                let textCount = 0;
+                let accessibleCount = 0;
+                let issues = [];
+
+                allElements.forEach(el => {
+                    const hasTabindex = el.hasAttribute('tabindex');
+                    const hasARIA = el.hasAttribute('aria-label') || el.hasAttribute('aria-labelledby') || el.hasAttribute('aria-describedby');
+                    const hasTitle = el.querySelector('title');
+                    const isText = el.tagName.toLowerCase() === 'text';
+
+                    if (isText) {
+                        textCount++;
+                        if (!el.hasAttribute('aria-hidden') && el.textContent.trim()) {
+                            issues.push(`Text element "${el.textContent.trim().substring(0, 20)}..." might need aria-hidden if decorative`);
+                        }
+                    }
+
+                    if (hasTabindex || hasARIA) {
+                        interactiveCount++;
+                        if (hasTabindex || hasARIA || hasTitle) {
+                            accessibleCount++;
+                        }
+                    }
+
+                    if (hasTabindex && !hasARIA && !hasTitle) {
+                        issues.push(`Element ${el.tagName}${el.id ? '#' + el.id : ''} is keyboard accessible but lacks screen reader label`);
+                    }
+                });
+
+                let html = '';
+                html += `<div style="color: #059669; margin: 4px 0;">✓ Found ${interactiveCount} interactive elements</div>`;
+                html += `<div style="color: #059669; margin: 4px 0;">✓ Found ${textCount} text elements</div>`;
+                html += `<div style="color: #059669; margin: 4px 0;">✓ ${accessibleCount} elements have accessibility labels</div>`;
+
+                if (issues.length > 0) {
+                    issues.slice(0, 3).forEach(issue => {
+                        html += `<div style="color: #d97706; margin: 4px 0;">⚠ ${issue}</div>`;
+                    });
+                    if (issues.length > 3) {
+                        html += `<div style="color: #64748b; margin: 4px 0; font-style: italic;">... and ${issues.length - 3} more issues</div>`;
+                    }
+                }
+
+                // Inventory output removed; audit remains brief.
+
+                return html;
+            }
+
+            renderSVGInventoryOnly() {
+                if (!this.currentDoc) return '';
+
+                let svg = this.currentDoc.querySelector('svg');
+                if (!svg && this.currentDoc.documentElement && this.currentDoc.documentElement.tagName.toLowerCase() === 'svg') {
+                    svg = this.currentDoc.documentElement;
+                }
+
+                if (!svg) return '';
+
+                const inventory = [];
+                const allElements = svg.querySelectorAll('*');
+                
+                allElements.forEach(el => {
+                    if (el.tagName.toLowerCase() === 'text') {
+                        const item = this.createInventoryItem(el, false, 'text');
+                        inventory.push(item);
+                    }
+                });
+                
+                allElements.forEach(el => {
+                    if (el.tagName.toLowerCase() === 'text') return;
+                    
+                    const hasAccessibility = el.hasAttribute('tabindex') || 
+                                           el.hasAttribute('role') || 
+                                           el.hasAttribute('aria-label') || 
+                                           el.hasAttribute('aria-labelledby') || 
+                                           el.hasAttribute('aria-describedby');
+                    
+                    if (hasAccessibility) {
+                        const item = this.createInventoryItem(el, false, 'interactive');
+                        inventory.push(item);
+                    }
+                });
+
+                // Store inventory data for click handlers
+                this.inventoryData = inventory;
+                console.log('Stored non-JIM inventory data:', this.inventoryData.length, 'items');
+
+                const byCategory = {
+                    interactive: inventory.filter(i => i.category === 'interactive'),
+                    text: inventory.filter(i => i.category === 'text')
+                };
+
+                let html = '';
+                Object.entries(byCategory).forEach(([category, items]) => {
+                    if (items.length === 0) return;
+                    
+                    const categoryLabel = category.charAt(0).toUpperCase() + category.slice(1) + ' Elements';
+                    html += `<h5 style="margin-top: 8px; margin-bottom: 6px; font-size: 13px; color: #374151; font-weight: 600;">${categoryLabel} (${items.length})</h5>`;
+                    
+                    html += '<ul style="list-style: none; padding: 0; margin: 0;">';
+                    items.slice(0, 3).forEach((item, index) => {
+                        const clickHandler = `handleInventoryItemClick('${category}', ${index})`;
+                        
+                        html += `
+                            <li tabindex="0" style="background: #f8fafc; border: 1px solid #e2e8f0; padding: 6px; margin: 4px 0; border-radius: 4px; font-size: 11px; cursor: pointer;"
+                                onclick="${clickHandler}"
+                                onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();${clickHandler};}"
+                                onfocus="this.style.outline='2px solid #3b82f6'; this.style.outlineOffset='2px';" 
+                                onblur="this.style.outline=''; this.style.outlineOffset='';">
+                                <code>${item.selector}</code>
+                                ${item.textContent ? `<span style="color: #64748b;"> - "${item.textContent.substring(0, 30)}${item.textContent.length > 30 ? '...' : ''}"</span>` : ''}
+                            </li>
+                        `;
+                    });
+                    html += '</ul>';
+                    
+                    if (items.length > 3) {
+                        html += `<div style="color: #64748b; font-size: 11px; margin: 4px 0;">... and ${items.length - 3} more</div>`;
+                    }
+                });
+
+                return html;
+            }
+
+            renderVisualization() {
+                const svg = this.currentDoc.querySelector('svg');
+                
+                if (!svg) {
+                    this.showError('No SVG found in document');
+                    return;
+                }
+
+                // Clone the SVG to avoid modifying the original document
+                const svgClone = svg.cloneNode(true);
+                
+                // Attach JIM behaviors to elements that have selectors
+                const selectors = this.jimData.selectors || {};
+                Object.entries(selectors).forEach(([key, selector]) => {
+                    let element = null;
+                    try {
+                        element = svgClone.querySelector(selector.dom);
+                    } catch (e) {
+                        console.warn(`[JIMViewer] Invalid selector for key '${key}' in renderVisualization: '${selector.dom}'`, e);
+                        return; // skip this selector
+                    }
+                    if (element) {
+                        this.attachJIMBehavior(element, key);
+                    }
+                });
+
+                // Add fallback handler for ANY SVG element (for elements without JIM mappings)
+                svgClone.addEventListener('click', (e) => {
+                    // Only handle if target doesn't already have JIM behavior
+                    const targetElement = e.target;
+                    if (targetElement instanceof SVGElement && targetElement !== svgClone) {
+                        const hasJIM = Object.values(selectors).some(s => {
+                            try {
+                                return targetElement.matches(s.dom);
+                            } catch {
+                                return false;
+                            }
+                        });
+                        
+                        if (!hasJIM) {
+                            this.showNonJIMElementInfo(targetElement, 'click');
+                        }
+                    }
+                });
+
+                this.displayVisualization(svgClone);
+            }
+
+            attachJIMBehavior(element, selectorKey) {
+                element.addEventListener('focus', () => this.showElementInfo(selectorKey, 'focus', element));
+                element.addEventListener('click', () => this.showElementInfo(selectorKey, 'click', element));
+            }
+
+            showElementInfo(selectorKey, eventType, element) {
+        // --- CLEAN IMPLEMENTATION START ---
+        const facets = this.jimData?.datasets?.[0]?.facets || {};
+        const selector = this.jimData.selectors?.[selectorKey];
+        if (!selector) return;
+        const behavior = this.jimData.behaviors?.find(b => b.target?.selector === selector?.dom);
+        const data = this.getDataFromJSONPath(selector.json);
+        const explicitAnnouncement = this.getExplicitAnnouncement(behavior);
+        const defaultAnnouncement = this.getDefaultAnnouncement(data);
+
+        // Find the element in the live visualization SVG
+        let vizElement = null;
+        try {
+            const viz = document.getElementById('visualization');
+            if (viz && selector.dom) {
+                vizElement = viz.querySelector(selector.dom);
+            }
+        } catch (e) {
+            vizElement = element;
+        }
+        if (!vizElement) vizElement = element;
+
+        let html = '';
+        // JIM-specific info
+        html += `<div><strong>JIM Selector Key:</strong> <code>${selectorKey}</code></div>`;
+        html += `<div><strong>Event:</strong> <code>${eventType}</code></div>`;
+        if (this.jimData?.selectors?.[selectorKey]) {
+            html += `<div><strong>DOM Selector:</strong> <code>${this.jimData.selectors[selectorKey].dom}</code></div>`;
+            html += `<div><strong>JSON Path:</strong> <code>${this.jimData.selectors[selectorKey].json}</code></div>`;
+            if (this.jimData.selectors[selectorKey].note) {
+                html += `<div><strong>Note:</strong> ${this.jimData.selectors[selectorKey].note}</div>`;
+            }
+        }
+
+        // JIM announcement (explicit and default)
+        if (behavior?.enter?.announcement) {
+            const ann = behavior.enter.announcement;
+            html += `<div class="announcement" style="margin-top:12px; padding:10px; background:#f0fdf4; border-left:4px solid #10b981; border-radius:4px;">
+                <strong>Explicit Announcement:</strong><br>${ann.description || ''}
+            </div>`;
+        }
+        // Default announcement (if present and different from explicit)
+        if (defaultAnnouncement && (!behavior?.enter?.announcement || defaultAnnouncement !== behavior.enter.announcement.description)) {
+            html += `<div class="announcement" style="margin-top:8px; padding:8px; background:#f1f5f9; border-left:4px solid #64748b; border-radius:4px;">
+                <strong>Default Announcement:</strong><br>${defaultAnnouncement}
+            </div>`;
+        }
+        // Show full JSON view of the behavior if present
+        if (behavior) {
+            html += `<details open style="margin-top:10px;"><summary style="cursor:pointer; color:#0ea5e9;">Show/Hide Full Behavior JSON</summary><pre style="background:#f8fafc; color:#334155; font-size:12px; padding:8px; border-radius:4px; margin-top:6px;">${JSON.stringify(behavior, null, 2)}</pre></details>`;
+        }
+
+        // Accessibility attributes section
+        html += '<h4 style="margin-top: 12px; padding-top: 12px; border-top: 1px solid #e2e8f0; font-size: 15px; color: #1e293b;">Accessibility Attributes</h4>';
+        html += `<div><strong>aria-label:</strong> ${vizElement.getAttribute('aria-label') || '<span style="color: #94a3b8;">Not present</span>'}</div>`;
+        html += `<div><strong>aria-labelledby:</strong> ${vizElement.getAttribute('aria-labelledby') || '<span style="color: #94a3b8;">Not present</span>'}</div>`;
+        html += `<div><strong>aria-describedby:</strong> ${vizElement.getAttribute('aria-describedby') || '<span style="color: #94a3b8;">Not present</span>'}</div>`;
+        html += `<div><strong>role:</strong> ${vizElement.getAttribute('role') || '<span style="color: #94a3b8;">Not present</span>'}</div>`;
+        html += `<div><strong>tabindex:</strong> ${vizElement.getAttribute('tabindex') !== null ? vizElement.getAttribute('tabindex') : '<span style="color: #94a3b8;">Not present</span>'}</div>`;
+
+        let titleText = null;
+        let descText = null;
+        const titleEl = vizElement.querySelector('title');
+        const titleAttr = vizElement.getAttribute('title');
+        titleText = titleEl ? titleEl.textContent : titleAttr;
+        const descEl = vizElement.querySelector('desc');
+        descText = descEl ? descEl.textContent : null;
+        html += `<div><strong>&lt;title&gt;:</strong> ${titleText || '<span style=\"color: #94a3b8;\">Not present</span>'}</div>`;
+        html += `<div><strong>&lt;desc&gt;:</strong> ${descText || '<span style=\"color: #94a3b8;\">Not present</span>'}</div>`;
+        html += `<div><strong>aria-hidden:</strong> ${vizElement.getAttribute('aria-hidden') || '<span style=\"color: #94a3b8;">Not present</span>'}</div>`;
+        html += `<div><strong>aria-live:</strong> ${vizElement.getAttribute('aria-live') || '<span style=\"color: #94a3b8;">Not present</span>'}</div>`;
+
+        // Computed styles section
+        if (window.getComputedStyle && vizElement) {
+            const computed = window.getComputedStyle(vizElement);
+            html += '<h4 style="margin-top: 12px; padding-top: 12px; border-top: 1px solid #e2e8f0; font-size: 15px; color: #1e293b;">Computed Styles</h4>';
+            html += `<div><strong>fill:</strong> <span style="color: ${computed.fill};">●</span> ${computed.fill}</div>`;
+            html += `<div><strong>stroke:</strong> <span style="color: ${computed.stroke};">●</span> ${computed.stroke}</div>`;
+            html += `<div><strong>stroke-width:</strong> ${computed.strokeWidth}</div>`;
+            html += `<div><strong>opacity:</strong> ${computed.opacity}</div>`;
+            html += `<div><strong>display:</strong> ${computed.display}</div>`;
+            html += `<div><strong>visibility:</strong> ${computed.visibility}</div>`;
+            html += `<div><strong>cursor:</strong> ${computed.cursor}</div>`;
+            if (vizElement.tagName.toLowerCase() === 'text') {
+                html += `<div><strong>font-size:</strong> ${computed.fontSize}</div>`;
+                html += `<div><strong>font-family:</strong> ${computed.fontFamily}</div>`;
+                html += `<div><strong>font-weight:</strong> ${computed.fontWeight}</div>`;
+                const textContent = vizElement.textContent.trim();
+                if (textContent) {
+                    html += `<div style="margin-top: 8px;"><strong>Text Content:</strong> \"${textContent}\"</div>`;
+                }
+            }
+        }
+
+        this.infoContent.innerHTML = html;
+        this.infoPanel.classList.add('visible');
+        // Update the live region for SR users after the panel is visible (one-frame delay)
+        const liveRegion = document.getElementById('info-panel-live');
+        if (liveRegion) {
+            let label = `Element info panel opened for JIM selector ${selectorKey}`;
+            liveRegion.textContent = '';
+            requestAnimationFrame(() => {
+                liveRegion.textContent = label;
+            });
+        }
+        // --- CLEAN IMPLEMENTATION END ---
+
+    }
+
+            createInventoryItem(element, hasJIM, category) {
+                const tag = element.tagName.toLowerCase();
+                const id = element.id ? `#${element.id}` : '';
+                const classes = element.classList.length ? '.' + [...element.classList].join('.') : '';
+                
+                // Create a more specific selector that includes position or attributes
+                let selector = `${tag}${id}${classes}`;
+                
+                // For elements without unique IDs, add position-based specificity
+                if (!element.id) {
+                    const siblings = Array.from(element.parentNode.children).filter(el => 
+                        el.tagName === element.tagName && 
+                        el.className === element.className
+                    );
+                    
+                    if (siblings.length > 1) {
+                        const index = siblings.indexOf(element);
+                        selector = `${tag}${classes}:nth-of-type(${index + 1})`;
+                    }
+                }
+                
+                const item = {
+                    category,
+                    selector,
+                    element: tag,
+                    hasJIM,
+                    domElement: element, // Store reference to actual element
+                    accessibility: {
+                        tabindex: element.getAttribute('tabindex'),
+                        role: element.getAttribute('role'),
+                        ariaLabel: element.getAttribute('aria-label'),
+                        ariaLabelledby: element.getAttribute('aria-labelledby'),
+                        ariaDescribedby: element.getAttribute('aria-describedby'),
+                        ariaHidden: element.getAttribute('aria-hidden'),
+                        hasTitle: !!element.querySelector('title'),
+                        hasDesc: !!element.querySelector('desc')
+                    },
+                    suggestions: []
+                };
+
+                if (tag === 'text') {
+                    item.textContent = element.textContent.trim();
+                }
+
+                if (category === 'text' && !item.accessibility.ariaHidden && item.textContent) {
+                    if (!hasJIM) {
+                        item.suggestions.push('Consider aria-hidden="true" if decorative, or connect via aria-labelledby if meaningful');
+                    }
+                }
+
+                if (category === 'interactive' && !hasJIM) {
+                    item.suggestions.push('Interactive element lacks JIM mapping');
+                }
+
+                if (!item.accessibility.tabindex && !item.accessibility.role && category === 'interactive') {
+                    item.suggestions.push('Has ARIA but no tabindex - may not be keyboard accessible');
+                }
+
+                if (item.accessibility.ariaLabelledby && !item.accessibility.tabindex) {
+                    item.suggestions.push('Has aria-labelledby but no tabindex');
+                }
+
+                return item;
+            }
+
+            renderValidationResults(validation) {
+                if (!validation) return '<div style="color:#64748b; font-style:italic;">No validation data available</div>';
+                let html = '';
+                // Facet validation
+                if (validation.facetSummary) {
+                    if (validation.facetSummary.missing && validation.facetSummary.missing.length) {
+                        html += `<div style="color:#d97706; margin:4px 0;">⚠ ${validation.facetSummary.missing.length} record properties lack facet definitions: ${validation.facetSummary.missing.join(', ')}</div>`;
+                    } else if (validation.facetSummary.total > 0) {
+                        html += `<div style="color:#059669; margin:4px 0;">✓ All record properties have facet definitions</div>`;
+                    }
+                }
+                // Behavior validation
+                if (validation.behaviorSummary) {
+                    if (validation.behaviorSummary.missing && validation.behaviorSummary.missing.length) {
+                        html += `<div style="color:#d97706; margin:4px 0;">⚠ ${validation.behaviorSummary.missing.length} selector(s) lack behavior definitions: ${validation.behaviorSummary.missing.join(', ')}</div>`;
+                    } else if (validation.behaviorSummary.total > 0) {
+                        html += `<div style="color:#059669; margin:4px 0;">✓ All selectors have behavior definitions</div>`;
+                    }
+                }
+                // Selector/DOM validation
+                if (validation.selectorSummary) {
+                    html += `<div style="color:#059669; margin:4px 0;">✓ ${validation.selectorSummary.domValid} DOM selector(s) valid</div>`;
+                    html += `<div style="color:#059669; margin:4px 0;">✓ ${validation.selectorSummary.jsonValid} JSON path(s) valid</div>`;
+                }
+                // Behavior mapping
+                if (validation.behaviorSummary && typeof validation.behaviorSummary.mapped === 'number') {
+                    html += `<div style="color:#059669; margin:4px 0;">✓ ${validation.behaviorSummary.mapped} behavior(s) properly mapped</div>`;
+                }
+                // Errors, warnings, passes
+                validation.errors?.forEach(err => {
+                    html += `<div style="color: #dc2626; margin: 4px 0;">✗ ${err}</div>`;
+                });
+                validation.warnings?.forEach(w => {
+                    html += `<div style="color: #d97706; margin: 4px 0;">⚠ ${w}</div>`;
+                });
+                validation.passed?.forEach(p => {
+                    html += `<div style="color: #059669; margin: 4px 0;">✓ ${p}</div>`;
+                });
+                // Orphaned selectors (accessible heading and list)
+                if (validation.orphanedSelectors?.length) {
+                    html += '<h4 id="orphaned-selectors-heading" style="margin-top:12px; padding-top:12px; border-top:1px solid #e2e8f0; font-size:15px; color:#1e293b;" role="heading" aria-level="2">Orphaned Selectors (not in DOM)</h4>';
+                    html += '<div class="sr-only" id="orphaned-selectors-sr-help">This is a static list of selectors defined in JIM metadata that do not match any element in the SVG. This list is not interactive. Press \'i\' again to move to the SVG Element Inventory, where you can use Tab and Enter to explore items.</div>';
+                    html += '<ul aria-labelledby="orphaned-selectors-heading orphaned-selectors-sr-help" style="padding-left: 0; margin: 8px 0; list-style: none;">';
+                    validation.orphanedSelectors.forEach(orphan => {
+                        html += `
+                            <li style="background:#eff6ff; border-left:3px solid #3b82f6; padding:8px; margin:8px 0; border-radius:4px; font-size:13px; list-style: none;">
+                                <div><strong>${orphan.key}</strong></div>
+                                <div style="color:#64748b; font-size:12px;">Selector: <code>${orphan.selector}</code></div>
+                                <div style="color:#64748b; font-size:12px;">JSON Path: <code>${orphan.jsonPath}</code></div>
+                                ${orphan.data ? `<div style="margin-top:4px;"><strong>Data:</strong> <code>${JSON.stringify(orphan.data)}</code></div>` : ''}
+                            </li>`;
+                    });
+                    html += '</ul>';
+                }
+                if (!html) html = '<div style="color:#64748b; font-style:italic;">No validation data available</div>';
+                return html;
+            }
+        }
+        // Ensure the JIMViewer is initialized when the DOM is ready
+        document.addEventListener('DOMContentLoaded', () => {
+            window.jimViewer = new JIMViewer();
+        });
+
+        // Global function to handle inventory item clicks
+        window.handleInventoryItemClick = function (category, idx) {
+            if (!window.jimViewer || !window.jimViewer.inventoryData) return;
+            // Find the item in the inventory by category and index
+            const items = window.jimViewer.inventoryData.filter(i => i.category === category);
+            const item = items[idx];
+            if (item && item.domElement) {
+                if (item.hasJIM && window.jimViewer.jimData && window.jimViewer.jimData.selectors) {
+                    // Try to find the selectorKey for this element
+                    const selectors = window.jimViewer.jimData.selectors;
+                    let selectorKey = null;
+                    for (const [key, sel] of Object.entries(selectors)) {
+                        try {
+                            if (item.domElement.matches(sel.dom)) {
+                                selectorKey = key;
+                                break;
+                            }
+                        } catch { }
+                    }
+                    if (selectorKey) {
+                        window.jimViewer.showElementInfo(selectorKey, 'click', item.domElement);
+                        return;
+                    }
+                }
+                // Fallback: show non-JIM info
+                window.jimViewer.showNonJIMElementInfo(item.domElement, 'click');
+            }
+        };
+    </script>
+</body>
+</html>
