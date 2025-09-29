@@ -386,8 +386,16 @@
                             } else if (sel.dom.startsWith('#') && sel.dom.includes(' ')) {
                                 warnings.push(`Selector '${key}' references an SVG ID with spaces ('${sel.dom}'), which is invalid in HTML/SVG and cannot be matched by querySelector. Update the SVG to use IDs without spaces.`);
                             }
-                            if (typeof sel.json !== 'string' || !sel.json.trim()) {
-                                errors.push(`Selector '${key}' missing 'json' (string).`);
+                                if (!('json' in sel)) {
+                                    errors.push(`Selector '${key}' missing 'json' property.`);
+                                } else if (typeof sel.json !== 'string') {
+                                    if (Array.isArray(sel.json)) {
+                                        errors.push(`Selector '${key}' 'json' should be a string, not an array. Found array: ${JSON.stringify(sel.json)}.`);
+                                    } else {
+                                        errors.push(`Selector '${key}' 'json' should be a string. Found type: ${typeof sel.json}.`);
+                                    }
+                                } else if (!sel.json.trim()) {
+                                    errors.push(`Selector '${key}' 'json' is an empty string.`);
                             }
                         }
                     }
