@@ -375,7 +375,10 @@
                         errors.push("Missing required property: selectors (object).");
                     } else {
                         for (const [key, sel] of Object.entries(jim.selectors)) {
-                            if (!sel) { errors.push(`Selector '${key}' is null/undefined.`); continue; }
+                            if (!sel || typeof sel !== 'object') {
+                                errors.push(`Selector '${key}' is not an object (found type: ${typeof sel}).`);
+                                continue;
+                            }
                             if (sel.jsonPath && !sel.json) {
                                 sel.json = sel.jsonPath;
                                 warnings.push(`Selector '${key}' used 'jsonPath'; normalized to 'json'.`);
@@ -385,24 +388,24 @@
                                 errors.push(`Selector '${key}' missing 'dom' (string).`);
                             } else if (sel.dom.startsWith('#') && sel.dom.includes(' ')) {
                                 warnings.push(`Selector '${key}' references an SVG ID with spaces ('${sel.dom}'), which is invalid in HTML/SVG and cannot be matched by querySelector. Update the SVG to use IDs without spaces.`);
-                                } else {
-                                    // Check for invalid CSS selector syntax (e.g., forbidden characters)
-                                    try {
-                                        document.createElement('div').querySelector(sel.dom);
-                                    } catch (e) {
-                                        warnings.push(`Selector '${key}' uses invalid CSS selector syntax ('${sel.dom}'): ${e.message}`);
-                                    }
+                            } else {
+                                // Check for invalid CSS selector syntax (e.g., forbidden characters)
+                                try {
+                                    document.createElement('div').querySelector(sel.dom);
+                                } catch (e) {
+                                    warnings.push(`Selector '${key}' uses invalid CSS selector syntax ('${sel.dom}'): ${e.message}`);
+                                }
                             }
-                                if (!('json' in sel)) {
-                                    errors.push(`Selector '${key}' missing 'json' property.`);
-                                } else if (typeof sel.json !== 'string') {
-                                    if (Array.isArray(sel.json)) {
-                                        errors.push(`Selector '${key}' 'json' should be a string, not an array. Found array: ${JSON.stringify(sel.json)}.`);
-                                    } else {
-                                        errors.push(`Selector '${key}' 'json' should be a string. Found type: ${typeof sel.json}.`);
-                                    }
-                                } else if (!sel.json.trim()) {
-                                    errors.push(`Selector '${key}' 'json' is an empty string.`);
+                            if (!('json' in sel)) {
+                                errors.push(`Selector '${key}' missing 'json' property.`);
+                            } else if (typeof sel.json !== 'string') {
+                                if (Array.isArray(sel.json)) {
+                                    errors.push(`Selector '${key}' 'json' should be a string, not an array. Found array: ${JSON.stringify(sel.json)}.`);
+                                } else {
+                                    errors.push(`Selector '${key}' 'json' should be a string. Found type: ${typeof sel.json}.`);
+                                }
+                            } else if (!sel.json.trim()) {
+                                errors.push(`Selector '${key}' 'json' is an empty string.`);
                             }
                         }
                     }
