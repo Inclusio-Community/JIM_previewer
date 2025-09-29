@@ -1,0 +1,168 @@
+<!--
+Spec compliance
+⚠ Behavior[0] enter.announcement.name appears to use dynamic/template syntax ('compose({target.id}, .label)'), which is not currently supported by the JIM spec.
+⚠ datasets[0].series missing; continuing without series.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+  <title id="diagram-title">Hexagon ABCDEF</title>
+  <desc>A regular hexagon with vertices A, B, C, D, E, F and equal side lengths of 2 cm.</desc>
+  
+  <g id="shape-hexagon">
+    <!-- Edges of the hexagon -->
+    <g id="edges-hexagon">
+      <path id="edge-AB" class="line" aria-labelledby="label-AB" d="M100,30 L130,50" stroke="hsl(229, 4%, 7%)" stroke-width="2" vector-effect="non-scaling-stroke"/>
+      <path id="edge-BC" class="line" aria-labelledby="label-BC" d="M130,50 L130,90" stroke="hsl(229, 4%, 7%)" stroke-width="2" vector-effect="non-scaling-stroke"/>
+      <path id="edge-CD" class="line" aria-labelledby="label-CD" d="M130,90 L100,110" stroke="hsl(229, 4%, 7%)" stroke-width="2" vector-effect="non-scaling-stroke"/>
+      <path id="edge-DE" class="line" aria-labelledby="label-DE" d="M100,110 L70,90" stroke="hsl(229, 4%, 7%)" stroke-width="2" vector-effect="non-scaling-stroke"/>
+      <path id="edge-EF" class="line" aria-labelledby="label-EF" d="M70,90 L70,50" stroke="hsl(229, 4%, 7%)" stroke-width="2" vector-effect="non-scaling-stroke"/>
+      <path id="edge-FA" class="line" aria-labelledby="label-FA" d="M70,50 L100,30" stroke="hsl(229, 4%, 7%)" stroke-width="2" vector-effect="non-scaling-stroke"/>
+    </g>
+    
+    <!-- Vertices of the hexagon -->
+    <g id="vertices-hexagon">
+      <circle id="vertex-A" class="vertex" aria-labelledby="label-A" cx="100" cy="30" r="3" fill="hsl(229, 4%, 7%)"/>
+      <circle id="vertex-B" class="vertex" aria-labelledby="label-B" cx="130" cy="50" r="3" fill="hsl(229, 4%, 7%)"/>
+      <circle id="vertex-C" class="vertex" aria-labelledby="label-C" cx="130" cy="90" r="3" fill="hsl(229, 4%, 7%)"/>
+      <circle id="vertex-D" class="vertex" aria-labelledby="label-D" cx="100" cy="110" r="3" fill="hsl(229, 4%, 7%)"/>
+      <circle id="vertex-E" class="vertex" aria-labelledby="label-E" cx="70" cy="90" r="3" fill="hsl(229, 4%, 7%)"/>
+      <circle id="vertex-F" class="vertex" aria-labelledby="label-F" cx="70" cy="50" r="3" fill="hsl(229, 4%, 7%)"/>
+    </g>
+    
+    <!-- Labels for the vertices and edges -->
+    <g id="labels-hexagon">
+      <text id="label-A" x="100" y="20" font-family="sans-serif" font-size="10px" fill="hsl(229, 4%, 7%)">A</text>
+      <text id="label-B" x="140" y="50" font-family="sans-serif" font-size="10px" fill="hsl(229, 4%, 7%)">B</text>
+      <text id="label-C" x="140" y="90" font-family="sans-serif" font-size="10px" fill="hsl(229, 4%, 7%)">C</text>
+      <text id="label-D" x="100" y="120" font-family="sans-serif" font-size="10px" fill="hsl(229, 4%, 7%)">D</text>
+      <text id="label-E" x="60" y="90" font-family="sans-serif" font-size="10px" fill="hsl(229, 4%, 7%)">E</text>
+      <text id="label-F" x="60" y="50" font-family="sans-serif" font-size="10px" fill="hsl(229, 4%, 7%)">F</text>
+      <text id="label-AB" x="115" y="40" font-family="sans-serif" font-size="10px" fill="hsl(229, 4%, 7%)">2 cm</text>
+      <text id="label-BC" x="135" y="70" font-family="sans-serif" font-size="10px" fill="hsl(229, 4%, 7%)">2 cm</text>
+      <text id="label-CD" x="115" y="100" font-family="sans-serif" font-size="10px" fill="hsl(229, 4%, 7%)">2 cm</text>
+      <text id="label-DE" x="85" y="100" font-family="sans-serif" font-size="10px" fill="hsl(229, 4%, 7%)">2 cm</text>
+      <text id="label-EF" x="55" y="70" font-family="sans-serif" font-size="10px" fill="hsl(229, 4%, 7%)">2 cm</text>
+      <text id="label-FA" x="85" y="40" font-family="sans-serif" font-size="10px" fill="hsl(229, 4%, 7%)">2 cm</text>
+    </g>
+  </g>
+<metadata data-type="text/jim+json">{
+  "version": {
+    "jim": "0.4.1"
+  },
+  "datasets": [
+    {
+      "title": "Hexagon ABCDEF",
+      "subtitle": "Polygon geometry problem",
+      "description": "A regular hexagon with vertices A, B, C, D, E, F and equal side lengths of 2 cm.",
+      "source": {
+        "url": "https://inclusioproject.com/graphics/exemplars/Hexagon ABCDEF.svg",
+        "name": "Inclusio Project accessible graphic exemplar: Hexagon ABCDEF"
+      },
+      "items": {
+        "shape": {
+          "edge_0": {
+            "label": "line-AB",
+            "measurement": "2 cm"
+          },
+          "edge_1": {
+            "label": "line-BC",
+            "measurement": "2 cm"
+          },
+          "edge_2": {
+            "label": "line-CD",
+            "measurement": "2 cm"
+          },
+          "edge_3": {
+            "label": "line-DE",
+            "measurement": "2 cm"
+          },
+          "edge_4": {
+            "label": "line-EF",
+            "measurement": "2 cm"
+          },
+          "edge_5": {
+            "label": "line-FA",
+            "measurement": "2 cm"
+          }
+        },
+        "angles": {},
+        "markers": {}
+      }
+    }
+  ],
+  "selectors": {
+    "diagramTitle": {
+      "dom": "#diagram-title",
+      "json": "$.datasets[0].title"
+    },
+    "lineAB": {
+      "dom": "#edge-AB",
+      "json": "$.datasets[0].items.shape.edge_0"
+    },
+    "labelLineAB": {
+      "dom": "#label-AB",
+      "json": "$.datasets[0].items.shape.edge_0"
+    },
+    "lineBC": {
+      "dom": "#edge-BC",
+      "json": "$.datasets[0].items.shape.edge_1"
+    },
+    "labelLineBC": {
+      "dom": "#label-BC",
+      "json": "$.datasets[0].items.shape.edge_1"
+    },
+    "lineCD": {
+      "dom": "#edge-CD",
+      "json": "$.datasets[0].items.shape.edge_2"
+    },
+    "labelLineCD": {
+      "dom": "#label-CD",
+      "json": "$.datasets[0].items.shape.edge_2"
+    },
+    "lineDE": {
+      "dom": "#edge-DE",
+      "json": "$.datasets[0].items.shape.edge_3"
+    },
+    "labelLineDE": {
+      "dom": "#label-DE",
+      "json": "$.datasets[0].items.shape.edge_3"
+    },
+    "lineEF": {
+      "dom": "#edge-EF",
+      "json": "$.datasets[0].items.shape.edge_4"
+    },
+    "labelLineEF": {
+      "dom": "#label-EF",
+      "json": "$.datasets[0].items.shape.edge_4"
+    },
+    "lineFA": {
+      "dom": "#edge-FA",
+      "json": "$.datasets[0].items.shape.edge_5"
+    },
+    "labelLineFA": {
+      "dom": "#label-FA",
+      "json": "$.datasets[0].items.shape.edge_5"
+    }
+  },
+  "behaviors": [
+    {
+      "target": {
+        "selector": ".line"
+      },
+      "enter": {
+        "haptic": {
+          "durations": [0, 300, 100],
+          "repeatInterval": 0
+        },
+        "announcement": {
+          "name": "compose({target.id}, .label)"
+        }      
+      }
+    }
+  ],
+  "status": {
+    "features": [
+      "haptic",
+      "announcement"
+    ]
+  }
+}</metadata></svg>

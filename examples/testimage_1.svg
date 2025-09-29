@@ -1,0 +1,133 @@
+<!--
+Spec compliance
+⚠ Behavior[0] enter.announcement.name appears to use dynamic/template syntax ('compose({target.id}, .label)'), which is not currently supported by the JIM spec.
+⚠ datasets[0].series missing; continuing without series.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <title id="diagram-title">Square ABCD</title>
+  <desc>A square with vertices A, B, C, D and each side measuring 4 cm.</desc>
+  
+  <g id="shape-square">
+    <g id="edges-square">
+      <path id="edge-AB" class="line" aria-labelledby="label-AB" d="M10,10 L50,10" vector-effect="non-scaling-stroke" stroke="hsl(229, 4%, 7%)"/>
+      <path id="edge-BC" class="line" aria-labelledby="label-BC" d="M50,10 L50,50" vector-effect="non-scaling-stroke" stroke="hsl(229, 4%, 7%)"/>
+      <path id="edge-CD" class="line" aria-labelledby="label-CD" d="M50,50 L10,50" vector-effect="non-scaling-stroke" stroke="hsl(229, 4%, 7%)"/>
+      <path id="edge-DA" class="line" aria-labelledby="label-DA" d="M10,50 L10,10" vector-effect="non-scaling-stroke" stroke="hsl(229, 4%, 7%)"/>
+    </g>
+    
+    <g id="vertices-square">
+      <circle id="vertex-A" class="vertex" aria-labelledby="label-A" cx="10" cy="10" r="2" fill="hsl(229, 4%, 7%)"/>
+      <circle id="vertex-B" class="vertex" aria-labelledby="label-B" cx="50" cy="10" r="2" fill="hsl(229, 4%, 7%)"/>
+      <circle id="vertex-C" class="vertex" aria-labelledby="label-C" cx="50" cy="50" r="2" fill="hsl(229, 4%, 7%)"/>
+      <circle id="vertex-D" class="vertex" aria-labelledby="label-D" cx="10" cy="50" r="2" fill="hsl(229, 4%, 7%)"/>
+    </g>
+    
+    <g id="labels-square">
+      <text id="label-A" x="5" y="5" font-family="sans-serif" font-size="10px" fill="hsl(229, 4%, 7%)">A</text>
+      <text id="label-B" x="55" y="5" font-family="sans-serif" font-size="10px" fill="hsl(229, 4%, 7%)">B</text>
+      <text id="label-C" x="55" y="55" font-family="sans-serif" font-size="10px" fill="hsl(229, 4%, 7%)">C</text>
+      <text id="label-D" x="5" y="55" font-family="sans-serif" font-size="10px" fill="hsl(229, 4%, 7%)">D</text>
+      <text id="label-AB" x="30" y="5" font-family="sans-serif" font-size="10px" fill="hsl(229, 4%, 7%)">4 cm</text>
+      <text id="label-BC" x="55" y="30" font-family="sans-serif" font-size="10px" fill="hsl(229, 4%, 7%)">4 cm</text>
+      <text id="label-CD" x="30" y="55" font-family="sans-serif" font-size="10px" fill="hsl(229, 4%, 7%)">4 cm</text>
+      <text id="label-DA" x="0" y="30" font-family="sans-serif" font-size="10px" fill="hsl(229, 4%, 7%)">4 cm</text>
+    </g>
+  </g>
+<metadata data-type="text/jim+json">{
+  "version": {
+    "jim": "0.4.1"
+  },
+  "datasets": [
+    {
+      "title": "Square ABCD",
+      "subtitle": "Polygon geometry problem",
+      "description": "A square with vertices A, B, C, D and each side measuring 4 cm.",
+      "source": {
+        "url": "https://inclusioproject.com/graphics/exemplars/Square ABCD.svg",
+        "name": "Inclusio Project accessible graphic exemplar: Square ABCD"
+      },
+      "items": {
+        "shape": {
+          "edge_0": {
+            "label": "line-AB",
+            "measurement": "4 cm"
+          },
+          "edge_1": {
+            "label": "line-BC",
+            "measurement": "4 cm"
+          },
+          "edge_2": {
+            "label": "line-CD",
+            "measurement": "4 cm"
+          },
+          "edge_3": {
+            "label": "line-DA",
+            "measurement": "4 cm"
+          }
+        },
+        "angles": {},
+        "markers": {}
+      }
+    }
+  ],
+  "selectors": {
+    "diagramTitle": {
+      "dom": "#diagram-title",
+      "json": "$.datasets[0].title"
+    },
+    "lineAB": {
+      "dom": "#edge-AB",
+      "json": "$.datasets[0].items.shape.edge_0"
+    },
+    "labelLineAB": {
+      "dom": "#label-AB",
+      "json": "$.datasets[0].items.shape.edge_0"
+    },
+    "lineBC": {
+      "dom": "#edge-BC",
+      "json": "$.datasets[0].items.shape.edge_1"
+    },
+    "labelLineBC": {
+      "dom": "#label-BC",
+      "json": "$.datasets[0].items.shape.edge_1"
+    },
+    "lineCD": {
+      "dom": "#edge-CD",
+      "json": "$.datasets[0].items.shape.edge_2"
+    },
+    "labelLineCD": {
+      "dom": "#label-CD",
+      "json": "$.datasets[0].items.shape.edge_2"
+    },
+    "lineDA": {
+      "dom": "#edge-DA",
+      "json": "$.datasets[0].items.shape.edge_3"
+    },
+    "labelLineDA": {
+      "dom": "#label-DA",
+      "json": "$.datasets[0].items.shape.edge_3"
+    }
+  },
+  "behaviors": [
+    {
+      "target": {
+        "selector": ".line"
+      },
+      "enter": {
+        "haptic": {
+          "durations": [0, 300, 100],
+          "repeatInterval": 0
+        },
+        "announcement": {
+          "name": "compose({target.id}, .label)"
+        }      
+      }
+    }
+  ],
+  "status": {
+    "features": [
+      "haptic",
+      "announcement"
+    ]
+  }
+}</metadata></svg>

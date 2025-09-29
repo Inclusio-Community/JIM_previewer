@@ -1,0 +1,128 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+  <title id="diagram-title">Concave Shape with Right Angle</title>
+  <desc>A concave shape with a right angle at vertex B, formed by segments AB and BC.</desc>
+  
+  <g id="shape-concave">
+    <g id="edges-concave">
+      <path id="edge-AB" class="line" aria-labelledby="label-AB" d="M50,150 L150,150" stroke="hsl(229, 4%, 7%)" stroke-width="2" vector-effect="non-scaling-stroke"/>
+      <path id="edge-BC" class="line" aria-labelledby="label-BC" d="M150,150 L150,50" stroke="hsl(229, 4%, 7%)" stroke-width="2" vector-effect="non-scaling-stroke"/>
+    </g>
+    
+    <g id="vertices-concave">
+      <circle id="vertex-A" class="vertex" aria-labelledby="label-A" cx="50" cy="150" r="3" fill="hsl(229, 4%, 7%)"/>
+      <circle id="vertex-B" class="vertex" aria-labelledby="label-B" cx="150" cy="150" r="3" fill="hsl(229, 4%, 7%)"/>
+      <circle id="vertex-C" class="vertex" aria-labelledby="label-C" cx="150" cy="50" r="3" fill="hsl(229, 4%, 7%)"/>
+    </g>
+    
+    <g id="angles-concave">
+      <rect id="angle-B" class="angle right-angle" aria-labelledby="label-angle-B" x="145" y="145" width="10" height="10" fill="hsl(229, 4%, 7%)"/>
+    </g>
+    
+    <g id="labels-concave">
+      <text id="label-A" x="45" y="165" font-family="sans-serif" font-size="10px" fill="hsl(229, 4%, 7%)">A</text>
+      <text id="label-B" x="155" y="165" font-family="sans-serif" font-size="10px" fill="hsl(229, 4%, 7%)">B</text>
+      <text id="label-C" x="155" y="45" font-family="sans-serif" font-size="10px" fill="hsl(229, 4%, 7%)">C</text>
+      <text id="label-AB" x="100" y="140" font-family="sans-serif" font-size="10px" fill="hsl(229, 4%, 7%)">AB</text>
+      <text id="label-BC" x="160" y="100" font-family="sans-serif" font-size="10px" fill="hsl(229, 4%, 7%)">BC</text>
+      <text id="label-angle-B" x="160" y="160" font-family="sans-serif" font-size="10px" fill="hsl(229, 4%, 7%)">90°</text>
+    </g>
+  </g>
+<metadata data-type="text/jim+json">{
+  "version": {
+    "jim": "0.4.1"
+  },
+  "datasets": [
+    {
+      "title": "Concave Shape with Right Angle",
+      "subtitle": "Polygon geometry problem",
+      "description": "A concave shape with a right angle at vertex B, formed by segments AB and BC.",
+      "source": {
+        "url": "https://inclusioproject.com/graphics/exemplars/Concave Shape with Right Angle.svg",
+        "name": "Inclusio Project accessible graphic exemplar: Concave Shape with Right Angle"
+      },
+      "items": {
+        "shape": {
+          "edge_0": {
+            "label": "line-AB",
+            "measurement": "AB"
+          },
+          "edge_1": {
+            "label": "line-BC",
+            "measurement": "BC"
+          }
+        },
+        "angles": {
+          "angle_0": {
+            "label": "angle-B",
+            "description": "Intersection of edges at angle-B - right",
+            "measurement": "90"
+          }
+        },
+        "markers": {}
+      }
+    }
+  ],
+  "selectors": {
+    "diagramTitle": {
+      "dom": "#diagram-title",
+      "json": "$.datasets[0].title"
+    },
+    "lineAB": {
+      "dom": "#edge-AB",
+      "json": "$.datasets[0].items.shape.edge_0"
+    },
+    "labelLineAB": {
+      "dom": "#label-AB",
+      "json": "$.datasets[0].items.shape.edge_0"
+    },
+    "lineBC": {
+      "dom": "#edge-BC",
+      "json": "$.datasets[0].items.shape.edge_1"
+    },
+    "labelLineBC": {
+      "dom": "#label-BC",
+      "json": "$.datasets[0].items.shape.edge_1"
+    },
+    "angleB": {
+      "dom": "#angle-B",
+      "json": "$.datasets[0].items.angles.angle_0"
+    },
+    "labelAngleB": {
+      "dom": "#label-angle-B",
+      "json": "$.datasets[0].items.angles.angle_0"
+    }
+  },
+  "behaviors": [
+    {
+      "target": {
+        "selector": ".line"
+      },
+      "enter": {
+        "haptic": {
+          "durations": [0, 300, 100],
+          "repeatInterval": 0
+        },
+        "announcement": {
+          "name": "compose({target.id}, .label)"
+        }
+      }
+    },
+    {
+      "target": {
+        "selector": "#angle-B"
+      },
+      "enter": {  
+        "haptic": {
+          "durations": [0, 100, 100],
+          "repeatInterval": 100
+        }
+      }
+    }
+  ],
+  "status": {
+    "features": [
+      "haptic",
+      "announcement"
+    ]
+  }
+}</metadata></svg>
