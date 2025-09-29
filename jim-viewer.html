@@ -383,6 +383,8 @@
                             }
                             if (typeof sel.dom !== 'string' || !sel.dom.trim()) {
                                 errors.push(`Selector '${key}' missing 'dom' (string).`);
+                            } else if (sel.dom.startsWith('#') && sel.dom.includes(' ')) {
+                                warnings.push(`Selector '${key}' references an SVG ID with spaces ('${sel.dom}'), which is invalid in HTML/SVG and cannot be matched by querySelector. Update the SVG to use IDs without spaces.`);
                             }
                             if (typeof sel.json !== 'string' || !sel.json.trim()) {
                                 errors.push(`Selector '${key}' missing 'json' (string).`);
@@ -399,17 +401,130 @@
                         fixesApplied.push("behaviors→[]");
                         jim.behaviors = [];
                     }
+                        // — Validate behaviors structure and keys
+                        if (Array.isArray(jim.behaviors)) {
+                            // JIM spec event keys
+                            const allowedBehaviorKeys = new Set(["target", "enter", "details", "activate", "exit", "note", "description", "id", "name"]);
+                            const allowedEventKeys = new Set(["haptic", "haptic_pattern", "announcement", "notes", "description", "id", "name"]);
+                            const eventKeysSpec = ["enter", "details", "activate", "exit"];
+                            jim.behaviors.forEach((b, i) => {
+                                if (typeof b !== "object" || b === null) {
+                                    errors.push(`Behavior[${i}] is not an object.`);
+                                    return;
+                                }
+                                // Check for illegal keys
+                                const keys = Object.keys(b);
+                                const illegal = keys.filter(k => !allowedBehaviorKeys.has(k));
+                                if (illegal.length) {
+                                    errors.push(`Behavior[${i}] has illegal/non-standard key(s): ${illegal.join(", ")}`);
+                                }
+                                // Require 'target'
+                                if (!('target' in b)) {
+                                    errors.push(`Behavior[${i}] missing required 'target' property.`);
+                                } else if (typeof b.target !== "object" || b.target === null || typeof b.target.selector !== "string" || !b.target.selector.trim()) {
+                                    errors.push(`Behavior[${i}] 'target.selector' must be a non-empty string.`);
+                                }
+                                // Check event blocks (enter, details, activate, exit)
+                                eventKeysSpec.forEach(eventName => {
+                                    const block = b[eventName];
+                                    if (block !== undefined) {
+                                        if (!block || typeof block !== 'object') {
+                                            errors.push(`Behavior[${i}] ${eventName} is not an object.`);
+                                            return;
+                                        }
+                                        if ('haptic_pattern' in block && typeof block.haptic_pattern === 'string') {
+                                            warnings.push(`Behavior[${i}] ${eventName}.haptic_pattern uses deprecated string syntax; should be an object.`);
+                                        }
+                                        if ('announcement' in block && typeof block.announcement === 'string') {
+                                            warnings.push(`Behavior[${i}] ${eventName}.announcement uses deprecated string syntax; should be an object.`);
+                                        }
+                                            // Announcement block validation (JIM spec)
+                                            if ('announcement' in block && typeof block.announcement === 'object' && block.announcement !== null) {
+                                                const ann = block.announcement;
+                                                const annKeys = Object.keys(ann);
+                                                const allowedAnnKeys = new Set(['name', 'description', 'details', 'hint']);
+                                                const unknownAnnKeys = annKeys.filter(k => !allowedAnnKeys.has(k));
+                                                if (unknownAnnKeys.length) {
+                                                    warnings.push(`Behavior[${i}] ${eventName}.announcement has unknown/non-standard key(s): ${unknownAnnKeys.join(", ")}`);
+                                                }
+                                                annKeys.forEach(k => {
+                                                    if (!allowedAnnKeys.has(k)) return;
+                                                    const v = ann[k];
+                                                    if (typeof v !== 'string' || !v.trim()) {
+                                                        errors.push(`Behavior[${i}] ${eventName}.announcement.${k} must be a non-empty string.`);
+                                                    }
+                                                    // Warn if value looks like a template (contains curly braces)
+                                                    if (typeof v === 'string' && /\{.*\}/.test(v)) {
+                                                        warnings.push(`Behavior[${i}] ${eventName}.announcement.${k} appears to use dynamic/template syntax ('${v}'), which is not currently supported by the JIM spec.`);
+                                                    }
+                                                });
+                                            } else if ('announcement' in block && typeof block.announcement === 'object' && block.announcement !== null && Object.keys(block.announcement).length === 0) {
+                                                warnings.push(`Behavior[${i}] ${eventName}.announcement block is present but empty.`);
+                                            }
+                                        // Check for unknown keys in event block
+                                        const eventKeys = Object.keys(block);
+                                        const unknownEventKeys = eventKeys.filter(k => !allowedEventKeys.has(k));
+                                        if (unknownEventKeys.length) {
+                                            warnings.push(`Behavior[${i}] ${eventName} has unknown/non-standard key(s): ${unknownEventKeys.join(", ")}`);
+                                        }
+                                            // Haptic block validation (JIM spec)
+                                            if ('haptic' in block) {
+                                                const haptic = block.haptic;
+                                                if (!haptic || typeof haptic !== 'object') {
+                                                    errors.push(`Behavior[${i}] ${eventName}.haptic is not an object.`);
+                                                } else {
+                                                    const hapticKeys = Object.keys(haptic);
+                                                    const allowedHapticKeys = new Set(['durations', 'intensities', 'repeatInterval', 'repeatIndex']);
+                                                    const unknownHapticKeys = hapticKeys.filter(k => !allowedHapticKeys.has(k));
+                                                    if (unknownHapticKeys.length) {
+                                                        warnings.push(`Behavior[${i}] ${eventName}.haptic has unknown/non-standard key(s): ${unknownHapticKeys.join(", ")}`);
+                                                    }
+                                                    if (!('durations' in haptic)) {
+                                                        errors.push(`Behavior[${i}] ${eventName}.haptic missing required 'durations' key.`);
+                                                    } else if (!Array.isArray(haptic.durations)) {
+                                                        errors.push(`Behavior[${i}] ${eventName}.haptic.durations is not an array.`);
+                                                    }
+                                                }
+                                            }
+                                    }
+                                });
+                            });
+                        }
 
                     // — Conditional cross-refs (only if behaviors present)
-                    if (Array.isArray(jim.behaviors) && jim.behaviors.length > 0 && jim.selectors) {
-                        const domSet = new Set(Object.values(jim.selectors).map(s => s?.dom).filter(Boolean));
-                        jim.behaviors.forEach((b, i) => {
-                            const tgt = b?.target?.selector;
-                            if (tgt && !domSet.has(tgt)) {
-                                errors.push(`Behavior[${i}] target.selector does not match any selectors.dom: '${tgt}'`);
+                        // — Conditional cross-refs (only if behaviors present)
+                        // Accept currentDoc as an optional argument for DOM context
+                        if (Array.isArray(jim.behaviors) && jim.behaviors.length > 0 && jim.selectors && typeof window !== 'undefined') {
+                            // Use currentDoc if available, else fallback to document
+                            const doc = (typeof currentDoc !== 'undefined' && currentDoc) ? currentDoc : document;
+                            let svg = null;
+                            try {
+                                svg = doc.querySelector('svg');
+                            } catch {}
+                            if (svg) {
+                                jim.behaviors.forEach((b, i) => {
+                                    const tgt = b?.target?.selector;
+                                    if (typeof tgt === 'string' && tgt.trim()) {
+                                        let found = false;
+                                        try {
+                                            if (tgt.startsWith('#')) {
+                                                const id = tgt.slice(1);
+                                                if (svg.getElementById && svg.getElementById(id)) {
+                                                    found = true;
+                                                }
+                                            } else {
+                                                if (svg.querySelector(tgt)) {
+                                                    found = true;
+                                                }
+                                            }
+                                        } catch {}
+                                        if (!found) {
+                                            warnings.push(`Behavior[${i}] target.selector '${tgt}' did not match any SVG DOM elements.`);
+                                        }
+                                    }
+                                });
                             }
-                        });
-                    }
+                        }
 
                     // — Soft checks on datasets[0]
                     const ds0 = jim.datasets && jim.datasets[0];
@@ -510,7 +625,7 @@
         }
     }
 
-    // Render the SVG, attach JIM behaviors, and fallback click handler
+    // Render the SVG, attach JIM behaviors (including wildcards), and fallback click handler
     renderVisualization() {
         const svg = this.currentDoc.querySelector('svg');
         if (!svg) {
@@ -519,8 +634,10 @@
         }
         // Clone the SVG to avoid modifying the original document
         const svgClone = svg.cloneNode(true);
-        // Attach JIM behaviors to elements that have selectors
         const selectors = this.jimData.selectors || {};
+        const behaviors = this.jimData.behaviors || [];
+
+        // Attach JIM behaviors to elements that have selectors (legacy direct mapping)
         Object.entries(selectors).forEach(([key, selector]) => {
             let element = null;
             try {
@@ -533,9 +650,27 @@
                 this.attachJIMBehavior(element, key);
             }
         });
+
+        // Attach behaviors using target.selector (supports wildcards/classes)
+        behaviors.forEach((behavior, i) => {
+            const tgtSelector = behavior?.target?.selector;
+            if (typeof tgtSelector === 'string' && tgtSelector.trim()) {
+                let elements = [];
+                try {
+                    elements = Array.from(svgClone.querySelectorAll(tgtSelector));
+                } catch (e) {
+                    console.warn(`[JIMViewer] Invalid behavior target.selector '${tgtSelector}'`, e);
+                }
+                elements.forEach(el => {
+                    // Attach behavior event listeners
+                    el.addEventListener('focus', () => this.showElementInfoByBehavior(behavior, 'focus', el));
+                    el.addEventListener('click', () => this.showElementInfoByBehavior(behavior, 'click', el));
+                });
+            }
+        });
+
         // Add fallback handler for ANY SVG element (for elements without JIM mappings)
         svgClone.addEventListener('click', (e) => {
-            // Only handle if target doesn't already have JIM behavior
             const targetElement = e.target;
             if (targetElement instanceof SVGElement && targetElement !== svgClone) {
                 const hasJIM = Object.values(selectors).some(s => {
@@ -551,6 +686,35 @@
             }
         });
         this.displayVisualization(svgClone);
+    }
+
+    // Show info for elements mapped by behavior (wildcard/class support)
+    showElementInfoByBehavior(behavior, eventType, element) {
+        // Try to find a selectorKey for this element if possible
+        const selectors = this.jimData.selectors || {};
+        let selectorKey = null;
+        // First, try to match by selector dom (e.g., #edge-AB)
+        for (const [key, sel] of Object.entries(selectors)) {
+            try {
+                if (element.matches(sel.dom)) {
+                    selectorKey = key;
+                    break;
+                }
+            } catch {}
+        }
+        // If not found, try to match by element ID to selector dom value
+        if (!selectorKey && element.id) {
+            for (const [key, sel] of Object.entries(selectors)) {
+                if (sel.dom === `#${element.id}`) {
+                    selectorKey = key;
+                    break;
+                }
+            }
+        }
+        // Fallback: use behavior target.selector as key if no match
+        if (!selectorKey) selectorKey = behavior.target?.selector || 'unknown';
+        // Use existing showElementInfo, but pass the found selectorKey
+        this.showElementInfo(selectorKey, eventType, element);
     }
     // Full SVG accessibility and JIM selector validation
     validateJIMStructure() {
@@ -814,19 +978,26 @@
                 console.log('displayMetadataSummary called, JIM data present:', !!this.jimData);
                 const summary = document.getElementById('metadata-summary');
                 // Show spec compliance box if preflight found errors/warnings
-                let specBox = '';
-                if (this.specIssues && (this.specIssues.errors.length || this.specIssues.warnings.length)) {
-                  const color = this.specIssues.errors.length ? '#fee2e2' : '#fef9c3';
-                  const border = this.specIssues.errors.length ? '#dc2626' : '#f59e0b';
-                  const icon = this.specIssues.errors.length ? '✗' : '⚠';
-                  specBox = `<div style="background:${color};border:1px solid ${border};padding:12px 16px;border-radius:6px;margin-bottom:16px;">
-                    <strong style="color:${border};font-size:15px;">Spec compliance</strong><ul style="margin:8px 0 0 18px;padding:0;">
-                    ${this.specIssues.errors.map(e=>`<li style='color:#dc2626;'>✗ ${e}</li>`).join('')}
-                    ${this.specIssues.warnings.map(w=>`<li style='color:#d97706;'>⚠ ${w}</li>`).join('')}
-                    </ul>
-                    ${this.specIssues.fixes.length ? `<div style='color:#64748b;font-size:12px;margin-top:8px;'>Normalizations: ${this.specIssues.fixes.join(', ')}</div>` : ''}
-                  </div>`;
-                }
+                                let specBox = '';
+                                if (this.specIssues) {
+                                    if (this.specIssues.errors.length || this.specIssues.warnings.length) {
+                                        const color = this.specIssues.errors.length ? '#fee2e2' : '#fef9c3';
+                                        const border = this.specIssues.errors.length ? '#dc2626' : '#f59e0b';
+                                        const icon = this.specIssues.errors.length ? '✗' : '⚠';
+                                        specBox = `<div style="background:${color};border:1px solid ${border};padding:12px 16px;border-radius:6px;margin-bottom:16px;">
+                                            <strong style="color:${border};font-size:15px;">Spec compliance</strong><ul style="margin:8px 0 0 18px;padding:0;">
+                                            ${this.specIssues.errors.map(e=>`<li style='color:#dc2626;'>✗ ${e}</li>`).join('')}
+                                            ${this.specIssues.warnings.map(w=>`<li style='color:#d97706;'>⚠ ${w}</li>`).join('')}
+                                            </ul>
+                                            ${this.specIssues.fixes.length ? `<div style='color:#64748b;font-size:12px;margin-top:8px;'>Normalizations: ${this.specIssues.fixes.join(', ')}</div>` : ''}
+                                        </div>`;
+                                    } else {
+                                        // No errors or warnings: show green success box
+                                        specBox = `<div style="background:#dcfce7;border:1px solid #22c55e;padding:12px 16px;border-radius:6px;margin-bottom:16px;">
+                                            <strong style="color:#22c55e;font-size:15px;">✓ No JIM issues found</strong>
+                                        </div>`;
+                                    }
+                                }
 
                 if (!this.jimData) {
                     // SVG-only mode
@@ -1251,9 +1422,7 @@
         const facets = this.jimData?.datasets?.[0]?.facets || {};
         const selector = this.jimData.selectors?.[selectorKey];
         if (!selector) return;
-        const behavior = this.jimData.behaviors?.find(b => b.target?.selector === selector?.dom);
         const data = this.getDataFromJSONPath(selector.json);
-        const explicitAnnouncement = this.getExplicitAnnouncement(behavior);
         const defaultAnnouncement = this.getDefaultAnnouncement(data);
 
         // Find the element in the live visualization SVG
@@ -1280,22 +1449,38 @@
             }
         }
 
-        // JIM announcement (explicit and default)
-        if (behavior?.enter?.announcement) {
-            const ann = behavior.enter.announcement;
+        // Show all mapped behaviors for this element (including wildcards)
+        const behaviors = this.jimData.behaviors || [];
+        const matchedBehaviors = behaviors.filter(b => {
+            const tgtSelector = b?.target?.selector;
+            try {
+                return tgtSelector && vizElement.matches(tgtSelector);
+            } catch {
+                return false;
+            }
+        });
+        // Show explicit announcement box if present
+        let explicitAnn = null;
+        for (const b of matchedBehaviors) {
+            if (b.enter?.announcement) {
+                explicitAnn = b.enter.announcement;
+                break;
+            }
+        }
+        if (explicitAnn) {
             html += `<div class="announcement" style="margin-top:12px; padding:10px; background:#f0fdf4; border-left:4px solid #10b981; border-radius:4px;">
-                <strong>Explicit Announcement:</strong><br>${ann.description || ''}
+                <strong>Explicit Announcement:</strong><br>${typeof explicitAnn === 'object' ? (explicitAnn.description || JSON.stringify(explicitAnn)) : explicitAnn}
             </div>`;
         }
-        // Default announcement (if present and different from explicit)
-        if (defaultAnnouncement && (!behavior?.enter?.announcement || defaultAnnouncement !== behavior.enter.announcement.description)) {
+        // Show default announcement box if present and different from explicit
+        if (defaultAnnouncement && (!explicitAnn || (typeof explicitAnn === 'object' ? explicitAnn.description : explicitAnn) !== defaultAnnouncement)) {
             html += `<div class="announcement" style="margin-top:8px; padding:8px; background:#f1f5f9; border-left:4px solid #64748b; border-radius:4px;">
                 <strong>Default Announcement:</strong><br>${defaultAnnouncement}
             </div>`;
         }
-        // Show full JSON view of the behavior if present
-        if (behavior) {
-            html += `<details open style="margin-top:10px;"><summary style="cursor:pointer; color:#0ea5e9;">Show/Hide Full Behavior JSON</summary><pre style="background:#f8fafc; color:#334155; font-size:12px; padding:8px; border-radius:4px; margin-top:6px;">${JSON.stringify(behavior, null, 2)}</pre></details>`;
+        // Show full JSON view of the first matched behavior if present
+        if (matchedBehaviors.length) {
+            html += `<details open style="margin-top:10px;"><summary style="cursor:pointer; color:#0ea5e9;">Show/Hide Full Behavior JSON</summary><pre style="background:#f8fafc; color:#334155; font-size:12px; padding:8px; border-radius:4px; margin-top:6px;">${JSON.stringify(matchedBehaviors[0], null, 2)}</pre></details>`;
         }
 
         // Accessibility attributes section

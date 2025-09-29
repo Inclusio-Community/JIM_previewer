@@ -1,0 +1,121 @@
+<!--
+Spec compliance
+⚠ Behavior[0] enter.announcement.name appears to use dynamic/template syntax ('compose({target.id}, .label)'), which is not currently supported by the JIM spec.
+⚠ datasets[0].series missing; continuing without series.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 200">
+  <title id="diagram-title">Triangle with sides in ratio 3:5:6</title>
+  <desc>A triangle with sides in the ratio 3:5:6, rotated so the smallest angle is at the top.</desc>
+  
+  <g id="shape-triangle">
+    <!-- Edges of the triangle -->
+    <g id="edges-triangle">
+      <path id="edge-AB" class="line" aria-labelledby="label-AB" d="M150,50 L50,150" stroke="hsl(229, 4%, 7%)" stroke-width="2" vector-effect="non-scaling-stroke" fill="none"/>
+      <path id="edge-BC" class="line" aria-labelledby="label-BC" d="M50,150 L250,150" stroke="hsl(229, 4%, 7%)" stroke-width="2" vector-effect="non-scaling-stroke" fill="none"/>
+      <path id="edge-CA" class="line" aria-labelledby="label-CA" d="M250,150 L150,50" stroke="hsl(229, 4%, 7%)" stroke-width="2" vector-effect="non-scaling-stroke" fill="none"/>
+    </g>
+    
+    <!-- Vertices of the triangle -->
+    <g id="vertices-triangle">
+      <circle id="vertex-A" class="vertex" aria-labelledby="label-A" cx="150" cy="50" r="3" fill="hsl(229, 4%, 7%)"/>
+      <circle id="vertex-B" class="vertex" aria-labelledby="label-B" cx="50" cy="150" r="3" fill="hsl(229, 4%, 7%)"/>
+      <circle id="vertex-C" class="vertex" aria-labelledby="label-C" cx="250" cy="150" r="3" fill="hsl(229, 4%, 7%)"/>
+    </g>
+    
+    <!-- Labels for the triangle -->
+    <g id="labels-triangle">
+      <text id="label-A" x="150" y="40" font-family="sans-serif" font-size="10px" fill="hsl(229, 4%, 7%)" text-anchor="middle">A</text>
+      <text id="label-B" x="50" y="165" font-family="sans-serif" font-size="10px" fill="hsl(229, 4%, 7%)" text-anchor="middle">B</text>
+      <text id="label-C" x="250" y="165" font-family="sans-serif" font-size="10px" fill="hsl(229, 4%, 7%)" text-anchor="middle">C</text>
+      <text id="label-AB" x="100" y="100" font-family="sans-serif" font-size="10px" fill="hsl(229, 4%, 7%)" text-anchor="middle">5</text>
+      <text id="label-BC" x="150" y="160" font-family="sans-serif" font-size="10px" fill="hsl(229, 4%, 7%)" text-anchor="middle">6</text>
+      <text id="label-CA" x="200" y="100" font-family="sans-serif" font-size="10px" fill="hsl(229, 4%, 7%)" text-anchor="middle">3</text>
+    </g>
+  </g>
+<metadata data-type="text/jim+json">
+{
+  "version": {
+    "jim": "0.4.1"
+  },
+  "datasets": [
+    {
+      "title": "Triangle with sides in ratio 3:5:6",
+      "subtitle": "Polygon geometry problem",
+      "description": "A triangle with sides in the ratio 3:5:6, rotated so the smallest angle is at the top.",
+      "source": {
+        "url": "https://inclusioproject.com/graphics/exemplars/Triangle with sides in ratio 3:5:6.svg",
+        "name": "Inclusio Project accessible graphic exemplar: Triangle with sides in ratio 3:5:6"
+      },
+      "items": {
+        "shape": {
+          "edge_0": {
+            "label": "line-AB",
+            "measurement": "5"
+          },
+          "edge_1": {
+            "label": "line-BC",
+            "measurement": "6"
+          },
+          "edge_2": {
+            "label": "line-CA",
+            "measurement": "3"
+          }
+        },
+        "angles": {},
+        "markers": {}
+      }
+    }
+  ],
+  "selectors": {
+    "title": {
+      "dom": "#diagram-title",
+      "json": "$.datasets[0].title"
+    },
+    "edge_AB": {
+      "dom": "#edge-AB",
+      "json": "$.datasets[0].items.shape.edge_0"
+    },
+    "edge_BC": {
+      "dom": "#edge-BC",
+      "json": "$.datasets[0].items.shape.edge_1"
+    },
+    "edge_CA": {
+      "dom": "#edge-CA",
+      "json": "$.datasets[0].items.shape.edge_2"
+    },
+    "label_AB": {
+      "dom": "#label-AB", 
+      "json": "$.datasets[0].items.shape.edge_0"
+    },
+    "label_BC": {
+      "dom": "#label-BC", 
+      "json": "$.datasets[0].items.shape.edge_1"
+    },
+    "label_CA": {
+      "dom": "#label-CA", 
+      "json": "$.datasets[0].items.shape.edge_2"
+    }
+  },
+  "behaviors": [
+    {
+      "target": {
+        "selector": ".line"
+      },
+      "enter": {
+        "haptic": {
+          "durations": [0, 300, 100],
+          "repeatInterval": 0
+        },
+        "announcement": {
+          "name": "compose({target.id}, .label)"
+        }
+      }
+    }
+  ],
+  "status": {
+    "features": [
+      "haptic",
+      "announcement"
+    ]
+  }
+}</metadata></svg>
