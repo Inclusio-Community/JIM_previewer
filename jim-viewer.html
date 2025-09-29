@@ -385,6 +385,13 @@
                                 errors.push(`Selector '${key}' missing 'dom' (string).`);
                             } else if (sel.dom.startsWith('#') && sel.dom.includes(' ')) {
                                 warnings.push(`Selector '${key}' references an SVG ID with spaces ('${sel.dom}'), which is invalid in HTML/SVG and cannot be matched by querySelector. Update the SVG to use IDs without spaces.`);
+                                } else {
+                                    // Check for invalid CSS selector syntax (e.g., forbidden characters)
+                                    try {
+                                        document.createElement('div').querySelector(sel.dom);
+                                    } catch (e) {
+                                        warnings.push(`Selector '${key}' uses invalid CSS selector syntax ('${sel.dom}'): ${e.message}`);
+                                    }
                             }
                                 if (!('json' in sel)) {
                                     errors.push(`Selector '${key}' missing 'json' property.`);
