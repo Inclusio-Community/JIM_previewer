@@ -1,0 +1,123 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 220">
+  <!-- Geometry -->
+  <polygon id="tri" points="150,50 50,150 250,150" fill="none" stroke="black" />
+  <!-- Edge paths called out individually (optional but nice): -->
+  <polyline id="edge-AB" points="150,50 50,150" fill="none" stroke="black" />
+  <polyline id="edge-BC" points="50,150 250,150" fill="none" stroke="black" />
+  <polyline id="edge-CA" points="250,150 150,50" fill="none" stroke="black" />
+
+  <!-- Optional pre-existing text (script will update x/y): -->
+  <text id="label-AB" class="lbl" x="100" y="100">5</text>
+  <text id="label-BC" class="lbl" x="150" y="160">6</text>
+  <text id="label-CA" class="lbl" x="200" y="100">3</text>
+
+  <!-- Inline JIM -->
+  <script type="application/json" id="jim">
+  {
+    "labels": [
+      { "id":"lbl-AB", "targets":[{"selector":"#edge-AB"}],
+        "anchor":{"type":"edge","index":0,"t":0.5},
+        "offset":{"dx":-5,"dy":0,"units":"px"},
+        "align":"end", "print":{"text":"5","lang":"en"}, "label_dom":"#label-AB"
+      },
+      { "id":"lbl-BC", "targets":[{"selector":"#edge-BC"}],
+        "anchor":{"type":"edge","index":0,"t":0.5},
+        "offset":{"dx":0,"dy":10,"units":"px"},
+        "align":"center", "print":{"text":"6","lang":"en"}, "label_dom":"#label-BC"
+      },
+      { "id":"lbl-CA", "targets":[{"selector":"#edge-CA"}],
+        "anchor":{"type":"edge","index":0,"t":0.5},
+        "offset":{"dx":5,"dy":0,"units":"px"},
+        "align":"start", "print":{"text":"3","lang":"en"}, "label_dom":"#label-CA"
+      }
+    ]
+  }
+  </script>
+
+  <!-- Tiny materializer: computes anchor+offset and positions <text> -->
+  <script><![CDATA[
+  (function(){
+    const ns = "http://www.w3.org/2000/svg";
+    const jimNode = document.getElementById("jim");
+    if (!jimNode) return;
+    const jim = JSON.parse(jimNode.textContent);
+
+    function pointsArray(el){
+      return el.getAttribute("points")
+               .trim().split(/\s+/).map(p=>p.split(",").map(Number));
+    }
+    function edgePoint(el, index, t){
+      t = (t==null)?0.5:t;
+      if (el.tagName==="polyline"||el.tagName==="polygon"){
+        const pts = pointsArray(el);
+        const i = Math.max(0, Math.min(index||0, pts.length-2));
+        const [x1,y1]=pts[i], [x2,y2]=pts[i+1];
+        return {x: x1+(x2-x1)*t, y: y1+(y2-y1)*t};
+      }
+      if (el.tagName==="line"){
+        const x1=+el.getAttribute("x1"), y1=+el.getAttribute("y1");
+        const x2=+el.getAttribute("x2"), y2=+el.getAttribute("y2");
+        return {x: x1+(x2-x1)*t, y: y1+(y2-y1)*t};
+      }
+      if (el.tagName==="path"){
+        const len = el.getTotalLength();
+        const pt = el.getPointAtLength((t)*len);
+        return {x: pt.x, y: pt.y};
+      }
+      // Fallback: bbox center
+      const b = el.getBBox();
+      return {x: b.x + b.width/2, y: b.y + b.height/2};
+    }
+    function centroid(el){
+      const pts = pointsArray(el);
+      let A=0,Cx=0,Cy=0;
+      for(let i=0;i<pts.length;i++){
+        const [x1,y1]=pts[i], [x2,y2]=pts[(i+1)%pts.length];
+        const cross = x1*y2 - x2*y1;
+        A += cross; Cx += (x1+x2)*cross; Cy += (y1+y2)*cross;
+      }
+      A *= 0.5; return {x: Cx/(6*A), y: Cy/(6*A)};
+    }
+    function anchorPoint(el, anchor){
+      switch(anchor.type){
+        case "edge":     return edgePoint(el, anchor.index||0, anchor.t==null?0.5:anchor.t);
+        case "vertex": { const pts = pointsArray(el); return {x: pts[anchor.index||0][0], y: pts[anchor.index||0][1]}; }
+        case "path":    { const len=el.getTotalLength(); const pt=el.getPointAtLength((anchor.s||0.5)*len); return {x:pt.x,y:pt.y}; }
+        case "centroid":return centroid(el);
+        case "point":   return {x: anchor.x, y: anchor.y};
+        default:        { const b=el.getBBox(); return {x:b.x+b.width/2, y:b.y+b.height/2}; }
+      }
+    }
+    function textAnchorValue(align){
+      return align==="start" ? "start" : align==="end" ? "end" : "middle";
+    }
+
+    (jim.labels||[]).forEach(lbl=>{
+      const targetSel = lbl.targets?.[0]?.selector;
+      const target = targetSel ? document.querySelector(targetSel) : null;
+      if (!target) return;
+
+      const a = anchorPoint(target, lbl.anchor||{type:"centroid"});
+      const dx = (lbl.offset?.dx)||0, dy = (lbl.offset?.dy)||0;
+      const x = a.x + dx, y = a.y + dy;
+
+      let t = lbl.label_dom ? document.querySelector(lbl.label_dom) : null;
+      if (!t){
+        t = document.createElementNS(ns, "text");
+        t.id = lbl.id || ("lbl-" + Math.random().toString(36).slice(2));
+        t.classList.add("lbl");
+        t.textContent = (lbl.print && lbl.print.text) ? lbl.print.text : "";
+        // append near root for simplicity
+        document.documentElement.appendChild(t);
+      }
+      t.setAttribute("x", x); t.setAttribute("y", y);
+      t.setAttribute("text-anchor", textAnchorValue(lbl.align));
+      t.setAttribute("dominant-baseline", "middle");
+    });
+  })();
+  ]]></script>
+
+  <style>
+    .lbl { font: 12px system-ui, Arial, sans-serif; }
+  </style>
+</svg>
