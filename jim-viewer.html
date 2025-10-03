@@ -1168,11 +1168,23 @@
                     selectorPanelHtml += "<strong style='color:#1e293b;font-size:15px;'>Selectors</strong>";
                     selectorPanelHtml += "<div style='display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;'>";
                     var svg = this.currentDoc.querySelector('svg');
+                    // Track group behaviors
+                    var groupBehaviors = [];
+                    for (var j = 0; j < behaviors.length; j++) {
+                        var tgtSelector = behaviors[j].target && behaviors[j].target.selector;
+                        if (tgtSelector) {
+                            var B = [];
+                            try { B = Array.from(svg.querySelectorAll(tgtSelector)); } catch (e) {}
+                            if (B.length > 1) {
+                                groupBehaviors.push({ selector: tgtSelector, elements: B });
+                            }
+                        }
+                    }
                     for (var k = 0; k < selectorKeys.length; k++) {
                         var key = selectorKeys[k];
                         var dom = this.jimData.selectors[key].dom;
                         var hasBehavior = false;
-                        var behaviorElsewhere = false;
+                        var isGroupMapped = false;
                         var A = [];
                         try { A = Array.from(svg.querySelectorAll(dom)); } catch (e) {}
                         for (var j = 0; j < behaviors.length; j++) {
@@ -1180,23 +1192,43 @@
                             if (tgtSelector) {
                                 var B = [];
                                 try { B = Array.from(svg.querySelectorAll(tgtSelector)); } catch (e) {}
-                                // Intersection
-                                if (A.some(n => n.matches && n.matches(tgtSelector))) { hasBehavior = true; break; }
-                                // Behavior ancestor of selector
-                                if (A.some(a => B.some(b => b.contains && b.contains(a)))) { hasBehavior = true; break; }
-                                // Selector ancestor of behavior
-                                if (B.some(b => A.some(a => a.contains && a.contains(b)))) { hasBehavior = true; break; }
-                                if (B.length && !hasBehavior) behaviorElsewhere = true;
+                                // Direct mapping: selector's dom exactly matches behavior's selector
+                                if (dom === tgtSelector) { hasBehavior = true; break; }
+                                // If not direct, but covered by a group behavior
+                                if (!hasBehavior && B.length > 1 && B.some(b => A.includes(b))) {
+                                    isGroupMapped = true;
+                                }
                             }
                         }
                         var style = hasBehavior
                             ? "background:#d1fae5;border:1px solid #10b981;color:#065f46;"
-                            : "background:#e0e7ef;border:none;color:#1e293b;";
-                        var icon = hasBehavior ? "<span style='margin-right:4px;'>✓</span>" : "";
-                        var hint = "";
-                        selectorPanelHtml += "<button style='"+style+" padding:6px 12px;border-radius:4px;cursor:pointer;font-size:13px;margin-bottom:6px;' onclick='window.jimViewer.showElementInfo(\""+key+"\", \"select\", null);'>"+icon+key+hint+"</button>";
+                            : isGroupMapped
+                                ? "background:#fef9c3;border:1px solid #f59e0b;color:#92400e;"
+                                : "background:#e0e7ef;border:none;color:#1e293b;";
+                        var icon = hasBehavior
+                            ? "<span style='margin-right:4px;' aria-label='Directly mapped by behavior' role='img'>✓</span>"
+                            : isGroupMapped
+                                ? "<span style='margin-right:4px;' aria-label='Covered by group behavior' role='img'>👥</span>"
+                                : "";
+                        selectorPanelHtml += "<button style='"+style+" padding:6px 12px;border-radius:4px;cursor:pointer;font-size:13px;margin-bottom:6px;' onclick='window.jimViewer.showElementInfo(\""+key+"\", \"select\", null);'>"+icon+key+"</button>";
                     }
-                    selectorPanelHtml += "</div></div>";
+                    selectorPanelHtml += "</div>";
+                    // Add group behaviors section
+                    if (groupBehaviors.length) {
+                        selectorPanelHtml += `<div style='margin-top:16px;'><strong style='color:#1e293b;font-size:15px;'>Group Behaviors</strong><div style='display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;'>`;
+                        groupBehaviors.forEach(gb => {
+                            selectorPanelHtml += `<div style='background:#fef9c3;border:1px solid #f59e0b;color:#92400e;padding:8px 12px;border-radius:4px;font-size:13px;display:inline-flex;align-items:center;margin-bottom:8px;'>`;
+                            selectorPanelHtml += `<span style='font-weight:600;margin-right:8px;'>${gb.selector}</span> <span style='font-size:12px;margin-right:8px;'>(matches ${gb.elements.length} elements)</span>`;
+                            gb.elements.slice(0,6).forEach(el => {
+                                var label = el.id ? `#${el.id}` : el.classList.length ? '.' + Array.from(el.classList).join('.') : el.tagName;
+                                selectorPanelHtml += `<span style='background:#e0e7ef;color:#1e293b;padding:2px 6px;border-radius:3px;font-size:11px;display:inline-block;vertical-align:middle;margin-right:4px;'>${label}</span>`;
+                            });
+                            if (gb.elements.length > 6) selectorPanelHtml += `<span style='color:#64748b;font-size:11px;'>...and ${gb.elements.length-6} more</span>`;
+                            selectorPanelHtml += `</div>`;
+                        });
+                        selectorPanelHtml += `</div></div>`;
+                    }
+                    selectorPanelHtml += "</div>";
                     selectorPanel.innerHTML = selectorPanelHtml;
                     selectorPanel.style.display = '';
                 } else {
