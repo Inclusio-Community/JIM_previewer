@@ -1,0 +1,96 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 220" width="600" height="440">
+  <title>Triangle — XY+Ref Label Test</title>
+  <desc>Triangle ABC with edge length labels placed via JIM labels using absolute XY, with optional ref+offset metadata.</desc>
+
+  <!-- Geometry: triangle and explicit edges -->
+  <polygon id="tri" points="150,50 50,150 250,150" fill="none" stroke="#222" stroke-width="2" />
+  <polyline id="edge-AB" points="150,50 50,150"  fill="none" stroke="#555" stroke-width="2" />
+  <polyline id="edge-BC" points="50,150 250,150"  fill="none" stroke="#555" stroke-width="2" />
+  <polyline id="edge-CA" points="250,150 150,50"  fill="none" stroke="#555" stroke-width="2" />
+
+  <!-- Optional pre-existing text nodes. The script will update or create if missing. -->
+  <text id="label-AB" class="lbl" x="100" y="100">5</text>
+  <text id="label-BC" class="lbl" x="150" y="150">6</text>
+  <text id="label-CA" class="lbl" x="200" y="100">3</text>
+
+  <!-- JIM labels: Option B (xy authoritative; ref+offset informational) -->
+  <script type="application/json" id="jim">
+  {
+    "labels": [
+      {
+        "id": "lbl-AB",
+        "xy": { "x": 100, "y": 100 },
+        "ref": { "selector": "#edge-AB", "hint": "edge@t=0.5" },
+        "offset": { "dx": -5, "dy": 0, "units": "px" },
+        "align": "end",
+        "print": { "text": "5", "lang": "en" },
+        "braille": { "text": "⠑", "code": "UEB" },
+        "label_dom": "#label-AB"
+      },
+      {
+        "id": "lbl-BC",
+        "xy": { "x": 150, "y": 160 },
+        "ref": { "selector": "#edge-BC", "hint": "edge@t=0.5" },
+        "offset": { "dx": 0, "dy": 5, "units": "px" },
+        "align": "center",
+        "print": { "text": "6", "lang": "en" },
+        "braille": { "text": "⠋", "code": "UEB" },
+        "label_dom": "#label-BC"
+      },
+      {
+        "id": "lbl-CA",
+        "xy": { "x": 200, "y": 100 },
+        "ref": { "selector": "#edge-CA", "hint": "edge@t=0.5" },
+        "offset": { "dx": 5, "dy": 0, "units": "px" },
+        "align": "start",
+        "print": { "text": "3", "lang": "en" },
+        "braille": { "text": "⠉", "code": "UEB" },
+        "label_dom": "#label-CA"
+      }
+    ]
+  }
+  </script>
+
+  <!-- Minimal materializer: places/updates <text> from JIM.xy and align -->
+  <script><![CDATA[
+  (function(){
+    const ns = "http://www.w3.org/2000/svg";
+    const jimEl = document.getElementById("jim");
+    if (!jimEl) return;
+    /** @type {{labels?: Array<any>}} */
+    const jim = JSON.parse(jimEl.textContent || "{}");
+
+    function anchorVal(a){
+      return a === "start" ? "start" : a === "end" ? "end" : "middle";
+    }
+
+    (jim.labels || []).forEach(l => {
+      const baseX = l?.xy?.x, baseY = l?.xy?.y;
+      if (baseX == null || baseY == null) return; // require absolute point
+      const dx = l?.offset?.dx || 0, dy = l?.offset?.dy || 0;
+      const x = baseX + dx, y = baseY + dy;
+
+      let t = l.label_dom ? document.querySelector(l.label_dom) : null;
+      if (!t) {
+        t = document.createElementNS(ns, "text");
+        t.id = (l.id ? l.id + "-print" : ("lbl-" + Math.random().toString(36).slice(2)));
+        t.classList.add("lbl");
+        document.documentElement.appendChild(t);
+      }
+
+      // Update content and placement
+      if (l.print && typeof l.print.text === "string") t.textContent = l.print.text;
+      t.setAttribute("x", String(x));
+      t.setAttribute("y", String(y));
+      t.setAttribute("text-anchor", anchorVal(l.align));
+      t.setAttribute("dominant-baseline", "middle");
+      // Optional: language hint
+      if (l.print && l.print.lang) t.setAttribute("xml:lang", l.print.lang);
+    });
+  })();
+  ]]></script>
+
+  <style>
+    .lbl { font: 12px system-ui, Arial, sans-serif; }
+  </style>
+</svg>
