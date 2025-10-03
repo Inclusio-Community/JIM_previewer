@@ -1,0 +1,1923 @@
+<svg tabindex="0" aria-label="College enrollment in public and private institutions in the U.S. 1965 to 2028, accessible chart" xmlns="http://www.w3.org/2000/svg" data-charttype="bar" class="  " viewBox="0 0 600 450" style="font-family:Helvetica, sans-serif;font-weight:300;--axis-line-color:hsl(0, 0%, 0%);--label-color:hsl(0, 0%, 0%);" id="paradb23238d-0c64-49b3-acf4-676f37c0ca42"><style>#paradb23238d-0c64-49b3-acf4-676f37c0ca42 { --axis-line-color: hsl(0, 0%, 0%); --label-color: hsl(0, 0%, 0%); --tick-grid-color: hsl(270, 50%, 50%); --background-color: white; --theme-color: var(--fizz-theme-color, purple); --theme-color-light: var(--fizz-theme-color-light, hsl(275.4, 100%, 88%)); --theme-contrast-color: white; --fizz-theme-color: var(--paracharts-theme-color, navy); --fizz-theme-color-light: var(--paracharts-theme-color-light, hsl(210.5, 100%, 88%)); --visited-color: hsl(0, 100%, 50%); --highlighted-color: hsl(100, 100%, 50%); --visited-stroke-width: 6; --selected-color: var(--label-color); --datapoint-centroid: 50% 50%; --focus-animation: all 0.5s ease-in-out; --chart-cursor: pointer; --data-cursor: cell; --focus-shadow-color: gray; --focus-shadow: drop-shadow(0px 0px 4px var(--focus-shadow-color)); --caption-border: none; --caption-grid-template-columns: auto auto; --exploration-bar-display: flex; --chart-font-scale: 1; --chart-title-font-size: 12pt; --horiz-axis-title-font-size: 12pt; --vert-axis-title-font-size: 12pt; --horiz-axis-tick-label-font-size: 10pt; --vert-axis-tick-label-font-size: 10pt; --direct-label-font-size: 10pt; --legend-label-font-size: 10pt; display: block; font-family: "Trebuchet MS", Helvetica, sans-serif; font-size: var(--chart-view-font-size, 1rem); }
+#paradb23238d-0c64-49b3-acf4-676f37c0ca42, :root { --axis-line-color: hsl(0, 0%, 0%); --label-color: hsl(0, 0%, 0%); --tick-grid-color: hsl(270, 50%, 50%); --background-color: white; --theme-color: var(--fizz-theme-color, purple); --theme-color-light: var(--fizz-theme-color-light, hsl(275.4, 100%, 88%)); --theme-contrast-color: white; --fizz-theme-color: var(--paracharts-theme-color, navy); --fizz-theme-color-light: var(--paracharts-theme-color-light, hsl(210.5, 100%, 88%)); --selected-color: var(--label-color); --datapoint-centroid: 50% 50%; --focus-animation: all 0.5s ease-in-out; --chart-cursor: pointer; --data-cursor: cell; --color-palette-series-0: hsl(225, 30%, 52%); --color-palette-series-1: hsl(12, 69%, 35%); --color-palette-series-2: hsl(75, 43%, 45%); --color-palette-series-3: hsl(40, 100%, 49%); --color-palette-series-4: hsl(215, 37%, 66%); --color-palette-series-5: hsl(63, 100%, 23%); --color-palette-series-6: hsl(34, 57%, 46%); --color-palette-series-7: hsl(51, 56%, 64%); --color-palette-series-8: hsl(253, 26%, 43%); --color-palette-series-9: hsl(85, 65%, 36%); --focus-shadow-color: gray; --focus-shadow: drop-shadow(0px 0px 4px var(--focus-shadow-color)); }
+.hidden { display: none !important; }
+.sr-only { border: 0px !important; clip: rect(1px, 1px, 1px, 1px) !important; clip-path: inset(50%) !important; height: 1px !important; overflow: hidden !important; margin: -1px !important; padding: 0px !important; position: absolute !important; width: 1px !important; white-space: nowrap !important; }
+* { font-family: "Trebuchet MS", Helvetica, sans-serif; }
+#y-axis-line { fill: none; stroke: var(--axis-line-color); stroke-width: 2px; stroke-linecap: round; }
+#x-axis-line { fill: none; stroke: var(--axis-line-color); opacity: 1; stroke-width: 2px; stroke-linecap: round; }
+.chart-title { font-size: 1.25rem; }
+.label { display: block; fill: var(--label-color); }
+.axis-title { text-anchor: middle; }
+.tick-label { fill: var(--label-color); }
+.tickmark-y { opacity: 0.2; }
+.tickmark-y-0 { fill: var(--tick-grid-color); stroke: var(--tick-grid-color); opacity: 1; stroke-width: 2px; stroke-linecap: round; }
+.tick-group-y:hover, .tick-group-y:hover .tickmark-y { font-weight: bold; opacity: 1; }
+.tickmark-x { opacity: 0.2; }
+.tickmark-x-0 { fill: var(--tick-grid-color); stroke: var(--tick-grid-color); opacity: 1; stroke-width: 2px; stroke-linecap: round; }
+.tick-group-x:hover, .tick-group-x:hover .tickmark_x { font-weight: bold; opacity: 1; }
+rect#data-backdrop { stroke: none; fill: none; pointer-events: all; }
+.stack { stroke-width: 0; }
+.bar:hover, .bar:focus { fill: rgb(166, 121, 210); outline: -webkit-focus-ring-color auto 2px; }
+.datapoint_background { fill: none; stroke: none; pointer-events: all; outline: none; }
+.datapoint_background:hover, .datapoint_background:focus { outline: -webkit-focus-ring-color auto 2px; box-shadow: none; }
+.data-line { fill: none; stroke-linecap: round; }
+.data_area { stroke: rgb(128, 64, 191); stroke-width: 3px; stroke-linecap: round; fill: none; }
+.data_area_background { stroke: none; fill: rgb(128, 64, 191); fill-opacity: 0.8; }
+.trendline { stroke: red; stroke-width: 3px; fill: none; }
+.center_label &gt; tspan.subtext { font-size: 2rem; text-anchor: middle; }
+g.datapoint { transform-origin: var(--datapoint-centroid); }
+g.datapoint g.datapoint_popup rect { fill: rgb(64, 64, 64); }
+g.datapoint g.datapoint_popup text { fill: white; font-size: 1rem; text-anchor: middle; }
+g.datapoint g.datapoint_popup { stroke: none; opacity: 0; transition: opacity 0.3s ease-in-out; }
+g.datapoint:focus g.datapoint_popup, g.datapoint:hover g.datapoint_popup { opacity: 1; transition: opacity 0.3s ease-in-out; }
+g.datapoint g.datapoint_popup .desc { opacity: 0; }
+g.datapoint:focus g.datapoint_popup .desc, g.datapoint:hover g.datapoint_popup .desc { opacity: 1; transition: opacity 0.3s ease-in-out 2s; }
+g.datapoint.visited { fill: var(--visited-color, red); stroke: var(--visited-color, red); transform-box: fill-box; }
+g.datapoint.visited:focus { transition: var(--focus-animation); filter: var(--focus-shadow); }
+[data-charttype="stepline"] g.datapoint.visited { fill: var(--visited-color, red); stroke: var(--visited-color, red); transform: none; }
+use.visited-mark { pointer-events: none; }
+@keyframes pulse-animation { 
+  0% { filter: drop-shadow(gray 0px 0px 0px); }
+  100% { filter: drop-shadow(gray 0px 0px 12px); }
+}
+.selected-datapoint-marker { fill: transparent; stroke: var(--selected-color); stroke-width: 3px; pointer-events: none; stroke-linejoin: round; }
+.symbol { stroke-linejoin: round; }
+.symbol.outline { fill: white; }
+.slice path { stroke: none; }
+.slice text { fill: black; stroke: black; text-anchor: middle; }
+:fullscreen, ::backdrop { background-color: var(--background-color); }
+.theme-diva { --color-palette-series-0: hsl(225, 30%, 52%); --color-palette-series-1: hsl(12, 69%, 35%); --color-palette-series-2: hsl(75, 43%, 45%); --color-palette-series-3: hsl(40, 100%, 49%); --color-palette-series-4: hsl(215, 37%, 66%); --color-palette-series-5: hsl(63, 100%, 23%); --color-palette-series-6: hsl(34, 57%, 46%); --color-palette-series-7: hsl(51, 56%, 64%); --color-palette-series-8: hsl(253, 26%, 43%); --color-palette-series-9: hsl(85, 65%, 36%); }
+.theme-deutan { --color-palette-series-0: #800080; --color-palette-series-1: #ff00ff; --color-palette-series-2: #ca0088; --color-palette-series-3: #fa0080; --color-palette-series-4: #b400b4; --color-palette-series-5: #4477AA; --color-palette-series-6: #EE6677; --color-palette-series-7: #228833; --color-palette-series-8: #CCBB44; --color-palette-series-9: #66CCEE; --color-palette-series-10: #AA3377; }
+.theme-protan { --color-palette-series-0: hsl(39, 70%, 54%); --color-palette-series-1: hsl(206, 68%, 66%); --color-palette-series-2: hsl(154, 39%, 44%); --color-palette-series-3: hsl(56, 81%, 66%); --color-palette-series-4: hsl(209, 57%, 43%); --color-palette-series-5: hsl(24, 68%, 46%); --color-palette-series-6: hsl(324, 35%, 62%); }
+.theme-tritan { --color-palette-series-0: #77AADD; --color-palette-series-1: #99DDFF; --color-palette-series-2: #44BB99; --color-palette-series-3: #BBCC33; --color-palette-series-4: #AAAAOO; --color-palette-series-5: #EEDD88; --color-palette-series-6: #FFAABB; }
+.theme-grayscale { --color-palette-series-0: #262626; --color-palette-series-1: #595959; --color-palette-series-2: #7f7f7f; --color-palette-series-3: #a1a1a1; --color-palette-series-4: #bababa; --color-palette-series-5: #d4d4d4; --color-palette-series-6: #ededed; }
+.series-0 { fill: var(--color-palette-series-0); stroke: var(--color-palette-series-0); }
+.series-1 { fill: var(--color-palette-series-1); stroke: var(--color-palette-series-1); }
+.series-2 { fill: var(--color-palette-series-2); stroke: var(--color-palette-series-2); }
+.series-3 { fill: var(--color-palette-series-3); stroke: var(--color-palette-series-3); }
+.series-4 { fill: var(--color-palette-series-4); stroke: var(--color-palette-series-4); }
+.series-5 { fill: var(--color-palette-series-5); stroke: var(--color-palette-series-5); }
+.series-6 { fill: var(--color-palette-series-6); stroke: var(--color-palette-series-6); }
+.series-7 { fill: var(--color-palette-series-7); stroke: var(--color-palette-series-7); }
+.series-8 { fill: var(--color-palette-series-8); stroke: var(--color-palette-series-8); }
+.series-9 { fill: var(--color-palette-series-9); stroke: var(--color-palette-series-9); }
+.range-highlights { fill: pink; stroke: pink; fill-opacity: 0.25; stroke-width: 4px; stroke-opacity: 0.5; }
+.range-highlights rect[data-id="0"] { fill: orange; stroke: orange; }
+.range-highlights rect[data-id="1"] { fill: cyan; stroke: cyan; }
+.linebreaker[data-state="active"] .linebreaker-marker { stroke: dodgerblue; stroke-width: 3px; }
+.best_fit_line[data-state="active"] { display: inline; fill: none; stroke: rgb(222, 13, 169); stroke-width: 8px; stroke-linecap: butt; stroke-dasharray: 12, 12; stroke-opacity: 0.5; }
+.best_fit_line[data-state="inactive"] { display: none; }
+.setting-views { display: flex; gap: 1rem; }
+.setting-views + .setting-views { margin-top: 0.5rem; }
+figure { display: inline-block; }
+svg { display: block; }
+.tab-content { display: flex; flex-direction: row; gap: 1rem; align-items: center; justify-content: space-between; padding: 0.2rem; }
+.tab-content.stacked { flex-direction: column; gap: 0.1rem; align-items: flex-start; justify-content: space-between; padding: 0.5rem 0.2rem; }
+#chart-colors-presets { border: none; padding: 0px; margin: 0px; }
+#chart-colors-presets label { display: flex; flex-direction: column; align-items: center; justify-content: space-between; }
+#chart-colors-presets label span { text-align: center; word-spacing: 20em; }
+#output_dialog { margin: 0px auto; }
+#output-dialog::backdrop { background: repeating-linear-gradient(45deg, rgba(128, 0, 128, 0.2), rgba(128, 0, 128, 0.2) 1px, rgba(128, 0, 128, 0.3) 1px, rgba(128, 0, 128, 0.3) 20px); }
+#output-dialog button { color: white; background-color: var(--theme-color); border: 1px solid var(--theme-color); }
+#output-dialog h1 { color: black; font-size: 1.3rem; font-weight: normal; }
+button { margin: 0.2rem; background-color: var(--theme-color); color: var(--theme-contrast-color); border: thin solid var(--theme-color); border-radius: 0.2em; padding: 0.2em; }
+#status_split { display: flex; flex-direction: column; justify-content: space-between; }
+[role="graphics-document"] { cursor: var(--chart-cursor); }
+#chart-layers { cursor: var(--data-cursor); }
+#paradb23238d-0c64-49b3-acf4-676f37c0ca42 { --control-panel-icon: url(/lib/assets/info-icon-alt.svg); --summary-marker-size: 1.1rem; }
+figure { display: inline-block; margin: 0px; }
+#frame { fill: var(--background-color); stroke: none; }
+#frame.pending { fill: lightgray; }
+.darkmode { --axis-line-color: ghostwhite; --label-color: ghostwhite; --background-color: black; }
+#loading-message { fill: black; }
+#loading-message text { fill: white; }
+.grid-horiz { stroke: var(--axis-line-color); opacity: 0.2; }
+.grid-vert { stroke: var(--axis-line-color); opacity: 0.2; }
+#grid-zero { opacity: 0.6; stroke-width: 2; }
+.tick { stroke: var(--label-color); }
+.chart-title { font-size: calc(var(--chart-title-font-size)*var(--chart-font-scale)); }
+.axis-title-horiz { font-size: calc(var(--horiz-axis-title-font-size)*var(--chart-font-scale)); }
+.axis-title-vert { font-size: calc(var(--vert-axis-title-font-size)*var(--chart-font-scale)); }
+.direct-label { font-size: calc(var(--direct-label-font-size)*var(--chart-font-scale)); }
+.legend-label { font-size: calc(var(--legend-label-font-size)*var(--chart-font-scale)); }
+.label { fill: var(--label-color); stroke: none; }
+.tick-label-horiz { font-size: calc(var(--horiz-axis-tick-label-font-size)*var(--chart-font-scale)); }
+.tick-label-vert { font-size: calc(var(--vert-axis-tick-label-font-size)*var(--chart-font-scale)); }
+.bar-label { font-size: 13px; fill: white; }
+.pastry-inside-label { }
+.pastry-outside-label-leader { fill: none; stroke-width: 2; }
+.pastry-slice { stroke: white; stroke-width: 2; }
+.label-leader { stroke-width: 2; }
+#vert-axis-line { fill: none; stroke: var(--axis-line-color); stroke-width: 2px; stroke-linecap: round; }
+#horiz-axis-line { fill: none; stroke: var(--axis-line-color); opacity: 1; stroke-width: 2px; stroke-linecap: round; }
+rect#data-backdrop { stroke: none; fill: none; pointer-events: all; }
+.symbol { stroke-linejoin: round; }
+.symbol.outline { fill: white; }
+use.visited-mark { pointer-events: none; }
+.data-line { fill: none; stroke-linecap: round; }
+.range-highlight { fill: silver; opacity: 0.5; }
+.linebreaker-marker { fill: rgb(112, 79, 79); }
+.user-linebreaker-marker { fill: rgb(229, 16, 16); }
+.trend-line { display: inline; stroke-width: 8px; stroke-linecap: butt; stroke-dasharray: 12, 12; stroke-opacity: 0.8; }
+.user-trend-line { display: inline; stroke-width: 8px; stroke-linecap: butt; stroke-dasharray: 12, 12; stroke-opacity: 0.8; }
+.datapoint.visited:not(.highlighted) { stroke: var(--visited-color); fill: var(--visited-color); stroke-width: var(--visited-stroke-width); }
+.datapoint.highlighted { stroke: var(--highlighted-color); fill: var(--highlighted-color); stroke-width: var(--visited-stroke-width); }
+.lowlight { opacity: 0.2; }
+.hidden { display: none; }
+.invis { opacity: 0; }
+.control-column { display: flex; flex-direction: column; justify-content: space-between; align-items: flex-start; gap: 0.5em; }
+.debug-grid-territory { fill: lightblue; stroke: blue; stroke-width: 2; opacity: 0.5; }</style>
+        <defs>
+        <path id="sym-square-solid" d="m-5,-5 h10 v10 h-10 z"/>
+            <clipPath id="clip-path">
+              <rect x="0" y="0" width="430.06666603088377" height="326.88404083251953">
+              </rect>
+            </clipPath>
+        </defs>
+        <metadata data-type="text/jim+json">
+          {
+  "datasets": [
+    {
+      "title": "College enrollment in public and private institutions in the U.S. 1965 to 2028",
+      "facets": {
+        "x": {
+          "label": "Year",
+          "variableType": "independent",
+          "measure": "interval",
+          "datatype": "date",
+          "units": "year",
+          "displayType": {
+            "type": "axis"
+          }
+        },
+        "y": {
+          "label": "Enrollment",
+          "variableType": "dependent",
+          "measure": "ratio",
+          "datatype": "number",
+          "multiplier": 1000000,
+          "displayType": {
+            "type": "axis"
+          }
+        }
+      },
+      "series": [
+        {
+          "name": "Public",
+          "type": "column",
+          "records": [
+            {
+              "x": "1965",
+              "y": "3.97"
+            },
+            {
+              "x": "1966",
+              "y": "4.35"
+            },
+            {
+              "x": "1967",
+              "y": "4.82"
+            },
+            {
+              "x": "1968",
+              "y": "5.43"
+            },
+            {
+              "x": "1969",
+              "y": "5.9"
+            },
+            {
+              "x": "1970",
+              "y": "6.43"
+            },
+            {
+              "x": "1971",
+              "y": "6.8"
+            },
+            {
+              "x": "1972",
+              "y": "7.07"
+            },
+            {
+              "x": "1973",
+              "y": "7.42"
+            },
+            {
+              "x": "1974",
+              "y": "7.99"
+            },
+            {
+              "x": "1975",
+              "y": "8.83"
+            },
+            {
+              "x": "1976",
+              "y": "8.65"
+            },
+            {
+              "x": "1977",
+              "y": "8.85"
+            },
+            {
+              "x": "1978",
+              "y": "8.79"
+            },
+            {
+              "x": "1979",
+              "y": "9.04"
+            },
+            {
+              "x": "1980",
+              "y": "9.46"
+            },
+            {
+              "x": "1981",
+              "y": "9.65"
+            },
+            {
+              "x": "1982",
+              "y": "9.7"
+            },
+            {
+              "x": "1983",
+              "y": "9.68"
+            },
+            {
+              "x": "1984",
+              "y": "9.48"
+            },
+            {
+              "x": "1985",
+              "y": "9.48"
+            },
+            {
+              "x": "1986",
+              "y": "9.71"
+            },
+            {
+              "x": "1987",
+              "y": "9.97"
+            },
+            {
+              "x": "1988",
+              "y": "10.16"
+            },
+            {
+              "x": "1989",
+              "y": "10.58"
+            },
+            {
+              "x": "1990",
+              "y": "10.84"
+            },
+            {
+              "x": "1991",
+              "y": "11.31"
+            },
+            {
+              "x": "1992",
+              "y": "11.38"
+            },
+            {
+              "x": "1993",
+              "y": "11.19"
+            },
+            {
+              "x": "1994",
+              "y": "11.13"
+            },
+            {
+              "x": "1995",
+              "y": "11.09"
+            },
+            {
+              "x": "1996",
+              "y": "11.12"
+            },
+            {
+              "x": "1997",
+              "y": "11.2"
+            },
+            {
+              "x": "1998",
+              "y": "11.14"
+            },
+            {
+              "x": "1999",
+              "y": "11.38"
+            },
+            {
+              "x": "2000",
+              "y": "11.75"
+            },
+            {
+              "x": "2001",
+              "y": "12.23"
+            },
+            {
+              "x": "2002",
+              "y": "12.75"
+            },
+            {
+              "x": "2003",
+              "y": "12.86"
+            },
+            {
+              "x": "2004",
+              "y": "12.98"
+            },
+            {
+              "x": "2005",
+              "y": "13.02"
+            },
+            {
+              "x": "2006",
+              "y": "13.18"
+            },
+            {
+              "x": "2007",
+              "y": "13.49"
+            },
+            {
+              "x": "2008",
+              "y": "13.97"
+            },
+            {
+              "x": "2009",
+              "y": "14.81"
+            },
+            {
+              "x": "2010",
+              "y": "15.14"
+            },
+            {
+              "x": "2011",
+              "y": "15.12"
+            },
+            {
+              "x": "2012",
+              "y": "14.88"
+            },
+            {
+              "x": "2013",
+              "y": "14.75"
+            },
+            {
+              "x": "2014",
+              "y": "14.65"
+            },
+            {
+              "x": "2015",
+              "y": "14.57"
+            },
+            {
+              "x": "2016",
+              "y": "14.59"
+            },
+            {
+              "x": "2017",
+              "y": "14.56"
+            },
+            {
+              "x": "2018*",
+              "y": "14.61"
+            },
+            {
+              "x": "2019*",
+              "y": "14.67"
+            },
+            {
+              "x": "2020*",
+              "y": "14.69"
+            },
+            {
+              "x": "2021*",
+              "y": "14.71"
+            },
+            {
+              "x": "2022*",
+              "y": "14.74"
+            },
+            {
+              "x": "2023*",
+              "y": "14.77"
+            },
+            {
+              "x": "2024*",
+              "y": "14.82"
+            },
+            {
+              "x": "2025*",
+              "y": "14.88"
+            },
+            {
+              "x": "2026*",
+              "y": "14.94"
+            },
+            {
+              "x": "2027*",
+              "y": "14.97"
+            },
+            {
+              "x": "2028*",
+              "y": "14.98"
+            }
+          ]
+        },
+        {
+          "name": "Private",
+          "type": "column",
+          "records": [
+            {
+              "x": "1965",
+              "y": "1.95"
+            },
+            {
+              "x": "1966",
+              "y": "2.04"
+            },
+            {
+              "x": "1967",
+              "y": "2.1"
+            },
+            {
+              "x": "1968",
+              "y": "2.08"
+            },
+            {
+              "x": "1969",
+              "y": "2.11"
+            },
+            {
+              "x": "1970",
+              "y": "2.15"
+            },
+            {
+              "x": "1971",
+              "y": "2.14"
+            },
+            {
+              "x": "1972",
+              "y": "2.14"
+            },
+            {
+              "x": "1973",
+              "y": "2.18"
+            },
+            {
+              "x": "1974",
+              "y": "2.24"
+            },
+            {
+              "x": "1975",
+              "y": "2.35"
+            },
+            {
+              "x": "1976",
+              "y": "2.36"
+            },
+            {
+              "x": "1977",
+              "y": "2.44"
+            },
+            {
+              "x": "1978",
+              "y": "2.47"
+            },
+            {
+              "x": "1979",
+              "y": "2.53"
+            },
+            {
+              "x": "1980",
+              "y": "2.64"
+            },
+            {
+              "x": "1981",
+              "y": "2.72"
+            },
+            {
+              "x": "1982",
+              "y": "2.73"
+            },
+            {
+              "x": "1983",
+              "y": "2.78"
+            },
+            {
+              "x": "1984",
+              "y": "2.76"
+            },
+            {
+              "x": "1985",
+              "y": "2.77"
+            },
+            {
+              "x": "1986",
+              "y": "2.79"
+            },
+            {
+              "x": "1987",
+              "y": "2.79"
+            },
+            {
+              "x": "1988",
+              "y": "2.89"
+            },
+            {
+              "x": "1989",
+              "y": "2.96"
+            },
+            {
+              "x": "1990",
+              "y": "2.97"
+            },
+            {
+              "x": "1991",
+              "y": "3.05"
+            },
+            {
+              "x": "1992",
+              "y": "3.1"
+            },
+            {
+              "x": "1993",
+              "y": "3.12"
+            },
+            {
+              "x": "1994",
+              "y": "3.15"
+            },
+            {
+              "x": "1995",
+              "y": "3.17"
+            },
+            {
+              "x": "1996",
+              "y": "3.25"
+            },
+            {
+              "x": "1997",
+              "y": "3.31"
+            },
+            {
+              "x": "1998",
+              "y": "3.37"
+            },
+            {
+              "x": "1999",
+              "y": "3.47"
+            },
+            {
+              "x": "2000",
+              "y": "3.56"
+            },
+            {
+              "x": "2001",
+              "y": "3.69"
+            },
+            {
+              "x": "2002",
+              "y": "3.86"
+            },
+            {
+              "x": "2003",
+              "y": "4.05"
+            },
+            {
+              "x": "2004",
+              "y": "4.29"
+            },
+            {
+              "x": "2005",
+              "y": "4.47"
+            },
+            {
+              "x": "2006",
+              "y": "4.58"
+            },
+            {
+              "x": "2007",
+              "y": "4.76"
+            },
+            {
+              "x": "2008",
+              "y": "5.13"
+            },
+            {
+              "x": "2009",
+              "y": "5.5"
+            },
+            {
+              "x": "2010",
+              "y": "5.88"
+            },
+            {
+              "x": "2011",
+              "y": "5.89"
+            },
+            {
+              "x": "2012",
+              "y": "5.76"
+            },
+            {
+              "x": "2013",
+              "y": "5.63"
+            },
+            {
+              "x": "2014",
+              "y": "5.55"
+            },
+            {
+              "x": "2015",
+              "y": "5.42"
+            },
+            {
+              "x": "2016",
+              "y": "5.26"
+            },
+            {
+              "x": "2017",
+              "y": "5.1"
+            },
+            {
+              "x": "2018*",
+              "y": "5.22"
+            },
+            {
+              "x": "2019*",
+              "y": "5.24"
+            },
+            {
+              "x": "2020*",
+              "y": "5.24"
+            },
+            {
+              "x": "2021*",
+              "y": "5.25"
+            },
+            {
+              "x": "2022*",
+              "y": "5.26"
+            },
+            {
+              "x": "2023*",
+              "y": "5.27"
+            },
+            {
+              "x": "2024*",
+              "y": "5.28"
+            },
+            {
+              "x": "2025*",
+              "y": "5.3"
+            },
+            {
+              "x": "2026*",
+              "y": "5.32"
+            },
+            {
+              "x": "2027*",
+              "y": "5.33"
+            },
+            {
+              "x": "2028*",
+              "y": "5.33"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "selectors": {
+    "chartTitle": {
+      "dom": "#chart-title",
+      "json": "$.datasets[0].title"
+    },
+    "datapoint1": {
+      "dom": "#datapoint-1965_3_97_public",
+      "json": [
+        "$.datasets[0].series[0].name",
+        "$.datasets[0].series[0].records[0].*"
+      ]
+    },
+    "datapoint2": {
+      "dom": "#datapoint-1966_4_35_public",
+      "json": [
+        "$.datasets[0].series[0].name",
+        "$.datasets[0].series[0].records[1].*"
+      ]
+    },
+    "datapoint3": {
+      "dom": "#datapoint-1967_4_82_public",
+      "json": [
+        "$.datasets[0].series[0].name",
+        "$.datasets[0].series[0].records[2].*"
+      ]
+    },
+    "datapoint4": {
+      "dom": "#datapoint-1968_5_43_public",
+      "json": [
+        "$.datasets[0].series[0].name",
+        "$.datasets[0].series[0].records[3].*"
+      ]
+    },
+    "datapoint5": {
+      "dom": "#datapoint-1969_5_9_public",
+      "json": [
+        "$.datasets[0].series[0].name",
+        "$.datasets[0].series[0].records[4].*"
+      ]
+    },
+    "datapoint6": {
+      "dom": "#datapoint-1970_6_43_public",
+      "json": [
+        "$.datasets[0].series[0].name",
+        "$.datasets[0].series[0].records[5].*"
+      ]
+    },
+    "datapoint7": {
+      "dom": "#datapoint-1971_6_8_public",
+      "json": [
+        "$.datasets[0].series[0].name",
+        "$.datasets[0].series[0].records[6].*"
+      ]
+    },
+    "datapoint8": {
+      "dom": "#datapoint-1972_7_07_public",
+      "json": [
+        "$.datasets[0].series[0].name",
+        "$.datasets[0].series[0].records[7].*"
+      ]
+    },
+    "datapoint9": {
+      "dom": "#datapoint-1973_7_42_public",
+      "json": [
+        "$.datasets[0].series[0].name",
+        "$.datasets[0].series[0].records[8].*"
+      ]
+    },
+    "datapoint10": {
+      "dom": "#datapoint-1974_7_99_public",
+      "json": [
+        "$.datasets[0].series[0].name",
+        "$.datasets[0].series[0].records[9].*"
+      ]
+    },
+    "datapoint11": {
+      "dom": "#datapoint-1975_8_83_public",
+      "json": [
+        "$.datasets[0].series[0].name",
+        "$.datasets[0].series[0].records[10].*"
+      ]
+    },
+    "datapoint12": {
+      "dom": "#datapoint-1976_8_65_public",
+      "json": [
+        "$.datasets[0].series[0].name",
+        "$.datasets[0].series[0].records[11].*"
+      ]
+    },
+    "datapoint13": {
+      "dom": "#datapoint-1977_8_85_public",
+      "json": [
+        "$.datasets[0].series[0].name",
+        "$.datasets[0].series[0].records[12].*"
+      ]
+    },
+    "datapoint14": {
+      "dom": "#datapoint-1978_8_79_public",
+      "json": [
+        "$.datasets[0].series[0].name",
+        "$.datasets[0].series[0].records[13].*"
+      ]
+    },
+    "datapoint15": {
+      "dom": "#datapoint-1979_9_04_public",
+      "json": [
+        "$.datasets[0].series[0].name",
+        "$.datasets[0].series[0].records[14].*"
+      ]
+    },
+    "datapoint16": {
+      "dom": "#datapoint-1980_9_46_public",
+      "json": [
+        "$.datasets[0].series[0].name",
+        "$.datasets[0].series[0].records[15].*"
+      ]
+    },
+    "datapoint17": {
+      "dom": "#datapoint-1981_9_65_public",
+      "json": [
+        "$.datasets[0].series[0].name",
+        "$.datasets[0].series[0].records[16].*"
+      ]
+    },
+    "datapoint18": {
+      "dom": "#datapoint-1982_9_7_public",
+      "json": [
+        "$.datasets[0].series[0].name",
+        "$.datasets[0].series[0].records[17].*"
+      ]
+    },
+    "datapoint19": {
+      "dom": "#datapoint-1983_9_68_public",
+      "json": [
+        "$.datasets[0].series[0].name",
+        "$.datasets[0].series[0].records[18].*"
+      ]
+    },
+    "datapoint20": {
+      "dom": "#datapoint-1984_9_48_public",
+      "json": [
+        "$.datasets[0].series[0].name",
+        "$.datasets[0].series[0].records[19].*"
+      ]
+    },
+    "datapoint21": {
+      "dom": "#datapoint-1985_9_48_public",
+      "json": [
+        "$.datasets[0].series[0].name",
+        "$.datasets[0].series[0].records[20].*"
+      ]
+    },
+    "datapoint22": {
+      "dom": "#datapoint-1986_9_71_public",
+      "json": [
+        "$.datasets[0].series[0].name",
+        "$.datasets[0].series[0].records[21].*"
+      ]
+    },
+    "datapoint23": {
+      "dom": "#datapoint-1987_9_97_public",
+      "json": [
+        "$.datasets[0].series[0].name",
+        "$.datasets[0].series[0].records[22].*"
+      ]
+    },
+    "datapoint24": {
+      "dom": "#datapoint-1988_10_16_public",
+      "json": [
+        "$.datasets[0].series[0].name",
+        "$.datasets[0].series[0].records[23].*"
+      ]
+    },
+    "datapoint25": {
+      "dom": "#datapoint-1989_10_58_public",
+      "json": [
+        "$.datasets[0].series[0].name",
+        "$.datasets[0].series[0].records[24].*"
+      ]
+    },
+    "datapoint26": {
+      "dom": "#datapoint-1990_10_84_public",
+      "json": [
+        "$.datasets[0].series[0].name",
+        "$.datasets[0].series[0].records[25].*"
+      ]
+    },
+    "datapoint27": {
+      "dom": "#datapoint-1991_11_31_public",
+      "json": [
+        "$.datasets[0].series[0].name",
+        "$.datasets[0].series[0].records[26].*"
+      ]
+    },
+    "datapoint28": {
+      "dom": "#datapoint-1992_11_38_public",
+      "json": [
+        "$.datasets[0].series[0].name",
+        "$.datasets[0].series[0].records[27].*"
+      ]
+    },
+    "datapoint29": {
+      "dom": "#datapoint-1993_11_19_public",
+      "json": [
+        "$.datasets[0].series[0].name",
+        "$.datasets[0].series[0].records[28].*"
+      ]
+    },
+    "datapoint30": {
+      "dom": "#datapoint-1994_11_13_public",
+      "json": [
+        "$.datasets[0].series[0].name",
+        "$.datasets[0].series[0].records[29].*"
+      ]
+    },
+    "datapoint31": {
+      "dom": "#datapoint-1995_11_09_public",
+      "json": [
+        "$.datasets[0].series[0].name",
+        "$.datasets[0].series[0].records[30].*"
+      ]
+    },
+    "datapoint32": {
+      "dom": "#datapoint-1996_11_12_public",
+      "json": [
+        "$.datasets[0].series[0].name",
+        "$.datasets[0].series[0].records[31].*"
+      ]
+    },
+    "datapoint33": {
+      "dom": "#datapoint-1997_11_2_public",
+      "json": [
+        "$.datasets[0].series[0].name",
+        "$.datasets[0].series[0].records[32].*"
+      ]
+    },
+    "datapoint34": {
+      "dom": "#datapoint-1998_11_14_public",
+      "json": [
+        "$.datasets[0].series[0].name",
+        "$.datasets[0].series[0].records[33].*"
+      ]
+    },
+    "datapoint35": {
+      "dom": "#datapoint-1999_11_38_public",
+      "json": [
+        "$.datasets[0].series[0].name",
+        "$.datasets[0].series[0].records[34].*"
+      ]
+    },
+    "datapoint36": {
+      "dom": "#datapoint-2000_11_75_public",
+      "json": [
+        "$.datasets[0].series[0].name",
+        "$.datasets[0].series[0].records[35].*"
+      ]
+    },
+    "datapoint37": {
+      "dom": "#datapoint-2001_12_23_public",
+      "json": [
+        "$.datasets[0].series[0].name",
+        "$.datasets[0].series[0].records[36].*"
+      ]
+    },
+    "datapoint38": {
+      "dom": "#datapoint-2002_12_75_public",
+      "json": [
+        "$.datasets[0].series[0].name",
+        "$.datasets[0].series[0].records[37].*"
+      ]
+    },
+    "datapoint39": {
+      "dom": "#datapoint-2003_12_86_public",
+      "json": [
+        "$.datasets[0].series[0].name",
+        "$.datasets[0].series[0].records[38].*"
+      ]
+    },
+    "datapoint40": {
+      "dom": "#datapoint-2004_12_98_public",
+      "json": [
+        "$.datasets[0].series[0].name",
+        "$.datasets[0].series[0].records[39].*"
+      ]
+    },
+    "datapoint41": {
+      "dom": "#datapoint-2005_13_02_public",
+      "json": [
+        "$.datasets[0].series[0].name",
+        "$.datasets[0].series[0].records[40].*"
+      ]
+    },
+    "datapoint42": {
+      "dom": "#datapoint-2006_13_18_public",
+      "json": [
+        "$.datasets[0].series[0].name",
+        "$.datasets[0].series[0].records[41].*"
+      ]
+    },
+    "datapoint43": {
+      "dom": "#datapoint-2007_13_49_public",
+      "json": [
+        "$.datasets[0].series[0].name",
+        "$.datasets[0].series[0].records[42].*"
+      ]
+    },
+    "datapoint44": {
+      "dom": "#datapoint-2008_13_97_public",
+      "json": [
+        "$.datasets[0].series[0].name",
+        "$.datasets[0].series[0].records[43].*"
+      ]
+    },
+    "datapoint45": {
+      "dom": "#datapoint-2009_14_81_public",
+      "json": [
+        "$.datasets[0].series[0].name",
+        "$.datasets[0].series[0].records[44].*"
+      ]
+    },
+    "datapoint46": {
+      "dom": "#datapoint-2010_15_14_public",
+      "json": [
+        "$.datasets[0].series[0].name",
+        "$.datasets[0].series[0].records[45].*"
+      ]
+    },
+    "datapoint47": {
+      "dom": "#datapoint-2011_15_12_public",
+      "json": [
+        "$.datasets[0].series[0].name",
+        "$.datasets[0].series[0].records[46].*"
+      ]
+    },
+    "datapoint48": {
+      "dom": "#datapoint-2012_14_88_public",
+      "json": [
+        "$.datasets[0].series[0].name",
+        "$.datasets[0].series[0].records[47].*"
+      ]
+    },
+    "datapoint49": {
+      "dom": "#datapoint-2013_14_75_public",
+      "json": [
+        "$.datasets[0].series[0].name",
+        "$.datasets[0].series[0].records[48].*"
+      ]
+    },
+    "datapoint50": {
+      "dom": "#datapoint-2014_14_65_public",
+      "json": [
+        "$.datasets[0].series[0].name",
+        "$.datasets[0].series[0].records[49].*"
+      ]
+    },
+    "datapoint51": {
+      "dom": "#datapoint-2015_14_57_public",
+      "json": [
+        "$.datasets[0].series[0].name",
+        "$.datasets[0].series[0].records[50].*"
+      ]
+    },
+    "datapoint52": {
+      "dom": "#datapoint-2016_14_59_public",
+      "json": [
+        "$.datasets[0].series[0].name",
+        "$.datasets[0].series[0].records[51].*"
+      ]
+    },
+    "datapoint53": {
+      "dom": "#datapoint-2017_14_56_public",
+      "json": [
+        "$.datasets[0].series[0].name",
+        "$.datasets[0].series[0].records[52].*"
+      ]
+    },
+    "datapoint54": {
+      "dom": "#datapoint-2018__14_61_public",
+      "json": [
+        "$.datasets[0].series[0].name",
+        "$.datasets[0].series[0].records[53].*"
+      ]
+    },
+    "datapoint55": {
+      "dom": "#datapoint-2019__14_67_public",
+      "json": [
+        "$.datasets[0].series[0].name",
+        "$.datasets[0].series[0].records[54].*"
+      ]
+    },
+    "datapoint56": {
+      "dom": "#datapoint-2020__14_69_public",
+      "json": [
+        "$.datasets[0].series[0].name",
+        "$.datasets[0].series[0].records[55].*"
+      ]
+    },
+    "datapoint57": {
+      "dom": "#datapoint-2021__14_71_public",
+      "json": [
+        "$.datasets[0].series[0].name",
+        "$.datasets[0].series[0].records[56].*"
+      ]
+    },
+    "datapoint58": {
+      "dom": "#datapoint-2022__14_74_public",
+      "json": [
+        "$.datasets[0].series[0].name",
+        "$.datasets[0].series[0].records[57].*"
+      ]
+    },
+    "datapoint59": {
+      "dom": "#datapoint-2023__14_77_public",
+      "json": [
+        "$.datasets[0].series[0].name",
+        "$.datasets[0].series[0].records[58].*"
+      ]
+    },
+    "datapoint60": {
+      "dom": "#datapoint-2024__14_82_public",
+      "json": [
+        "$.datasets[0].series[0].name",
+        "$.datasets[0].series[0].records[59].*"
+      ]
+    },
+    "datapoint61": {
+      "dom": "#datapoint-2025__14_88_public",
+      "json": [
+        "$.datasets[0].series[0].name",
+        "$.datasets[0].series[0].records[60].*"
+      ]
+    },
+    "datapoint62": {
+      "dom": "#datapoint-2026__14_94_public",
+      "json": [
+        "$.datasets[0].series[0].name",
+        "$.datasets[0].series[0].records[61].*"
+      ]
+    },
+    "datapoint63": {
+      "dom": "#datapoint-2027__14_97_public",
+      "json": [
+        "$.datasets[0].series[0].name",
+        "$.datasets[0].series[0].records[62].*"
+      ]
+    },
+    "datapoint64": {
+      "dom": "#datapoint-2028__14_98_public",
+      "json": [
+        "$.datasets[0].series[0].name",
+        "$.datasets[0].series[0].records[63].*"
+      ]
+    },
+    "datapoint65": {
+      "dom": "#datapoint-1965_1_95_private",
+      "json": [
+        "$.datasets[0].series[1].name",
+        "$.datasets[0].series[1].records[0].*"
+      ]
+    },
+    "datapoint66": {
+      "dom": "#datapoint-1966_2_04_private",
+      "json": [
+        "$.datasets[0].series[1].name",
+        "$.datasets[0].series[1].records[1].*"
+      ]
+    },
+    "datapoint67": {
+      "dom": "#datapoint-1967_2_1_private",
+      "json": [
+        "$.datasets[0].series[1].name",
+        "$.datasets[0].series[1].records[2].*"
+      ]
+    },
+    "datapoint68": {
+      "dom": "#datapoint-1968_2_08_private",
+      "json": [
+        "$.datasets[0].series[1].name",
+        "$.datasets[0].series[1].records[3].*"
+      ]
+    },
+    "datapoint69": {
+      "dom": "#datapoint-1969_2_11_private",
+      "json": [
+        "$.datasets[0].series[1].name",
+        "$.datasets[0].series[1].records[4].*"
+      ]
+    },
+    "datapoint70": {
+      "dom": "#datapoint-1970_2_15_private",
+      "json": [
+        "$.datasets[0].series[1].name",
+        "$.datasets[0].series[1].records[5].*"
+      ]
+    },
+    "datapoint71": {
+      "dom": "#datapoint-1971_2_14_private",
+      "json": [
+        "$.datasets[0].series[1].name",
+        "$.datasets[0].series[1].records[6].*"
+      ]
+    },
+    "datapoint72": {
+      "dom": "#datapoint-1972_2_14_private",
+      "json": [
+        "$.datasets[0].series[1].name",
+        "$.datasets[0].series[1].records[7].*"
+      ]
+    },
+    "datapoint73": {
+      "dom": "#datapoint-1973_2_18_private",
+      "json": [
+        "$.datasets[0].series[1].name",
+        "$.datasets[0].series[1].records[8].*"
+      ]
+    },
+    "datapoint74": {
+      "dom": "#datapoint-1974_2_24_private",
+      "json": [
+        "$.datasets[0].series[1].name",
+        "$.datasets[0].series[1].records[9].*"
+      ]
+    },
+    "datapoint75": {
+      "dom": "#datapoint-1975_2_35_private",
+      "json": [
+        "$.datasets[0].series[1].name",
+        "$.datasets[0].series[1].records[10].*"
+      ]
+    },
+    "datapoint76": {
+      "dom": "#datapoint-1976_2_36_private",
+      "json": [
+        "$.datasets[0].series[1].name",
+        "$.datasets[0].series[1].records[11].*"
+      ]
+    },
+    "datapoint77": {
+      "dom": "#datapoint-1977_2_44_private",
+      "json": [
+        "$.datasets[0].series[1].name",
+        "$.datasets[0].series[1].records[12].*"
+      ]
+    },
+    "datapoint78": {
+      "dom": "#datapoint-1978_2_47_private",
+      "json": [
+        "$.datasets[0].series[1].name",
+        "$.datasets[0].series[1].records[13].*"
+      ]
+    },
+    "datapoint79": {
+      "dom": "#datapoint-1979_2_53_private",
+      "json": [
+        "$.datasets[0].series[1].name",
+        "$.datasets[0].series[1].records[14].*"
+      ]
+    },
+    "datapoint80": {
+      "dom": "#datapoint-1980_2_64_private",
+      "json": [
+        "$.datasets[0].series[1].name",
+        "$.datasets[0].series[1].records[15].*"
+      ]
+    },
+    "datapoint81": {
+      "dom": "#datapoint-1981_2_72_private",
+      "json": [
+        "$.datasets[0].series[1].name",
+        "$.datasets[0].series[1].records[16].*"
+      ]
+    },
+    "datapoint82": {
+      "dom": "#datapoint-1982_2_73_private",
+      "json": [
+        "$.datasets[0].series[1].name",
+        "$.datasets[0].series[1].records[17].*"
+      ]
+    },
+    "datapoint83": {
+      "dom": "#datapoint-1983_2_78_private",
+      "json": [
+        "$.datasets[0].series[1].name",
+        "$.datasets[0].series[1].records[18].*"
+      ]
+    },
+    "datapoint84": {
+      "dom": "#datapoint-1984_2_76_private",
+      "json": [
+        "$.datasets[0].series[1].name",
+        "$.datasets[0].series[1].records[19].*"
+      ]
+    },
+    "datapoint85": {
+      "dom": "#datapoint-1985_2_77_private",
+      "json": [
+        "$.datasets[0].series[1].name",
+        "$.datasets[0].series[1].records[20].*"
+      ]
+    },
+    "datapoint86": {
+      "dom": "#datapoint-1986_2_79_private",
+      "json": [
+        "$.datasets[0].series[1].name",
+        "$.datasets[0].series[1].records[21].*"
+      ]
+    },
+    "datapoint87": {
+      "dom": "#datapoint-1987_2_79_private",
+      "json": [
+        "$.datasets[0].series[1].name",
+        "$.datasets[0].series[1].records[22].*"
+      ]
+    },
+    "datapoint88": {
+      "dom": "#datapoint-1988_2_89_private",
+      "json": [
+        "$.datasets[0].series[1].name",
+        "$.datasets[0].series[1].records[23].*"
+      ]
+    },
+    "datapoint89": {
+      "dom": "#datapoint-1989_2_96_private",
+      "json": [
+        "$.datasets[0].series[1].name",
+        "$.datasets[0].series[1].records[24].*"
+      ]
+    },
+    "datapoint90": {
+      "dom": "#datapoint-1990_2_97_private",
+      "json": [
+        "$.datasets[0].series[1].name",
+        "$.datasets[0].series[1].records[25].*"
+      ]
+    },
+    "datapoint91": {
+      "dom": "#datapoint-1991_3_05_private",
+      "json": [
+        "$.datasets[0].series[1].name",
+        "$.datasets[0].series[1].records[26].*"
+      ]
+    },
+    "datapoint92": {
+      "dom": "#datapoint-1992_3_1_private",
+      "json": [
+        "$.datasets[0].series[1].name",
+        "$.datasets[0].series[1].records[27].*"
+      ]
+    },
+    "datapoint93": {
+      "dom": "#datapoint-1993_3_12_private",
+      "json": [
+        "$.datasets[0].series[1].name",
+        "$.datasets[0].series[1].records[28].*"
+      ]
+    },
+    "datapoint94": {
+      "dom": "#datapoint-1994_3_15_private",
+      "json": [
+        "$.datasets[0].series[1].name",
+        "$.datasets[0].series[1].records[29].*"
+      ]
+    },
+    "datapoint95": {
+      "dom": "#datapoint-1995_3_17_private",
+      "json": [
+        "$.datasets[0].series[1].name",
+        "$.datasets[0].series[1].records[30].*"
+      ]
+    },
+    "datapoint96": {
+      "dom": "#datapoint-1996_3_25_private",
+      "json": [
+        "$.datasets[0].series[1].name",
+        "$.datasets[0].series[1].records[31].*"
+      ]
+    },
+    "datapoint97": {
+      "dom": "#datapoint-1997_3_31_private",
+      "json": [
+        "$.datasets[0].series[1].name",
+        "$.datasets[0].series[1].records[32].*"
+      ]
+    },
+    "datapoint98": {
+      "dom": "#datapoint-1998_3_37_private",
+      "json": [
+        "$.datasets[0].series[1].name",
+        "$.datasets[0].series[1].records[33].*"
+      ]
+    },
+    "datapoint99": {
+      "dom": "#datapoint-1999_3_47_private",
+      "json": [
+        "$.datasets[0].series[1].name",
+        "$.datasets[0].series[1].records[34].*"
+      ]
+    },
+    "datapoint100": {
+      "dom": "#datapoint-2000_3_56_private",
+      "json": [
+        "$.datasets[0].series[1].name",
+        "$.datasets[0].series[1].records[35].*"
+      ]
+    },
+    "datapoint101": {
+      "dom": "#datapoint-2001_3_69_private",
+      "json": [
+        "$.datasets[0].series[1].name",
+        "$.datasets[0].series[1].records[36].*"
+      ]
+    },
+    "datapoint102": {
+      "dom": "#datapoint-2002_3_86_private",
+      "json": [
+        "$.datasets[0].series[1].name",
+        "$.datasets[0].series[1].records[37].*"
+      ]
+    },
+    "datapoint103": {
+      "dom": "#datapoint-2003_4_05_private",
+      "json": [
+        "$.datasets[0].series[1].name",
+        "$.datasets[0].series[1].records[38].*"
+      ]
+    },
+    "datapoint104": {
+      "dom": "#datapoint-2004_4_29_private",
+      "json": [
+        "$.datasets[0].series[1].name",
+        "$.datasets[0].series[1].records[39].*"
+      ]
+    },
+    "datapoint105": {
+      "dom": "#datapoint-2005_4_47_private",
+      "json": [
+        "$.datasets[0].series[1].name",
+        "$.datasets[0].series[1].records[40].*"
+      ]
+    },
+    "datapoint106": {
+      "dom": "#datapoint-2006_4_58_private",
+      "json": [
+        "$.datasets[0].series[1].name",
+        "$.datasets[0].series[1].records[41].*"
+      ]
+    },
+    "datapoint107": {
+      "dom": "#datapoint-2007_4_76_private",
+      "json": [
+        "$.datasets[0].series[1].name",
+        "$.datasets[0].series[1].records[42].*"
+      ]
+    },
+    "datapoint108": {
+      "dom": "#datapoint-2008_5_13_private",
+      "json": [
+        "$.datasets[0].series[1].name",
+        "$.datasets[0].series[1].records[43].*"
+      ]
+    },
+    "datapoint109": {
+      "dom": "#datapoint-2009_5_5_private",
+      "json": [
+        "$.datasets[0].series[1].name",
+        "$.datasets[0].series[1].records[44].*"
+      ]
+    },
+    "datapoint110": {
+      "dom": "#datapoint-2010_5_88_private",
+      "json": [
+        "$.datasets[0].series[1].name",
+        "$.datasets[0].series[1].records[45].*"
+      ]
+    },
+    "datapoint111": {
+      "dom": "#datapoint-2011_5_89_private",
+      "json": [
+        "$.datasets[0].series[1].name",
+        "$.datasets[0].series[1].records[46].*"
+      ]
+    },
+    "datapoint112": {
+      "dom": "#datapoint-2012_5_76_private",
+      "json": [
+        "$.datasets[0].series[1].name",
+        "$.datasets[0].series[1].records[47].*"
+      ]
+    },
+    "datapoint113": {
+      "dom": "#datapoint-2013_5_63_private",
+      "json": [
+        "$.datasets[0].series[1].name",
+        "$.datasets[0].series[1].records[48].*"
+      ]
+    },
+    "datapoint114": {
+      "dom": "#datapoint-2014_5_55_private",
+      "json": [
+        "$.datasets[0].series[1].name",
+        "$.datasets[0].series[1].records[49].*"
+      ]
+    },
+    "datapoint115": {
+      "dom": "#datapoint-2015_5_42_private",
+      "json": [
+        "$.datasets[0].series[1].name",
+        "$.datasets[0].series[1].records[50].*"
+      ]
+    },
+    "datapoint116": {
+      "dom": "#datapoint-2016_5_26_private",
+      "json": [
+        "$.datasets[0].series[1].name",
+        "$.datasets[0].series[1].records[51].*"
+      ]
+    },
+    "datapoint117": {
+      "dom": "#datapoint-2017_5_1_private",
+      "json": [
+        "$.datasets[0].series[1].name",
+        "$.datasets[0].series[1].records[52].*"
+      ]
+    },
+    "datapoint118": {
+      "dom": "#datapoint-2018__5_22_private",
+      "json": [
+        "$.datasets[0].series[1].name",
+        "$.datasets[0].series[1].records[53].*"
+      ]
+    },
+    "datapoint119": {
+      "dom": "#datapoint-2019__5_24_private",
+      "json": [
+        "$.datasets[0].series[1].name",
+        "$.datasets[0].series[1].records[54].*"
+      ]
+    },
+    "datapoint120": {
+      "dom": "#datapoint-2020__5_24_private",
+      "json": [
+        "$.datasets[0].series[1].name",
+        "$.datasets[0].series[1].records[55].*"
+      ]
+    },
+    "datapoint121": {
+      "dom": "#datapoint-2021__5_25_private",
+      "json": [
+        "$.datasets[0].series[1].name",
+        "$.datasets[0].series[1].records[56].*"
+      ]
+    },
+    "datapoint122": {
+      "dom": "#datapoint-2022__5_26_private",
+      "json": [
+        "$.datasets[0].series[1].name",
+        "$.datasets[0].series[1].records[57].*"
+      ]
+    },
+    "datapoint123": {
+      "dom": "#datapoint-2023__5_27_private",
+      "json": [
+        "$.datasets[0].series[1].name",
+        "$.datasets[0].series[1].records[58].*"
+      ]
+    },
+    "datapoint124": {
+      "dom": "#datapoint-2024__5_28_private",
+      "json": [
+        "$.datasets[0].series[1].name",
+        "$.datasets[0].series[1].records[59].*"
+      ]
+    },
+    "datapoint125": {
+      "dom": "#datapoint-2025__5_3_private",
+      "json": [
+        "$.datasets[0].series[1].name",
+        "$.datasets[0].series[1].records[60].*"
+      ]
+    },
+    "datapoint126": {
+      "dom": "#datapoint-2026__5_32_private",
+      "json": [
+        "$.datasets[0].series[1].name",
+        "$.datasets[0].series[1].records[61].*"
+      ]
+    },
+    "datapoint127": {
+      "dom": "#datapoint-2027__5_33_private",
+      "json": [
+        "$.datasets[0].series[1].name",
+        "$.datasets[0].series[1].records[62].*"
+      ]
+    },
+    "datapoint128": {
+      "dom": "#datapoint-2028__5_33_private",
+      "json": [
+        "$.datasets[0].series[1].name",
+        "$.datasets[0].series[1].records[63].*"
+      ]
+    }
+  },
+  "version": {
+    "jim": "0.4.0"
+  }
+}
+        </metadata>
+        <rect id="frame" pointer-events="all" x="0" y="0" width="100%" height="100%">
+        </rect>
+        <g role="graphics-document" aria-roledescription="column chart" transform="translate(25.60,8)">
+      <text class=" chart-title label " role="heading" x="13.59" y="14.67" text-anchor="start" id="chart-title">
+        College enrollment in public and private institutions in the U.S. 1965 to 2028
+      </text>
+        <g id="vert-axis" role="graphics-object" aria-roledescription="y-axis" transform="translate(0,58)">
+      <text class=" axis-title-vert label " role="heading" x="14.67" y="163.55" text-anchor="middle" transform="&#10;        translate(14.67,163.55)&#10;        rotate(-90)&#10;        translate(-14.67,-163.55)" id="axis-title-vert">
+        Enrollment
+      </text>
+        <g id="tick-label-tier-vert-0" transform="translate(26,0)">
+      <text class=" tick-label tick-label-vert west label " role="axislabel" x="14.83" y="331.77" text-anchor="end" id="tick-label-vert-0">
+        0
+      </text>
+      <text class=" tick-label tick-label-vert west label " role="axislabel" x="14.83" y="266.40" text-anchor="end" id="tick-label-vert-1">
+        5
+      </text>
+      <text class=" tick-label tick-label-vert west label " role="axislabel" x="14.83" y="201.02" text-anchor="end" id="tick-label-vert-2">
+        10
+      </text>
+      <text class=" tick-label tick-label-vert west label " role="axislabel" x="14.83" y="135.64" text-anchor="end" id="tick-label-vert-3">
+        15
+      </text>
+      <text class=" tick-label tick-label-vert west label " role="axislabel" x="14.83" y="70.27" text-anchor="end" id="tick-label-vert-4">
+        20
+      </text>
+      <text class=" tick-label tick-label-vert west label " role="axislabel" x="14.83" y="4.89" text-anchor="end" id="tick-label-vert-5">
+        25
+      </text>
+        </g>
+        <g id="vert-axis-tick-strip" transform="translate(40.83,0)">
+      <path id="" class=" tick tick-vert " d="M10,0 h-10"/>
+      <path id="" class=" tick tick-vert " d="M10,65.38 h-10"/>
+      <path id="" class=" tick tick-vert " d="M10,130.75 h-10"/>
+      <path id="" class=" tick tick-vert " d="M10,196.13 h-10"/>
+      <path id="" class=" tick tick-vert " d="M10,261.51 h-10"/>
+      <path id="" class=" tick tick-vert " d="M10,326.88 h-10"/>
+      <path id="" class=" grid grid-vert " d="M10,0 h430.07"/>
+      <path id="" class=" grid grid-vert " d="M10,65.38 h430.07"/>
+      <path id="" class=" grid grid-vert " d="M10,130.75 h430.07"/>
+      <path id="" class=" grid grid-vert " d="M10,196.13 h430.07"/>
+      <path id="" class=" grid grid-vert " d="M10,261.51 h430.07"/>
+      <path id="grid-zero" class=" grid grid-vert " d="M10,326.88 h430.07"/>
+        </g>
+      <path transform="translate(50.83,0)" id="vert-axis-line" class=" axis-line axis-line-vert " d="M0,0 v336.88"/>
+        </g>
+        <g id="horiz-axis" role="graphics-object" aria-roledescription="x-axis" transform="translate(50.83,384.88)">
+      <path id="horiz-axis-line" class=" axis-line axis-line-horiz " d="M-10,0 h440.07"/>
+        <g id="horiz-axis-tick-strip">
+      <path id="" class=" tick tick-horiz " d="M6.72,0 v10"/>
+      <path id="" class=" tick tick-horiz " d="M13.44,0 v10"/>
+      <path id="" class=" tick tick-horiz " d="M20.16,0 v10"/>
+      <path id="" class=" tick tick-horiz " d="M26.88,0 v10"/>
+      <path id="" class=" tick tick-horiz " d="M33.60,0 v10"/>
+      <path id="" class=" tick tick-horiz " d="M40.32,0 v10"/>
+      <path id="" class=" tick tick-horiz " d="M47.04,0 v10"/>
+      <path id="" class=" tick tick-horiz " d="M53.76,0 v10"/>
+      <path id="" class=" tick tick-horiz " d="M60.48,0 v10"/>
+      <path id="" class=" tick tick-horiz " d="M67.20,0 v10"/>
+      <path id="" class=" tick tick-horiz " d="M73.92,0 v10"/>
+      <path id="" class=" tick tick-horiz " d="M80.64,0 v10"/>
+      <path id="" class=" tick tick-horiz " d="M87.36,0 v10"/>
+      <path id="" class=" tick tick-horiz " d="M94.08,0 v10"/>
+      <path id="" class=" tick tick-horiz " d="M100.80,0 v10"/>
+      <path id="" class=" tick tick-horiz " d="M107.52,0 v10"/>
+      <path id="" class=" tick tick-horiz " d="M114.24,0 v10"/>
+      <path id="" class=" tick tick-horiz " d="M120.96,0 v10"/>
+      <path id="" class=" tick tick-horiz " d="M127.68,0 v10"/>
+      <path id="" class=" tick tick-horiz " d="M134.40,0 v10"/>
+      <path id="" class=" tick tick-horiz " d="M141.12,0 v10"/>
+      <path id="" class=" tick tick-horiz " d="M147.84,0 v10"/>
+      <path id="" class=" tick tick-horiz " d="M154.56,0 v10"/>
+      <path id="" class=" tick tick-horiz " d="M161.27,0 v10"/>
+      <path id="" class=" tick tick-horiz " d="M167.99,0 v10"/>
+      <path id="" class=" tick tick-horiz " d="M174.71,0 v10"/>
+      <path id="" class=" tick tick-horiz " d="M181.43,0 v10"/>
+      <path id="" class=" tick tick-horiz " d="M188.15,0 v10"/>
+      <path id="" class=" tick tick-horiz " d="M194.87,0 v10"/>
+      <path id="" class=" tick tick-horiz " d="M201.59,0 v10"/>
+      <path id="" class=" tick tick-horiz " d="M208.31,0 v10"/>
+      <path id="" class=" tick tick-horiz " d="M215.03,0 v10"/>
+      <path id="" class=" tick tick-horiz " d="M221.75,0 v10"/>
+      <path id="" class=" tick tick-horiz " d="M228.47,0 v10"/>
+      <path id="" class=" tick tick-horiz " d="M235.19,0 v10"/>
+      <path id="" class=" tick tick-horiz " d="M241.91,0 v10"/>
+      <path id="" class=" tick tick-horiz " d="M248.63,0 v10"/>
+      <path id="" class=" tick tick-horiz " d="M255.35,0 v10"/>
+      <path id="" class=" tick tick-horiz " d="M262.07,0 v10"/>
+      <path id="" class=" tick tick-horiz " d="M268.79,0 v10"/>
+      <path id="" class=" tick tick-horiz " d="M275.51,0 v10"/>
+      <path id="" class=" tick tick-horiz " d="M282.23,0 v10"/>
+      <path id="" class=" tick tick-horiz " d="M288.95,0 v10"/>
+      <path id="" class=" tick tick-horiz " d="M295.67,0 v10"/>
+      <path id="" class=" tick tick-horiz " d="M302.39,0 v10"/>
+      <path id="" class=" tick tick-horiz " d="M309.11,0 v10"/>
+      <path id="" class=" tick tick-horiz " d="M315.83,0 v10"/>
+      <path id="" class=" tick tick-horiz " d="M322.55,0 v10"/>
+      <path id="" class=" tick tick-horiz " d="M329.27,0 v10"/>
+      <path id="" class=" tick tick-horiz " d="M335.99,0 v10"/>
+      <path id="" class=" tick tick-horiz " d="M342.71,0 v10"/>
+      <path id="" class=" tick tick-horiz " d="M349.43,0 v10"/>
+      <path id="" class=" tick tick-horiz " d="M356.15,0 v10"/>
+      <path id="" class=" tick tick-horiz " d="M362.87,0 v10"/>
+      <path id="" class=" tick tick-horiz " d="M369.59,0 v10"/>
+      <path id="" class=" tick tick-horiz " d="M376.31,0 v10"/>
+      <path id="" class=" tick tick-horiz " d="M383.03,0 v10"/>
+      <path id="" class=" tick tick-horiz " d="M389.75,0 v10"/>
+      <path id="" class=" tick tick-horiz " d="M396.47,0 v10"/>
+      <path id="" class=" tick tick-horiz " d="M403.19,0 v10"/>
+      <path id="" class=" tick tick-horiz " d="M409.91,0 v10"/>
+      <path id="" class=" tick tick-horiz " d="M416.63,0 v10"/>
+      <path id="" class=" tick tick-horiz " d="M423.35,0 v10"/>
+      <path id="" class=" tick tick-horiz " d="M430.07,0 v10"/>
+        </g>
+        <g id="tick-label-tier-horiz-0" transform="translate(0,18)">
+      <text class=" tick-label tick-label-horiz south label " role="axislabel" x="11.85" y="8.49" text-anchor="end" transform="&#10;        translate(11.85,8.49)&#10;        rotate(-45)&#10;        translate(-11.85,-8.49)" id="tick-label-horiz-0">
+        1965
+      </text>
+      <text class=" tick-label tick-label-horiz south label " role="axislabel" x="52.16" y="8.49" text-anchor="end" transform="&#10;        translate(52.16,8.49)&#10;        rotate(-45)&#10;        translate(-52.16,-8.49)" id="tick-label-horiz-6">
+        1971
+      </text>
+      <text class=" tick-label tick-label-horiz south label " role="axislabel" x="92.48" y="8.49" text-anchor="end" transform="&#10;        translate(92.48,8.49)&#10;        rotate(-45)&#10;        translate(-92.48,-8.49)" id="tick-label-horiz-12">
+        1977
+      </text>
+      <text class=" tick-label tick-label-horiz south label " role="axislabel" x="132.80" y="8.49" text-anchor="end" transform="&#10;        translate(132.80,8.49)&#10;        rotate(-45)&#10;        translate(-132.80,-8.49)" id="tick-label-horiz-18">
+        1983
+      </text>
+      <text class=" tick-label tick-label-horiz south label " role="axislabel" x="173.12" y="8.49" text-anchor="end" transform="&#10;        translate(173.12,8.49)&#10;        rotate(-45)&#10;        translate(-173.12,-8.49)" id="tick-label-horiz-24">
+        1989
+      </text>
+      <text class=" tick-label tick-label-horiz south label " role="axislabel" x="213.44" y="8.49" text-anchor="end" transform="&#10;        translate(213.44,8.49)&#10;        rotate(-45)&#10;        translate(-213.44,-8.49)" id="tick-label-horiz-30">
+        1995
+      </text>
+      <text class=" tick-label tick-label-horiz south label " role="axislabel" x="253.76" y="8.49" text-anchor="end" transform="&#10;        translate(253.76,8.49)&#10;        rotate(-45)&#10;        translate(-253.76,-8.49)" id="tick-label-horiz-36">
+        2001
+      </text>
+      <text class=" tick-label tick-label-horiz south label " role="axislabel" x="294.08" y="8.49" text-anchor="end" transform="&#10;        translate(294.08,8.49)&#10;        rotate(-45)&#10;        translate(-294.08,-8.49)" id="tick-label-horiz-42">
+        2007
+      </text>
+      <text class=" tick-label tick-label-horiz south label " role="axislabel" x="334.40" y="8.49" text-anchor="end" transform="&#10;        translate(334.40,8.49)&#10;        rotate(-45)&#10;        translate(-334.40,-8.49)" id="tick-label-horiz-48">
+        2013
+      </text>
+      <text class=" tick-label tick-label-horiz south label " role="axislabel" x="374.71" y="8.49" text-anchor="end" transform="&#10;        translate(374.71,8.49)&#10;        rotate(-45)&#10;        translate(-374.71,-8.49)" id="tick-label-horiz-54">
+        2019*
+      </text>
+      <text class=" tick-label tick-label-horiz south label " role="axislabel" x="415.03" y="8.49" text-anchor="end" transform="&#10;        translate(415.03,8.49)&#10;        rotate(-45)&#10;        translate(-415.03,-8.49)" id="tick-label-horiz-60">
+        2025*
+      </text>
+        </g>
+        </g>
+      <g id="chart-layers" transform="translate(50.83,58)">
+        <rect id="data-backdrop" width="430.06666603088377" height="326.88404083251953"/>
+        <g id="background-annotation-layer">
+        <g>
+        </g>
+        <g>
+        </g>
+        <g>
+        </g>
+        </g>
+        <g id="data-layer" role="dataset">
+        <g id="series-public" class=" series " style="fill:hsl(225, 30%, 52%);stroke:hsl(225, 30%, 52%);stroke-width:4;">
+      <rect id="datapoint-1965_3_97_public" style="stroke-width:0;" class=" bar datapoint " role="datapoint" x="0" y="249.48" width="10" height="51.91"/>
+      <rect id="datapoint-1966_4_35_public" style="stroke-width:0;" class=" bar datapoint " role="datapoint" x="6.72" y="243.33" width="10" height="56.88"/>
+      <rect id="datapoint-1967_4_82_public" style="stroke-width:0;" class=" bar datapoint " role="datapoint" x="13.44" y="236.40" width="10" height="63.02"/>
+      <rect id="datapoint-1968_5_43_public" style="stroke-width:0;" class=" bar datapoint " role="datapoint" x="20.16" y="228.69" width="10" height="71.00"/>
+      <rect id="datapoint-1969_5_9_public" style="stroke-width:0;" class=" bar datapoint " role="datapoint" x="26.88" y="222.15" width="10" height="77.14"/>
+      <rect id="datapoint-1970_6_43_public" style="stroke-width:0;" class=" bar datapoint " role="datapoint" x="33.60" y="214.70" width="10" height="84.07"/>
+      <rect id="datapoint-1971_6_8_public" style="stroke-width:0;" class=" bar datapoint " role="datapoint" x="40.32" y="209.99" width="10" height="88.91"/>
+      <rect id="datapoint-1972_7_07_public" style="stroke-width:0;" class=" bar datapoint " role="datapoint" x="47.04" y="206.46" width="10" height="92.44"/>
+      <rect id="datapoint-1973_7_42_public" style="stroke-width:0;" class=" bar datapoint " role="datapoint" x="53.76" y="201.36" width="10" height="97.02"/>
+      <rect id="datapoint-1974_7_99_public" style="stroke-width:0;" class=" bar datapoint " role="datapoint" x="60.48" y="193.12" width="10" height="104.47"/>
+      <rect id="datapoint-1975_8_83_public" style="stroke-width:0;" class=" bar datapoint " role="datapoint" x="67.20" y="180.70" width="10" height="115.46"/>
+      <rect id="datapoint-1976_8_65_public" style="stroke-width:0;" class=" bar datapoint " role="datapoint" x="73.92" y="182.92" width="10" height="113.10"/>
+      <rect id="datapoint-1977_8_85_public" style="stroke-width:0;" class=" bar datapoint " role="datapoint" x="80.64" y="179.26" width="10" height="115.72"/>
+      <rect id="datapoint-1978_8_79_public" style="stroke-width:0;" class=" bar datapoint " role="datapoint" x="87.36" y="179.66" width="10" height="114.93"/>
+      <rect id="datapoint-1979_9_04_public" style="stroke-width:0;" class=" bar datapoint " role="datapoint" x="94.08" y="175.60" width="10" height="118.20"/>
+      <rect id="datapoint-1980_9_46_public" style="stroke-width:0;" class=" bar datapoint " role="datapoint" x="100.80" y="168.67" width="10" height="123.69"/>
+      <rect id="datapoint-1981_9_65_public" style="stroke-width:0;" class=" bar datapoint " role="datapoint" x="107.52" y="165.14" width="10" height="126.18"/>
+      <rect id="datapoint-1982_9_7_public" style="stroke-width:0;" class=" bar datapoint " role="datapoint" x="114.24" y="164.36" width="10" height="126.83"/>
+      <rect id="datapoint-1983_9_68_public" style="stroke-width:0;" class=" bar datapoint " role="datapoint" x="120.96" y="163.97" width="10" height="126.57"/>
+      <rect id="datapoint-1984_9_48_public" style="stroke-width:0;" class=" bar datapoint " role="datapoint" x="127.68" y="166.84" width="10" height="123.95"/>
+      <rect id="datapoint-1985_9_48_public" style="stroke-width:0;" class=" bar datapoint " role="datapoint" x="134.40" y="166.71" width="10" height="123.95"/>
+      <rect id="datapoint-1986_9_71_public" style="stroke-width:0;" class=" bar datapoint " role="datapoint" x="141.12" y="163.44" width="10" height="126.96"/>
+      <rect id="datapoint-1987_9_97_public" style="stroke-width:0;" class=" bar datapoint " role="datapoint" x="147.84" y="160.04" width="10" height="130.36"/>
+      <rect id="datapoint-1988_10_16_public" style="stroke-width:0;" class=" bar datapoint " role="datapoint" x="154.56" y="156.25" width="10" height="132.85"/>
+      <rect id="datapoint-1989_10_58_public" style="stroke-width:0;" class=" bar datapoint " role="datapoint" x="161.27" y="149.84" width="10" height="138.34"/>
+      <rect id="datapoint-1990_10_84_public" style="stroke-width:0;" class=" bar datapoint " role="datapoint" x="167.99" y="146.31" width="10" height="141.74"/>
+      <rect id="datapoint-1991_11_31_public" style="stroke-width:0;" class=" bar datapoint " role="datapoint" x="174.71" y="139.12" width="10" height="147.88"/>
+      <rect id="datapoint-1992_11_38_public" style="stroke-width:0;" class=" bar datapoint " role="datapoint" x="181.43" y="137.55" width="10" height="148.80"/>
+      <rect id="datapoint-1993_11_19_public" style="stroke-width:0;" class=" bar datapoint " role="datapoint" x="188.15" y="139.78" width="10" height="146.31"/>
+      <rect id="datapoint-1994_11_13_public" style="stroke-width:0;" class=" bar datapoint " role="datapoint" x="194.87" y="140.17" width="10" height="145.53"/>
+      <rect id="datapoint-1995_11_09_public" style="stroke-width:0;" class=" bar datapoint " role="datapoint" x="201.59" y="140.43" width="10" height="145.01"/>
+      <rect id="datapoint-1996_11_12_public" style="stroke-width:0;" class=" bar datapoint " role="datapoint" x="208.31" y="138.99" width="10" height="145.40"/>
+      <rect id="datapoint-1997_11_2_public" style="stroke-width:0;" class=" bar datapoint " role="datapoint" x="215.03" y="137.16" width="10" height="146.44"/>
+      <rect id="datapoint-1998_11_14_public" style="stroke-width:0;" class=" bar datapoint " role="datapoint" x="221.75" y="137.16" width="10" height="145.66"/>
+      <rect id="datapoint-1999_11_38_public" style="stroke-width:0;" class=" bar datapoint " role="datapoint" x="228.47" y="132.71" width="10" height="148.80"/>
+      <rect id="datapoint-2000_11_75_public" style="stroke-width:0;" class=" bar datapoint " role="datapoint" x="235.19" y="126.70" width="10" height="153.64"/>
+      <rect id="datapoint-2001_12_23_public" style="stroke-width:0;" class=" bar datapoint " role="datapoint" x="241.91" y="118.72" width="10" height="159.91"/>
+      <rect id="datapoint-2002_12_75_public" style="stroke-width:0;" class=" bar datapoint " role="datapoint" x="248.63" y="109.70" width="10" height="166.71"/>
+      <rect id="datapoint-2003_12_86_public" style="stroke-width:0;" class=" bar datapoint " role="datapoint" x="255.35" y="105.78" width="10" height="168.15"/>
+      <rect id="datapoint-2004_12_98_public" style="stroke-width:0;" class=" bar datapoint " role="datapoint" x="262.07" y="101.07" width="10" height="169.72"/>
+      <rect id="datapoint-2005_13_02_public" style="stroke-width:0;" class=" bar datapoint " role="datapoint" x="268.79" y="98.20" width="10" height="170.24"/>
+      <rect id="datapoint-2006_13_18_public" style="stroke-width:0;" class=" bar datapoint " role="datapoint" x="275.51" y="94.67" width="10" height="172.33"/>
+      <rect id="datapoint-2007_13_49_public" style="stroke-width:0;" class=" bar datapoint " role="datapoint" x="282.23" y="88.26" width="10" height="176.39"/>
+      <rect id="datapoint-2008_13_97_public" style="stroke-width:0;" class=" bar datapoint " role="datapoint" x="288.95" y="77.14" width="10" height="182.66"/>
+      <rect id="datapoint-2009_14_81_public" style="stroke-width:0;" class=" bar datapoint " role="datapoint" x="295.67" y="61.32" width="10" height="193.65"/>
+      <rect id="datapoint-2010_15_14_public" style="stroke-width:0;" class=" bar datapoint " role="datapoint" x="302.39" y="52.04" width="10" height="197.96"/>
+      <rect id="datapoint-2011_15_12_public" style="stroke-width:0;" class=" bar datapoint " role="datapoint" x="309.11" y="52.17" width="10" height="197.70"/>
+      <rect id="datapoint-2012_14_88_public" style="stroke-width:0;" class=" bar datapoint " role="datapoint" x="315.83" y="57.01" width="10" height="194.56"/>
+      <rect id="datapoint-2013_14_75_public" style="stroke-width:0;" class=" bar datapoint " role="datapoint" x="322.55" y="60.41" width="10" height="192.86"/>
+      <rect id="datapoint-2014_14_65_public" style="stroke-width:0;" class=" bar datapoint " role="datapoint" x="329.27" y="62.76" width="10" height="191.55"/>
+      <rect id="datapoint-2015_14_57_public" style="stroke-width:0;" class=" bar datapoint " role="datapoint" x="335.99" y="65.51" width="10" height="190.51"/>
+      <rect id="datapoint-2016_14_59_public" style="stroke-width:0;" class=" bar datapoint " role="datapoint" x="342.71" y="67.34" width="10" height="190.77"/>
+      <rect id="datapoint-2017_14_56_public" style="stroke-width:0;" class=" bar datapoint " role="datapoint" x="349.43" y="69.82" width="10" height="190.38"/>
+      <rect id="datapoint-2018__14_61_public" style="stroke-width:0;" class=" bar datapoint " role="datapoint" x="356.15" y="67.60" width="10" height="191.03"/>
+      <rect id="datapoint-2019__14_67_public" style="stroke-width:0;" class=" bar datapoint " role="datapoint" x="362.87" y="66.55" width="10" height="191.82"/>
+      <rect id="datapoint-2020__14_69_public" style="stroke-width:0;" class=" bar datapoint " role="datapoint" x="369.59" y="66.29" width="10" height="192.08"/>
+      <rect id="datapoint-2021__14_71_public" style="stroke-width:0;" class=" bar datapoint " role="datapoint" x="376.31" y="65.90" width="10" height="192.34"/>
+      <rect id="datapoint-2022__14_74_public" style="stroke-width:0;" class=" bar datapoint " role="datapoint" x="383.03" y="65.38" width="10" height="192.73"/>
+      <rect id="datapoint-2023__14_77_public" style="stroke-width:0;" class=" bar datapoint " role="datapoint" x="389.75" y="64.85" width="10" height="193.12"/>
+      <rect id="datapoint-2024__14_82_public" style="stroke-width:0;" class=" bar datapoint " role="datapoint" x="396.47" y="64.07" width="10" height="193.78"/>
+      <rect id="datapoint-2025__14_88_public" style="stroke-width:0;" class=" bar datapoint " role="datapoint" x="403.19" y="63.02" width="10" height="194.56"/>
+      <rect id="datapoint-2026__14_94_public" style="stroke-width:0;" class=" bar datapoint " role="datapoint" x="409.91" y="61.98" width="10" height="195.35"/>
+      <rect id="datapoint-2027__14_97_public" style="stroke-width:0;" class=" bar datapoint " role="datapoint" x="416.63" y="61.45" width="10" height="195.74"/>
+      <rect id="datapoint-2028__14_98_public" style="stroke-width:0;" class=" bar datapoint " role="datapoint" x="423.35" y="61.32" width="10" height="195.87"/>
+        </g>
+        <g id="series-private" class=" series " style="fill:hsl(12, 69%, 35%);stroke:hsl(12, 69%, 35%);stroke-width:4;">
+      <rect id="datapoint-1965_1_95_private" style="stroke-width:0;" class=" bar datapoint " role="datapoint" x="0" y="301.39" width="10" height="25.50"/>
+      <rect id="datapoint-1966_2_04_private" style="stroke-width:0;" class=" bar datapoint " role="datapoint" x="6.72" y="300.21" width="10" height="26.67"/>
+      <rect id="datapoint-1967_2_1_private" style="stroke-width:0;" class=" bar datapoint " role="datapoint" x="13.44" y="299.43" width="10" height="27.46"/>
+      <rect id="datapoint-1968_2_08_private" style="stroke-width:0;" class=" bar datapoint " role="datapoint" x="20.16" y="299.69" width="10" height="27.20"/>
+      <rect id="datapoint-1969_2_11_private" style="stroke-width:0;" class=" bar datapoint " role="datapoint" x="26.88" y="299.30" width="10" height="27.59"/>
+      <rect id="datapoint-1970_2_15_private" style="stroke-width:0;" class=" bar datapoint " role="datapoint" x="33.60" y="298.77" width="10" height="28.11"/>
+      <rect id="datapoint-1971_2_14_private" style="stroke-width:0;" class=" bar datapoint " role="datapoint" x="40.32" y="298.90" width="10" height="27.98"/>
+      <rect id="datapoint-1972_2_14_private" style="stroke-width:0;" class=" bar datapoint " role="datapoint" x="47.04" y="298.90" width="10" height="27.98"/>
+      <rect id="datapoint-1973_2_18_private" style="stroke-width:0;" class=" bar datapoint " role="datapoint" x="53.76" y="298.38" width="10" height="28.50"/>
+      <rect id="datapoint-1974_2_24_private" style="stroke-width:0;" class=" bar datapoint " role="datapoint" x="60.48" y="297.60" width="10" height="29.29"/>
+      <rect id="datapoint-1975_2_35_private" style="stroke-width:0;" class=" bar datapoint " role="datapoint" x="67.20" y="296.16" width="10" height="30.73"/>
+      <rect id="datapoint-1976_2_36_private" style="stroke-width:0;" class=" bar datapoint " role="datapoint" x="73.92" y="296.03" width="10" height="30.86"/>
+      <rect id="datapoint-1977_2_44_private" style="stroke-width:0;" class=" bar datapoint " role="datapoint" x="80.64" y="294.98" width="10" height="31.90"/>
+      <rect id="datapoint-1978_2_47_private" style="stroke-width:0;" class=" bar datapoint " role="datapoint" x="87.36" y="294.59" width="10" height="32.30"/>
+      <rect id="datapoint-1979_2_53_private" style="stroke-width:0;" class=" bar datapoint " role="datapoint" x="94.08" y="293.80" width="10" height="33.08"/>
+      <rect id="datapoint-1980_2_64_private" style="stroke-width:0;" class=" bar datapoint " role="datapoint" x="100.80" y="292.37" width="10" height="34.52"/>
+      <rect id="datapoint-1981_2_72_private" style="stroke-width:0;" class=" bar datapoint " role="datapoint" x="107.52" y="291.32" width="10" height="35.56"/>
+      <rect id="datapoint-1982_2_73_private" style="stroke-width:0;" class=" bar datapoint " role="datapoint" x="114.24" y="291.19" width="10" height="35.70"/>
+      <rect id="datapoint-1983_2_78_private" style="stroke-width:0;" class=" bar datapoint " role="datapoint" x="120.96" y="290.53" width="10" height="36.35"/>
+      <rect id="datapoint-1984_2_76_private" style="stroke-width:0;" class=" bar datapoint " role="datapoint" x="127.68" y="290.80" width="10" height="36.09"/>
+      <rect id="datapoint-1985_2_77_private" style="stroke-width:0;" class=" bar datapoint " role="datapoint" x="134.40" y="290.67" width="10" height="36.22"/>
+      <rect id="datapoint-1986_2_79_private" style="stroke-width:0;" class=" bar datapoint " role="datapoint" x="141.12" y="290.40" width="10" height="36.48"/>
+      <rect id="datapoint-1987_2_79_private" style="stroke-width:0;" class=" bar datapoint " role="datapoint" x="147.84" y="290.40" width="10" height="36.48"/>
+      <rect id="datapoint-1988_2_89_private" style="stroke-width:0;" class=" bar datapoint " role="datapoint" x="154.56" y="289.10" width="10" height="37.79"/>
+      <rect id="datapoint-1989_2_96_private" style="stroke-width:0;" class=" bar datapoint " role="datapoint" x="161.27" y="288.18" width="10" height="38.70"/>
+      <rect id="datapoint-1990_2_97_private" style="stroke-width:0;" class=" bar datapoint " role="datapoint" x="167.99" y="288.05" width="10" height="38.83"/>
+      <rect id="datapoint-1991_3_05_private" style="stroke-width:0;" class=" bar datapoint " role="datapoint" x="174.71" y="287.00" width="10" height="39.88"/>
+      <rect id="datapoint-1992_3_1_private" style="stroke-width:0;" class=" bar datapoint " role="datapoint" x="181.43" y="286.35" width="10" height="40.53"/>
+      <rect id="datapoint-1993_3_12_private" style="stroke-width:0;" class=" bar datapoint " role="datapoint" x="188.15" y="286.09" width="10" height="40.80"/>
+      <rect id="datapoint-1994_3_15_private" style="stroke-width:0;" class=" bar datapoint " role="datapoint" x="194.87" y="285.70" width="10" height="41.19"/>
+      <rect id="datapoint-1995_3_17_private" style="stroke-width:0;" class=" bar datapoint " role="datapoint" x="201.59" y="285.44" width="10" height="41.45"/>
+      <rect id="datapoint-1996_3_25_private" style="stroke-width:0;" class=" bar datapoint " role="datapoint" x="208.31" y="284.39" width="10" height="42.49"/>
+      <rect id="datapoint-1997_3_31_private" style="stroke-width:0;" class=" bar datapoint " role="datapoint" x="215.03" y="283.60" width="10" height="43.28"/>
+      <rect id="datapoint-1998_3_37_private" style="stroke-width:0;" class=" bar datapoint " role="datapoint" x="221.75" y="282.82" width="10" height="44.06"/>
+      <rect id="datapoint-1999_3_47_private" style="stroke-width:0;" class=" bar datapoint " role="datapoint" x="228.47" y="281.51" width="10" height="45.37"/>
+      <rect id="datapoint-2000_3_56_private" style="stroke-width:0;" class=" bar datapoint " role="datapoint" x="235.19" y="280.34" width="10" height="46.55"/>
+      <rect id="datapoint-2001_3_69_private" style="stroke-width:0;" class=" bar datapoint " role="datapoint" x="241.91" y="278.64" width="10" height="48.25"/>
+      <rect id="datapoint-2002_3_86_private" style="stroke-width:0;" class=" bar datapoint " role="datapoint" x="248.63" y="276.41" width="10" height="50.47"/>
+      <rect id="datapoint-2003_4_05_private" style="stroke-width:0;" class=" bar datapoint " role="datapoint" x="255.35" y="273.93" width="10" height="52.96"/>
+      <rect id="datapoint-2004_4_29_private" style="stroke-width:0;" class=" bar datapoint " role="datapoint" x="262.07" y="270.79" width="10" height="56.09"/>
+      <rect id="datapoint-2005_4_47_private" style="stroke-width:0;" class=" bar datapoint " role="datapoint" x="268.79" y="268.44" width="10" height="58.45"/>
+      <rect id="datapoint-2006_4_58_private" style="stroke-width:0;" class=" bar datapoint " role="datapoint" x="275.51" y="267.00" width="10" height="59.89"/>
+      <rect id="datapoint-2007_4_76_private" style="stroke-width:0;" class=" bar datapoint " role="datapoint" x="282.23" y="264.65" width="10" height="62.24"/>
+      <rect id="datapoint-2008_5_13_private" style="stroke-width:0;" class=" bar datapoint " role="datapoint" x="288.95" y="259.81" width="10" height="67.08"/>
+      <rect id="datapoint-2009_5_5_private" style="stroke-width:0;" class=" bar datapoint " role="datapoint" x="295.67" y="254.97" width="10" height="71.91"/>
+      <rect id="datapoint-2010_5_88_private" style="stroke-width:0;" class=" bar datapoint " role="datapoint" x="302.39" y="250.00" width="10" height="76.88"/>
+      <rect id="datapoint-2011_5_89_private" style="stroke-width:0;" class=" bar datapoint " role="datapoint" x="309.11" y="249.87" width="10" height="77.01"/>
+      <rect id="datapoint-2012_5_76_private" style="stroke-width:0;" class=" bar datapoint " role="datapoint" x="315.83" y="251.57" width="10" height="75.31"/>
+      <rect id="datapoint-2013_5_63_private" style="stroke-width:0;" class=" bar datapoint " role="datapoint" x="322.55" y="253.27" width="10" height="73.61"/>
+      <rect id="datapoint-2014_5_55_private" style="stroke-width:0;" class=" bar datapoint " role="datapoint" x="329.27" y="254.32" width="10" height="72.57"/>
+      <rect id="datapoint-2015_5_42_private" style="stroke-width:0;" class=" bar datapoint " role="datapoint" x="335.99" y="256.02" width="10" height="70.87"/>
+      <rect id="datapoint-2016_5_26_private" style="stroke-width:0;" class=" bar datapoint " role="datapoint" x="342.71" y="258.11" width="10" height="68.78"/>
+      <rect id="datapoint-2017_5_1_private" style="stroke-width:0;" class=" bar datapoint " role="datapoint" x="349.43" y="260.20" width="10" height="66.68"/>
+      <rect id="datapoint-2018__5_22_private" style="stroke-width:0;" class=" bar datapoint " role="datapoint" x="356.15" y="258.63" width="10" height="68.25"/>
+      <rect id="datapoint-2019__5_24_private" style="stroke-width:0;" class=" bar datapoint " role="datapoint" x="362.87" y="258.37" width="10" height="68.51"/>
+      <rect id="datapoint-2020__5_24_private" style="stroke-width:0;" class=" bar datapoint " role="datapoint" x="369.59" y="258.37" width="10" height="68.51"/>
+      <rect id="datapoint-2021__5_25_private" style="stroke-width:0;" class=" bar datapoint " role="datapoint" x="376.31" y="258.24" width="10" height="68.65"/>
+      <rect id="datapoint-2022__5_26_private" style="stroke-width:0;" class=" bar datapoint " role="datapoint" x="383.03" y="258.11" width="10" height="68.78"/>
+      <rect id="datapoint-2023__5_27_private" style="stroke-width:0;" class=" bar datapoint " role="datapoint" x="389.75" y="257.98" width="10" height="68.91"/>
+      <rect id="datapoint-2024__5_28_private" style="stroke-width:0;" class=" bar datapoint " role="datapoint" x="396.47" y="257.85" width="10" height="69.04"/>
+      <rect id="datapoint-2025__5_3_private" style="stroke-width:0;" class=" bar datapoint " role="datapoint" x="403.19" y="257.58" width="10" height="69.30"/>
+      <rect id="datapoint-2026__5_32_private" style="stroke-width:0;" class=" bar datapoint " role="datapoint" x="409.91" y="257.32" width="10" height="69.56"/>
+      <rect id="datapoint-2027__5_33_private" style="stroke-width:0;" class=" bar datapoint " role="datapoint" x="416.63" y="257.19" width="10" height="69.69"/>
+      <rect id="datapoint-2028__5_33_private" style="stroke-width:0;" class=" bar datapoint " role="datapoint" x="423.35" y="257.19" width="10" height="69.69"/>
+        </g>
+        </g>
+        <g id="highlights-layer">
+        </g>
+        <g id="foreground-annotation-layer">
+        <g>
+        </g>
+        <g>
+        </g>
+        <g>
+        </g>
+        <g>
+        </g>
+        </g>
+        <g id="selection-layer">
+        </g>
+        <g id="focus-layer">
+        </g>
+      </g>
+        <g class=" legend " transform="translate(500.90,58)">
+      <rect style="fill:none;" x="-2.50" y="4.33" width="12" height="6"/>
+      <use href="#sym-square-solid" style="stroke-width:2;fill:hsl(225, 30%, 52%);stroke:hsl(225, 30%, 52%);" class=" symbol solid " transform="translate(14.50,7.33)"/>
+      <text class=" legend-label label " x="22" y="12" text-anchor="start" id="Public">
+        Public
+      </text>
+      <rect style="fill:none;" x="-2.50" y="19.00" width="12" height="6"/>
+      <use href="#sym-square-solid" style="stroke-width:2;fill:hsl(12, 69%, 35%);stroke:hsl(12, 69%, 35%);" class=" symbol solid " transform="translate(14.50,22.00)"/>
+      <text class=" legend-label label " x="22" y="26.67" text-anchor="start" id="Private">
+        Private
+      </text>
+        </g>
+        </g>
+      </svg>

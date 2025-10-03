@@ -1,0 +1,909 @@
+<svg tabindex="0" aria-label="Distribution of the workforce across economic sectors in India 2019, accessible chart" xmlns="http://www.w3.org/2000/svg" data-charttype="bar" class="  " viewBox="0 0 600 450" style="font-family:Helvetica, sans-serif;font-weight:300;--axis-line-color:hsl(0, 0%, 0%);--label-color:hsl(0, 0%, 0%);" id="para11bd773a-490d-48bc-a5c2-4c20d314778f"><style>#para11bd773a-490d-48bc-a5c2-4c20d314778f { --axis-line-color: hsl(0, 0%, 0%); --label-color: hsl(0, 0%, 0%); --tick-grid-color: hsl(270, 50%, 50%); --background-color: white; --theme-color: var(--fizz-theme-color, purple); --theme-color-light: var(--fizz-theme-color-light, hsl(275.4, 100%, 88%)); --theme-contrast-color: white; --fizz-theme-color: var(--paracharts-theme-color, navy); --fizz-theme-color-light: var(--paracharts-theme-color-light, hsl(210.5, 100%, 88%)); --visited-color: hsl(0, 100%, 50%); --highlighted-color: hsl(100, 100%, 50%); --visited-stroke-width: 7.5; --selected-color: var(--label-color); --datapoint-centroid: 50% 50%; --focus-animation: all 0.5s ease-in-out; --chart-cursor: pointer; --data-cursor: cell; --focus-shadow-color: gray; --focus-shadow: drop-shadow(0px 0px 4px var(--focus-shadow-color)); --caption-border: none; --caption-grid-template-columns: auto auto; --exploration-bar-display: flex; --chart-font-scale: 1; --chart-title-font-size: 12pt; --horiz-axis-title-font-size: 12pt; --vert-axis-title-font-size: 12pt; --horiz-axis-tick-label-font-size: 10pt; --vert-axis-tick-label-font-size: 10pt; --direct-label-font-size: 10pt; --legend-label-font-size: 10pt; display: block; font-family: "Trebuchet MS", Helvetica, sans-serif; font-size: var(--chart-view-font-size, 1rem); }
+#para11bd773a-490d-48bc-a5c2-4c20d314778f, :root { --axis-line-color: hsl(0, 0%, 0%); --label-color: hsl(0, 0%, 0%); --tick-grid-color: hsl(270, 50%, 50%); --background-color: white; --theme-color: var(--fizz-theme-color, purple); --theme-color-light: var(--fizz-theme-color-light, hsl(275.4, 100%, 88%)); --theme-contrast-color: white; --fizz-theme-color: var(--paracharts-theme-color, navy); --fizz-theme-color-light: var(--paracharts-theme-color-light, hsl(210.5, 100%, 88%)); --selected-color: var(--label-color); --datapoint-centroid: 50% 50%; --focus-animation: all 0.5s ease-in-out; --chart-cursor: pointer; --data-cursor: cell; --color-palette-series-0: hsl(225, 30%, 52%); --color-palette-series-1: hsl(12, 69%, 35%); --color-palette-series-2: hsl(75, 43%, 45%); --color-palette-series-3: hsl(40, 100%, 49%); --color-palette-series-4: hsl(215, 37%, 66%); --color-palette-series-5: hsl(63, 100%, 23%); --color-palette-series-6: hsl(34, 57%, 46%); --color-palette-series-7: hsl(51, 56%, 64%); --color-palette-series-8: hsl(253, 26%, 43%); --color-palette-series-9: hsl(85, 65%, 36%); --focus-shadow-color: gray; --focus-shadow: drop-shadow(0px 0px 4px var(--focus-shadow-color)); }
+.hidden { display: none !important; }
+.sr-only { border: 0px !important; clip: rect(1px, 1px, 1px, 1px) !important; clip-path: inset(50%) !important; height: 1px !important; overflow: hidden !important; margin: -1px !important; padding: 0px !important; position: absolute !important; width: 1px !important; white-space: nowrap !important; }
+* { font-family: "Trebuchet MS", Helvetica, sans-serif; }
+#y-axis-line { fill: none; stroke: var(--axis-line-color); stroke-width: 2px; stroke-linecap: round; }
+#x-axis-line { fill: none; stroke: var(--axis-line-color); opacity: 1; stroke-width: 2px; stroke-linecap: round; }
+.chart-title { font-size: 1.25rem; }
+.label { display: block; fill: var(--label-color); }
+.axis-title { text-anchor: middle; }
+.tick-label { fill: var(--label-color); }
+.tickmark-y { opacity: 0.2; }
+.tickmark-y-0 { fill: var(--tick-grid-color); stroke: var(--tick-grid-color); opacity: 1; stroke-width: 2px; stroke-linecap: round; }
+.tick-group-y:hover, .tick-group-y:hover .tickmark-y { font-weight: bold; opacity: 1; }
+.tickmark-x { opacity: 0.2; }
+.tickmark-x-0 { fill: var(--tick-grid-color); stroke: var(--tick-grid-color); opacity: 1; stroke-width: 2px; stroke-linecap: round; }
+.tick-group-x:hover, .tick-group-x:hover .tickmark_x { font-weight: bold; opacity: 1; }
+rect#data-backdrop { stroke: none; fill: none; pointer-events: all; }
+.stack { stroke-width: 0; }
+.bar:hover, .bar:focus { fill: rgb(166, 121, 210); outline: -webkit-focus-ring-color auto 2px; }
+.datapoint_background { fill: none; stroke: none; pointer-events: all; outline: none; }
+.datapoint_background:hover, .datapoint_background:focus { outline: -webkit-focus-ring-color auto 2px; box-shadow: none; }
+.data-line { fill: none; stroke-linecap: round; }
+.data_area { stroke: rgb(128, 64, 191); stroke-width: 3px; stroke-linecap: round; fill: none; }
+.data_area_background { stroke: none; fill: rgb(128, 64, 191); fill-opacity: 0.8; }
+.trendline { stroke: red; stroke-width: 3px; fill: none; }
+.center_label &gt; tspan.subtext { font-size: 2rem; text-anchor: middle; }
+g.datapoint { transform-origin: var(--datapoint-centroid); }
+g.datapoint g.datapoint_popup rect { fill: rgb(64, 64, 64); }
+g.datapoint g.datapoint_popup text { fill: white; font-size: 1rem; text-anchor: middle; }
+g.datapoint g.datapoint_popup { stroke: none; opacity: 0; transition: opacity 0.3s ease-in-out; }
+g.datapoint:focus g.datapoint_popup, g.datapoint:hover g.datapoint_popup { opacity: 1; transition: opacity 0.3s ease-in-out; }
+g.datapoint g.datapoint_popup .desc { opacity: 0; }
+g.datapoint:focus g.datapoint_popup .desc, g.datapoint:hover g.datapoint_popup .desc { opacity: 1; transition: opacity 0.3s ease-in-out 2s; }
+g.datapoint.visited { fill: var(--visited-color, red); stroke: var(--visited-color, red); transform-box: fill-box; }
+g.datapoint.visited:focus { transition: var(--focus-animation); filter: var(--focus-shadow); }
+[data-charttype="stepline"] g.datapoint.visited { fill: var(--visited-color, red); stroke: var(--visited-color, red); transform: none; }
+use.visited-mark { pointer-events: none; }
+@keyframes pulse-animation { 
+  0% { filter: drop-shadow(gray 0px 0px 0px); }
+  100% { filter: drop-shadow(gray 0px 0px 12px); }
+}
+.selected-datapoint-marker { fill: transparent; stroke: var(--selected-color); stroke-width: 3px; pointer-events: none; stroke-linejoin: round; }
+.symbol { stroke-linejoin: round; }
+.symbol.outline { fill: white; }
+.slice path { stroke: none; }
+.slice text { fill: black; stroke: black; text-anchor: middle; }
+:fullscreen, ::backdrop { background-color: var(--background-color); }
+.theme-diva { --color-palette-series-0: hsl(225, 30%, 52%); --color-palette-series-1: hsl(12, 69%, 35%); --color-palette-series-2: hsl(75, 43%, 45%); --color-palette-series-3: hsl(40, 100%, 49%); --color-palette-series-4: hsl(215, 37%, 66%); --color-palette-series-5: hsl(63, 100%, 23%); --color-palette-series-6: hsl(34, 57%, 46%); --color-palette-series-7: hsl(51, 56%, 64%); --color-palette-series-8: hsl(253, 26%, 43%); --color-palette-series-9: hsl(85, 65%, 36%); }
+.theme-deutan { --color-palette-series-0: #800080; --color-palette-series-1: #ff00ff; --color-palette-series-2: #ca0088; --color-palette-series-3: #fa0080; --color-palette-series-4: #b400b4; --color-palette-series-5: #4477AA; --color-palette-series-6: #EE6677; --color-palette-series-7: #228833; --color-palette-series-8: #CCBB44; --color-palette-series-9: #66CCEE; --color-palette-series-10: #AA3377; }
+.theme-protan { --color-palette-series-0: hsl(39, 70%, 54%); --color-palette-series-1: hsl(206, 68%, 66%); --color-palette-series-2: hsl(154, 39%, 44%); --color-palette-series-3: hsl(56, 81%, 66%); --color-palette-series-4: hsl(209, 57%, 43%); --color-palette-series-5: hsl(24, 68%, 46%); --color-palette-series-6: hsl(324, 35%, 62%); }
+.theme-tritan { --color-palette-series-0: #77AADD; --color-palette-series-1: #99DDFF; --color-palette-series-2: #44BB99; --color-palette-series-3: #BBCC33; --color-palette-series-4: #AAAAOO; --color-palette-series-5: #EEDD88; --color-palette-series-6: #FFAABB; }
+.theme-grayscale { --color-palette-series-0: #262626; --color-palette-series-1: #595959; --color-palette-series-2: #7f7f7f; --color-palette-series-3: #a1a1a1; --color-palette-series-4: #bababa; --color-palette-series-5: #d4d4d4; --color-palette-series-6: #ededed; }
+.series-0 { fill: var(--color-palette-series-0); stroke: var(--color-palette-series-0); }
+.series-1 { fill: var(--color-palette-series-1); stroke: var(--color-palette-series-1); }
+.series-2 { fill: var(--color-palette-series-2); stroke: var(--color-palette-series-2); }
+.series-3 { fill: var(--color-palette-series-3); stroke: var(--color-palette-series-3); }
+.series-4 { fill: var(--color-palette-series-4); stroke: var(--color-palette-series-4); }
+.series-5 { fill: var(--color-palette-series-5); stroke: var(--color-palette-series-5); }
+.series-6 { fill: var(--color-palette-series-6); stroke: var(--color-palette-series-6); }
+.series-7 { fill: var(--color-palette-series-7); stroke: var(--color-palette-series-7); }
+.series-8 { fill: var(--color-palette-series-8); stroke: var(--color-palette-series-8); }
+.series-9 { fill: var(--color-palette-series-9); stroke: var(--color-palette-series-9); }
+.range-highlights { fill: pink; stroke: pink; fill-opacity: 0.25; stroke-width: 4px; stroke-opacity: 0.5; }
+.range-highlights rect[data-id="0"] { fill: orange; stroke: orange; }
+.range-highlights rect[data-id="1"] { fill: cyan; stroke: cyan; }
+.linebreaker[data-state="active"] .linebreaker-marker { stroke: dodgerblue; stroke-width: 3px; }
+.best_fit_line[data-state="active"] { display: inline; fill: none; stroke: rgb(222, 13, 169); stroke-width: 8px; stroke-linecap: butt; stroke-dasharray: 12, 12; stroke-opacity: 0.5; }
+.best_fit_line[data-state="inactive"] { display: none; }
+.setting-views { display: flex; gap: 1rem; }
+.setting-views + .setting-views { margin-top: 0.5rem; }
+figure { display: inline-block; }
+svg { display: block; }
+.tab-content { display: flex; flex-direction: row; gap: 1rem; align-items: center; justify-content: space-between; padding: 0.2rem; }
+.tab-content.stacked { flex-direction: column; gap: 0.1rem; align-items: flex-start; justify-content: space-between; padding: 0.5rem 0.2rem; }
+#chart-colors-presets { border: none; padding: 0px; margin: 0px; }
+#chart-colors-presets label { display: flex; flex-direction: column; align-items: center; justify-content: space-between; }
+#chart-colors-presets label span { text-align: center; word-spacing: 20em; }
+#output_dialog { margin: 0px auto; }
+#output-dialog::backdrop { background: repeating-linear-gradient(45deg, rgba(128, 0, 128, 0.2), rgba(128, 0, 128, 0.2) 1px, rgba(128, 0, 128, 0.3) 1px, rgba(128, 0, 128, 0.3) 20px); }
+#output-dialog button { color: white; background-color: var(--theme-color); border: 1px solid var(--theme-color); }
+#output-dialog h1 { color: black; font-size: 1.3rem; font-weight: normal; }
+button { margin: 0.2rem; background-color: var(--theme-color); color: var(--theme-contrast-color); border: thin solid var(--theme-color); border-radius: 0.2em; padding: 0.2em; }
+#status_split { display: flex; flex-direction: column; justify-content: space-between; }
+[role="graphics-document"] { cursor: var(--chart-cursor); }
+#chart-layers { cursor: var(--data-cursor); }
+#para11bd773a-490d-48bc-a5c2-4c20d314778f { --control-panel-icon: url(/lib/assets/info-icon-alt.svg); --summary-marker-size: 1.1rem; }
+figure { display: inline-block; margin: 0px; }
+#frame { fill: var(--background-color); stroke: none; }
+#frame.pending { fill: lightgray; }
+.darkmode { --axis-line-color: ghostwhite; --label-color: ghostwhite; --background-color: black; }
+#loading-message { fill: black; }
+#loading-message text { fill: white; }
+.grid-horiz { stroke: var(--axis-line-color); opacity: 0.2; }
+.grid-vert { stroke: var(--axis-line-color); opacity: 0.2; }
+#grid-zero { opacity: 0.6; stroke-width: 2; }
+.tick { stroke: var(--label-color); }
+.chart-title { font-size: calc(var(--chart-title-font-size)*var(--chart-font-scale)); }
+.axis-title-horiz { font-size: calc(var(--horiz-axis-title-font-size)*var(--chart-font-scale)); }
+.axis-title-vert { font-size: calc(var(--vert-axis-title-font-size)*var(--chart-font-scale)); }
+.direct-label { font-size: calc(var(--direct-label-font-size)*var(--chart-font-scale)); }
+.legend-label { font-size: calc(var(--legend-label-font-size)*var(--chart-font-scale)); }
+.label { fill: var(--label-color); stroke: none; }
+.tick-label-horiz { font-size: calc(var(--horiz-axis-tick-label-font-size)*var(--chart-font-scale)); }
+.tick-label-vert { font-size: calc(var(--vert-axis-tick-label-font-size)*var(--chart-font-scale)); }
+.bar-label { font-size: 13px; fill: white; }
+.pastry-inside-label { }
+.pastry-outside-label-leader { fill: none; stroke-width: 2; }
+.pastry-slice { stroke: white; stroke-width: 2; }
+.label-leader { stroke-width: 2; }
+#vert-axis-line { fill: none; stroke: var(--axis-line-color); stroke-width: 2px; stroke-linecap: round; }
+#horiz-axis-line { fill: none; stroke: var(--axis-line-color); opacity: 1; stroke-width: 2px; stroke-linecap: round; }
+rect#data-backdrop { stroke: none; fill: none; pointer-events: all; }
+.symbol { stroke-linejoin: round; }
+.symbol.outline { fill: white; }
+use.visited-mark { pointer-events: none; }
+.data-line { fill: none; stroke-linecap: round; }
+.range-highlight { fill: silver; opacity: 0.5; }
+.linebreaker-marker { fill: rgb(112, 79, 79); }
+.user-linebreaker-marker { fill: rgb(229, 16, 16); }
+.trend-line { display: inline; stroke-width: 8px; stroke-linecap: butt; stroke-dasharray: 12, 12; stroke-opacity: 0.8; }
+.user-trend-line { display: inline; stroke-width: 8px; stroke-linecap: butt; stroke-dasharray: 12, 12; stroke-opacity: 0.8; }
+.datapoint.visited:not(.highlighted) { stroke: var(--visited-color); fill: var(--visited-color); stroke-width: var(--visited-stroke-width); }
+.datapoint.highlighted { stroke: var(--highlighted-color); fill: var(--highlighted-color); stroke-width: var(--visited-stroke-width); }
+.lowlight { opacity: 0.2; }
+.hidden { display: none; }
+.invis { opacity: 0; }
+.control-column { display: flex; flex-direction: column; justify-content: space-between; align-items: flex-start; gap: 0.5em; }
+.debug-grid-territory { fill: lightblue; stroke: blue; stroke-width: 2; opacity: 0.5; }</style>
+        <defs>
+        <path id="sym-circle-outline" d="m0,-5.64 a5.64,5.64 0 1,1 0,11.28 a5.64,5.64 0 1,1 0,-11.28"/>
+        <path id="sym-triangle_up-outline" d="m-7.60,5.26 h15.20 l-7.60,-13.16 z"/>
+        <path id="sym-square-outline" d="m-5,-5 h10 v10 h-10 z"/>
+            <clipPath id="clip-path">
+              <rect x="0" y="0" width="438.49375" height="330.65159797668457">
+              </rect>
+            </clipPath>
+        </defs>
+        <metadata data-type="text/jim+json">
+          {
+  "datasets": [
+    {
+      "title": "Distribution of the workforce across economic sectors in India 2019",
+      "facets": {
+        "x": {
+          "label": "Year",
+          "variableType": "independent",
+          "measure": "interval",
+          "datatype": "date",
+          "units": "year",
+          "displayType": {
+            "type": "axis",
+            "orientation": "horizontal"
+          }
+        },
+        "y": {
+          "label": "Percentage of workforce",
+          "variableType": "dependent",
+          "measure": "ratio",
+          "datatype": "number",
+          "multiplier": 0.01,
+          "displayType": {
+            "type": "axis",
+            "orientation": "vertical"
+          }
+        }
+      },
+      "series": [
+        {
+          "name": "Agriculture",
+          "type": "line",
+          "records": [
+            {
+              "x": "2009",
+              "y": "52.12"
+            },
+            {
+              "x": "2010",
+              "y": "51.06"
+            },
+            {
+              "x": "2011",
+              "y": "48.96"
+            },
+            {
+              "x": "2012",
+              "y": "47"
+            },
+            {
+              "x": "2013",
+              "y": "46.6"
+            },
+            {
+              "x": "2014",
+              "y": "46.07"
+            },
+            {
+              "x": "2015",
+              "y": "45.56"
+            },
+            {
+              "x": "2016",
+              "y": "45.12"
+            },
+            {
+              "x": "2017",
+              "y": "44.52"
+            },
+            {
+              "x": "2018",
+              "y": "43.86"
+            },
+            {
+              "x": "2019",
+              "y": "43.21"
+            }
+          ]
+        },
+        {
+          "name": "Industry",
+          "type": "line",
+          "records": [
+            {
+              "x": "2009",
+              "y": "21.61"
+            },
+            {
+              "x": "2010",
+              "y": "22.38"
+            },
+            {
+              "x": "2011",
+              "y": "23.52"
+            },
+            {
+              "x": "2012",
+              "y": "24.36"
+            },
+            {
+              "x": "2013",
+              "y": "24.36"
+            },
+            {
+              "x": "2014",
+              "y": "24.38"
+            },
+            {
+              "x": "2015",
+              "y": "24.34"
+            },
+            {
+              "x": "2016",
+              "y": "24.29"
+            },
+            {
+              "x": "2017",
+              "y": "24.47"
+            },
+            {
+              "x": "2018",
+              "y": "24.69"
+            },
+            {
+              "x": "2019",
+              "y": "24.89"
+            }
+          ]
+        },
+        {
+          "name": "Services",
+          "type": "line",
+          "records": [
+            {
+              "x": "2009",
+              "y": "26.27"
+            },
+            {
+              "x": "2010",
+              "y": "26.57"
+            },
+            {
+              "x": "2011",
+              "y": "27.52"
+            },
+            {
+              "x": "2012",
+              "y": "28.64"
+            },
+            {
+              "x": "2013",
+              "y": "29.04"
+            },
+            {
+              "x": "2014",
+              "y": "29.55"
+            },
+            {
+              "x": "2015",
+              "y": "30.1"
+            },
+            {
+              "x": "2016",
+              "y": "30.59"
+            },
+            {
+              "x": "2017",
+              "y": "31.01"
+            },
+            {
+              "x": "2018",
+              "y": "31.45"
+            },
+            {
+              "x": "2019",
+              "y": "31.9"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "selectors": {
+    "chartTitle": {
+      "dom": "#chart-title",
+      "json": "$.datasets[0].title"
+    },
+    "datapoint1": {
+      "dom": "#datapoint-2009_52_12_agriculture",
+      "json": [
+        "$.datasets[0].series[0].name",
+        "$.datasets[0].series[0].records[0].*"
+      ]
+    },
+    "datapoint2": {
+      "dom": "#datapoint-2010_51_06_agriculture",
+      "json": [
+        "$.datasets[0].series[0].name",
+        "$.datasets[0].series[0].records[1].*"
+      ]
+    },
+    "datapoint3": {
+      "dom": "#datapoint-2011_48_96_agriculture",
+      "json": [
+        "$.datasets[0].series[0].name",
+        "$.datasets[0].series[0].records[2].*"
+      ]
+    },
+    "datapoint4": {
+      "dom": "#datapoint-2012_47_agriculture",
+      "json": [
+        "$.datasets[0].series[0].name",
+        "$.datasets[0].series[0].records[3].*"
+      ]
+    },
+    "datapoint5": {
+      "dom": "#datapoint-2013_46_6_agriculture",
+      "json": [
+        "$.datasets[0].series[0].name",
+        "$.datasets[0].series[0].records[4].*"
+      ]
+    },
+    "datapoint6": {
+      "dom": "#datapoint-2014_46_07_agriculture",
+      "json": [
+        "$.datasets[0].series[0].name",
+        "$.datasets[0].series[0].records[5].*"
+      ]
+    },
+    "datapoint7": {
+      "dom": "#datapoint-2015_45_56_agriculture",
+      "json": [
+        "$.datasets[0].series[0].name",
+        "$.datasets[0].series[0].records[6].*"
+      ]
+    },
+    "datapoint8": {
+      "dom": "#datapoint-2016_45_12_agriculture",
+      "json": [
+        "$.datasets[0].series[0].name",
+        "$.datasets[0].series[0].records[7].*"
+      ]
+    },
+    "datapoint9": {
+      "dom": "#datapoint-2017_44_52_agriculture",
+      "json": [
+        "$.datasets[0].series[0].name",
+        "$.datasets[0].series[0].records[8].*"
+      ]
+    },
+    "datapoint10": {
+      "dom": "#datapoint-2018_43_86_agriculture",
+      "json": [
+        "$.datasets[0].series[0].name",
+        "$.datasets[0].series[0].records[9].*"
+      ]
+    },
+    "datapoint11": {
+      "dom": "#datapoint-2019_43_21_agriculture",
+      "json": [
+        "$.datasets[0].series[0].name",
+        "$.datasets[0].series[0].records[10].*"
+      ]
+    },
+    "datapoint12": {
+      "dom": "#datapoint-2009_21_61_industry",
+      "json": [
+        "$.datasets[0].series[1].name",
+        "$.datasets[0].series[1].records[0].*"
+      ]
+    },
+    "datapoint13": {
+      "dom": "#datapoint-2010_22_38_industry",
+      "json": [
+        "$.datasets[0].series[1].name",
+        "$.datasets[0].series[1].records[1].*"
+      ]
+    },
+    "datapoint14": {
+      "dom": "#datapoint-2011_23_52_industry",
+      "json": [
+        "$.datasets[0].series[1].name",
+        "$.datasets[0].series[1].records[2].*"
+      ]
+    },
+    "datapoint15": {
+      "dom": "#datapoint-2012_24_36_industry",
+      "json": [
+        "$.datasets[0].series[1].name",
+        "$.datasets[0].series[1].records[3].*"
+      ]
+    },
+    "datapoint16": {
+      "dom": "#datapoint-2013_24_36_industry",
+      "json": [
+        "$.datasets[0].series[1].name",
+        "$.datasets[0].series[1].records[4].*"
+      ]
+    },
+    "datapoint17": {
+      "dom": "#datapoint-2014_24_38_industry",
+      "json": [
+        "$.datasets[0].series[1].name",
+        "$.datasets[0].series[1].records[5].*"
+      ]
+    },
+    "datapoint18": {
+      "dom": "#datapoint-2015_24_34_industry",
+      "json": [
+        "$.datasets[0].series[1].name",
+        "$.datasets[0].series[1].records[6].*"
+      ]
+    },
+    "datapoint19": {
+      "dom": "#datapoint-2016_24_29_industry",
+      "json": [
+        "$.datasets[0].series[1].name",
+        "$.datasets[0].series[1].records[7].*"
+      ]
+    },
+    "datapoint20": {
+      "dom": "#datapoint-2017_24_47_industry",
+      "json": [
+        "$.datasets[0].series[1].name",
+        "$.datasets[0].series[1].records[8].*"
+      ]
+    },
+    "datapoint21": {
+      "dom": "#datapoint-2018_24_69_industry",
+      "json": [
+        "$.datasets[0].series[1].name",
+        "$.datasets[0].series[1].records[9].*"
+      ]
+    },
+    "datapoint22": {
+      "dom": "#datapoint-2019_24_89_industry",
+      "json": [
+        "$.datasets[0].series[1].name",
+        "$.datasets[0].series[1].records[10].*"
+      ]
+    },
+    "datapoint23": {
+      "dom": "#datapoint-2009_26_27_services",
+      "json": [
+        "$.datasets[0].series[2].name",
+        "$.datasets[0].series[2].records[0].*"
+      ]
+    },
+    "datapoint24": {
+      "dom": "#datapoint-2010_26_57_services",
+      "json": [
+        "$.datasets[0].series[2].name",
+        "$.datasets[0].series[2].records[1].*"
+      ]
+    },
+    "datapoint25": {
+      "dom": "#datapoint-2011_27_52_services",
+      "json": [
+        "$.datasets[0].series[2].name",
+        "$.datasets[0].series[2].records[2].*"
+      ]
+    },
+    "datapoint26": {
+      "dom": "#datapoint-2012_28_64_services",
+      "json": [
+        "$.datasets[0].series[2].name",
+        "$.datasets[0].series[2].records[3].*"
+      ]
+    },
+    "datapoint27": {
+      "dom": "#datapoint-2013_29_04_services",
+      "json": [
+        "$.datasets[0].series[2].name",
+        "$.datasets[0].series[2].records[4].*"
+      ]
+    },
+    "datapoint28": {
+      "dom": "#datapoint-2014_29_55_services",
+      "json": [
+        "$.datasets[0].series[2].name",
+        "$.datasets[0].series[2].records[5].*"
+      ]
+    },
+    "datapoint29": {
+      "dom": "#datapoint-2015_30_1_services",
+      "json": [
+        "$.datasets[0].series[2].name",
+        "$.datasets[0].series[2].records[6].*"
+      ]
+    },
+    "datapoint30": {
+      "dom": "#datapoint-2016_30_59_services",
+      "json": [
+        "$.datasets[0].series[2].name",
+        "$.datasets[0].series[2].records[7].*"
+      ]
+    },
+    "datapoint31": {
+      "dom": "#datapoint-2017_31_01_services",
+      "json": [
+        "$.datasets[0].series[2].name",
+        "$.datasets[0].series[2].records[8].*"
+      ]
+    },
+    "datapoint32": {
+      "dom": "#datapoint-2018_31_45_services",
+      "json": [
+        "$.datasets[0].series[2].name",
+        "$.datasets[0].series[2].records[9].*"
+      ]
+    },
+    "datapoint33": {
+      "dom": "#datapoint-2019_31_9_services",
+      "json": [
+        "$.datasets[0].series[2].name",
+        "$.datasets[0].series[2].records[10].*"
+      ]
+    }
+  },
+  "version": {
+    "jim": "0.4.0"
+  }
+}
+        </metadata>
+        <rect id="frame" pointer-events="all" x="0" y="0" width="100%" height="100%">
+        </rect>
+        <g role="graphics-document" aria-roledescription="line chart" transform="translate(25.60,8)">
+      <text class=" chart-title label " role="heading" x="44.75" y="14.67" text-anchor="start" id="chart-title">
+        Distribution of the workforce across economic sectors in India 2019
+      </text>
+        <g id="vert-axis" role="graphics-object" aria-roledescription="y-axis" transform="translate(0,58)">
+      <text class=" axis-title-vert label " role="heading" x="14.67" y="165.33" text-anchor="middle" transform="&#10;        translate(14.67,165.33)&#10;        rotate(-90)&#10;        translate(-14.67,-165.33)" id="axis-title-vert">
+        Percentage of workforce
+      </text>
+        <g id="tick-label-tier-vert-0" transform="translate(26,0)">
+      <text class=" tick-label tick-label-vert west label " role="axislabel" x="15.50" y="335.54" text-anchor="end" id="tick-label-vert-0">
+        20
+      </text>
+      <text class=" tick-label tick-label-vert west label " role="axislabel" x="15.50" y="288.30" text-anchor="end" id="tick-label-vert-1">
+        25
+      </text>
+      <text class=" tick-label tick-label-vert west label " role="axislabel" x="15.50" y="241.07" text-anchor="end" id="tick-label-vert-2">
+        30
+      </text>
+      <text class=" tick-label tick-label-vert west label " role="axislabel" x="15.50" y="193.83" text-anchor="end" id="tick-label-vert-3">
+        35
+      </text>
+      <text class=" tick-label tick-label-vert west label " role="axislabel" x="15.50" y="146.60" text-anchor="end" id="tick-label-vert-4">
+        40
+      </text>
+      <text class=" tick-label tick-label-vert west label " role="axislabel" x="15.50" y="99.36" text-anchor="end" id="tick-label-vert-5">
+        45
+      </text>
+      <text class=" tick-label tick-label-vert west label " role="axislabel" x="15.50" y="52.12" text-anchor="end" id="tick-label-vert-6">
+        50
+      </text>
+      <text class=" tick-label tick-label-vert west label " role="axislabel" x="15.50" y="4.89" text-anchor="end" id="tick-label-vert-7">
+        55
+      </text>
+        </g>
+        <g id="vert-axis-tick-strip" transform="translate(41.50,0)">
+      <path id="" class=" tick tick-vert " d="M10,0 h-10"/>
+      <path id="" class=" tick tick-vert " d="M10,47.24 h-10"/>
+      <path id="" class=" tick tick-vert " d="M10,94.47 h-10"/>
+      <path id="" class=" tick tick-vert " d="M10,141.71 h-10"/>
+      <path id="" class=" tick tick-vert " d="M10,188.94 h-10"/>
+      <path id="" class=" tick tick-vert " d="M10,236.18 h-10"/>
+      <path id="" class=" tick tick-vert " d="M10,283.42 h-10"/>
+      <path id="" class=" tick tick-vert " d="M10,330.65 h-10"/>
+      <path id="" class=" grid grid-vert " d="M10,0 h438.49"/>
+      <path id="" class=" grid grid-vert " d="M10,47.24 h438.49"/>
+      <path id="" class=" grid grid-vert " d="M10,94.47 h438.49"/>
+      <path id="" class=" grid grid-vert " d="M10,141.71 h438.49"/>
+      <path id="" class=" grid grid-vert " d="M10,188.94 h438.49"/>
+      <path id="" class=" grid grid-vert " d="M10,236.18 h438.49"/>
+      <path id="" class=" grid grid-vert " d="M10,283.42 h438.49"/>
+      <path id="" class=" grid grid-vert " d="M10,330.65 h438.49"/>
+        </g>
+      <path transform="translate(51.50,0)" id="vert-axis-line" class=" axis-line axis-line-vert " d="M0,0 v340.65"/>
+        </g>
+        <g id="horiz-axis" role="graphics-object" aria-roledescription="x-axis" transform="translate(51.50,388.65)">
+      <path id="horiz-axis-line" class=" axis-line axis-line-horiz " d="M-10,0 h448.49"/>
+        <g id="horiz-axis-tick-strip">
+      <path id="" class=" tick tick-horiz " d="M43.85,0 v10"/>
+      <path id="" class=" tick tick-horiz " d="M87.70,0 v10"/>
+      <path id="" class=" tick tick-horiz " d="M131.55,0 v10"/>
+      <path id="" class=" tick tick-horiz " d="M175.40,0 v10"/>
+      <path id="" class=" tick tick-horiz " d="M219.25,0 v10"/>
+      <path id="" class=" tick tick-horiz " d="M263.10,0 v10"/>
+      <path id="" class=" tick tick-horiz " d="M306.95,0 v10"/>
+      <path id="" class=" tick tick-horiz " d="M350.79,0 v10"/>
+      <path id="" class=" tick tick-horiz " d="M394.64,0 v10"/>
+      <path id="" class=" tick tick-horiz " d="M438.49,0 v10"/>
+        </g>
+        <g id="tick-label-tier-horiz-0" transform="translate(0,18)">
+      <text class=" tick-label tick-label-horiz south label " role="axislabel" x="8.49" y="8.49" text-anchor="end" transform="&#10;        translate(8.49,8.49)&#10;        rotate(-45)&#10;        translate(-8.49,-8.49)" id="tick-label-horiz-0">
+        2009
+      </text>
+      <text class=" tick-label tick-label-horiz south label " role="axislabel" x="52.33" y="8.49" text-anchor="end" transform="&#10;        translate(52.33,8.49)&#10;        rotate(-45)&#10;        translate(-52.33,-8.49)" id="tick-label-horiz-1">
+        2010
+      </text>
+      <text class=" tick-label tick-label-horiz south label " role="axislabel" x="96.18" y="8.49" text-anchor="end" transform="&#10;        translate(96.18,8.49)&#10;        rotate(-45)&#10;        translate(-96.18,-8.49)" id="tick-label-horiz-2">
+        2011
+      </text>
+      <text class=" tick-label tick-label-horiz south label " role="axislabel" x="140.03" y="8.49" text-anchor="end" transform="&#10;        translate(140.03,8.49)&#10;        rotate(-45)&#10;        translate(-140.03,-8.49)" id="tick-label-horiz-3">
+        2012
+      </text>
+      <text class=" tick-label tick-label-horiz south label " role="axislabel" x="183.88" y="8.49" text-anchor="end" transform="&#10;        translate(183.88,8.49)&#10;        rotate(-45)&#10;        translate(-183.88,-8.49)" id="tick-label-horiz-4">
+        2013
+      </text>
+      <text class=" tick-label tick-label-horiz south label " role="axislabel" x="227.73" y="8.49" text-anchor="end" transform="&#10;        translate(227.73,8.49)&#10;        rotate(-45)&#10;        translate(-227.73,-8.49)" id="tick-label-horiz-5">
+        2014
+      </text>
+      <text class=" tick-label tick-label-horiz south label " role="axislabel" x="271.58" y="8.49" text-anchor="end" transform="&#10;        translate(271.58,8.49)&#10;        rotate(-45)&#10;        translate(-271.58,-8.49)" id="tick-label-horiz-6">
+        2015
+      </text>
+      <text class=" tick-label tick-label-horiz south label " role="axislabel" x="315.43" y="8.49" text-anchor="end" transform="&#10;        translate(315.43,8.49)&#10;        rotate(-45)&#10;        translate(-315.43,-8.49)" id="tick-label-horiz-7">
+        2016
+      </text>
+      <text class=" tick-label tick-label-horiz south label " role="axislabel" x="359.28" y="8.49" text-anchor="end" transform="&#10;        translate(359.28,8.49)&#10;        rotate(-45)&#10;        translate(-359.28,-8.49)" id="tick-label-horiz-8">
+        2017
+      </text>
+      <text class=" tick-label tick-label-horiz south label " role="axislabel" x="403.13" y="8.49" text-anchor="end" transform="&#10;        translate(403.13,8.49)&#10;        rotate(-45)&#10;        translate(-403.13,-8.49)" id="tick-label-horiz-9">
+        2018
+      </text>
+      <text class=" tick-label tick-label-horiz south label " role="axislabel" x="446.98" y="8.49" text-anchor="end" transform="&#10;        translate(446.98,8.49)&#10;        rotate(-45)&#10;        translate(-446.98,-8.49)" id="tick-label-horiz-10">
+        2019
+      </text>
+        </g>
+        </g>
+      <g id="chart-layers" transform="translate(51.50,58)">
+        <rect id="data-backdrop" width="438.49375" height="330.65159797668457"/>
+        <g id="background-annotation-layer">
+        <g>
+        </g>
+        <g>
+        </g>
+        <g>
+        </g>
+        </g>
+        <g id="data-layer" role="dataset">
+        <g id="series-agriculture" class=" series " style="fill:hsl(225, 30%, 52%);stroke:hsl(225, 30%, 52%);stroke-width:5;">
+        <g role="datapoint" id="datapoint-2009_52_12_agriculture" class=" data-line datapoint ">
+      <rect id="datapoint-2009_52_12_agriculture-0" style="stroke:white;fill:white;" class=" invis " x="0" y="0" width="21.92" height="149.31"/>
+      <path id="datapoint-2009_52_12_agriculture-1" style="--datapoint-centroid:0px calc(100% - 0px);" class=" leg-right " d="M0,27.21L21.92,32.21" clip-path="url(#clip-path)"/>
+      <use href="#sym-circle-outline" id="datapoint-2009_52_12_agriculture-sym" style="stroke-width:2;" class=" symbol outline " transform="translate(0,27.21)"/>
+        </g>
+        <g role="datapoint" id="datapoint-2010_51_06_agriculture" class=" data-line datapoint ">
+      <rect id="datapoint-2010_51_06_agriculture-0" style="stroke:white;fill:white;" class=" invis " x="21.92" y="0" width="43.85" height="152.90"/>
+      <path id="datapoint-2010_51_06_agriculture-1" style="--datapoint-centroid:50% calc(100% - 0px);" class=" leg-left " d="M21.92,32.21L43.85,37.22"/>
+      <path id="datapoint-2010_51_06_agriculture-2" style="--datapoint-centroid:50% calc(100% - 0px);" class=" leg-right " d="M43.85,37.22L65.77,47.14"/>
+      <use href="#sym-circle-outline" id="datapoint-2010_51_06_agriculture-sym" style="stroke-width:2;" class=" symbol outline " transform="translate(43.85,37.22)"/>
+        </g>
+        <g role="datapoint" id="datapoint-2011_48_96_agriculture" class=" data-line datapoint ">
+      <rect id="datapoint-2011_48_96_agriculture-0" style="stroke:white;fill:white;" class=" invis " x="65.77" y="0" width="43.85" height="158.33"/>
+      <path id="datapoint-2011_48_96_agriculture-1" style="--datapoint-centroid:50% calc(100% - 0px);" class=" leg-left " d="M65.77,47.14L87.70,57.06"/>
+      <path id="datapoint-2011_48_96_agriculture-2" style="--datapoint-centroid:50% calc(100% - 0px);" class=" leg-right " d="M87.70,57.06L109.62,66.32"/>
+      <use href="#sym-circle-outline" id="datapoint-2011_48_96_agriculture-sym" style="stroke-width:2;" class=" symbol outline " transform="translate(87.70,57.06)"/>
+        </g>
+        <g role="datapoint" id="datapoint-2012_47_agriculture" class=" data-line datapoint ">
+      <rect id="datapoint-2012_47_agriculture-0" style="stroke:white;fill:white;" class=" invis " x="109.62" y="0" width="43.85" height="162.30"/>
+      <path id="datapoint-2012_47_agriculture-1" style="--datapoint-centroid:50% calc(100% - 0px);" class=" leg-left " d="M109.62,66.32L131.55,75.58"/>
+      <path id="datapoint-2012_47_agriculture-2" style="--datapoint-centroid:50% calc(100% - 0px);" class=" leg-right " d="M131.55,75.58L153.47,77.47"/>
+      <use href="#sym-circle-outline" id="datapoint-2012_47_agriculture-sym" style="stroke-width:2;" class=" symbol outline " transform="translate(131.55,75.58)"/>
+        </g>
+        <g role="datapoint" id="datapoint-2013_46_6_agriculture" class=" data-line datapoint ">
+      <rect id="datapoint-2013_46_6_agriculture-0" style="stroke:white;fill:white;" class=" invis " x="153.47" y="0" width="43.85" height="162.30"/>
+      <path id="datapoint-2013_46_6_agriculture-1" style="--datapoint-centroid:50% calc(100% - 0px);" class=" leg-left " d="M153.47,77.47L175.40,79.36"/>
+      <path id="datapoint-2013_46_6_agriculture-2" style="--datapoint-centroid:50% calc(100% - 0px);" class=" leg-right " d="M175.40,79.36L197.32,81.86"/>
+      <use href="#sym-circle-outline" id="datapoint-2013_46_6_agriculture-sym" style="stroke-width:2;" class=" symbol outline " transform="translate(175.40,79.36)"/>
+        </g>
+        <g role="datapoint" id="datapoint-2014_46_07_agriculture" class=" data-line datapoint ">
+      <rect id="datapoint-2014_46_07_agriculture-0" style="stroke:white;fill:white;" class=" invis " x="197.32" y="0" width="43.85" height="162.40"/>
+      <path id="datapoint-2014_46_07_agriculture-1" style="--datapoint-centroid:50% calc(100% - 0px);" class=" leg-left " d="M197.32,81.86L219.25,84.36"/>
+      <path id="datapoint-2014_46_07_agriculture-2" style="--datapoint-centroid:50% calc(100% - 0px);" class=" leg-right " d="M219.25,84.36L241.17,86.77"/>
+      <use href="#sym-circle-outline" id="datapoint-2014_46_07_agriculture-sym" style="stroke-width:2;" class=" symbol outline " transform="translate(219.25,84.36)"/>
+        </g>
+        <g role="datapoint" id="datapoint-2015_45_56_agriculture" class=" data-line datapoint ">
+      <rect id="datapoint-2015_45_56_agriculture-0" style="stroke:white;fill:white;" class=" invis " x="241.17" y="0" width="43.85" height="162.21"/>
+      <path id="datapoint-2015_45_56_agriculture-1" style="--datapoint-centroid:50% calc(100% - 0px);" class=" leg-left " d="M241.17,86.77L263.10,89.18"/>
+      <path id="datapoint-2015_45_56_agriculture-2" style="--datapoint-centroid:50% calc(100% - 0px);" class=" leg-right " d="M263.10,89.18L285.02,91.26"/>
+      <use href="#sym-circle-outline" id="datapoint-2015_45_56_agriculture-sym" style="stroke-width:2;" class=" symbol outline " transform="translate(263.10,89.18)"/>
+        </g>
+        <g role="datapoint" id="datapoint-2016_45_12_agriculture" class=" data-line datapoint ">
+      <rect id="datapoint-2016_45_12_agriculture-0" style="stroke:white;fill:white;" class=" invis " x="285.02" y="0" width="43.85" height="161.97"/>
+      <path id="datapoint-2016_45_12_agriculture-1" style="--datapoint-centroid:50% calc(100% - 0px);" class=" leg-left " d="M285.02,91.26L306.95,93.34"/>
+      <path id="datapoint-2016_45_12_agriculture-2" style="--datapoint-centroid:50% calc(100% - 0px);" class=" leg-right " d="M306.95,93.34L328.87,96.17"/>
+      <use href="#sym-circle-outline" id="datapoint-2016_45_12_agriculture-sym" style="stroke-width:2;" class=" symbol outline " transform="translate(306.95,93.34)"/>
+        </g>
+        <g role="datapoint" id="datapoint-2017_44_52_agriculture" class=" data-line datapoint ">
+      <rect id="datapoint-2017_44_52_agriculture-0" style="stroke:white;fill:white;" class=" invis " x="328.87" y="0" width="43.85" height="162.82"/>
+      <path id="datapoint-2017_44_52_agriculture-1" style="--datapoint-centroid:50% calc(100% - 0px);" class=" leg-left " d="M328.87,96.17L350.79,99.01"/>
+      <path id="datapoint-2017_44_52_agriculture-2" style="--datapoint-centroid:50% calc(100% - 0px);" class=" leg-right " d="M350.79,99.01L372.72,102.12"/>
+      <use href="#sym-circle-outline" id="datapoint-2017_44_52_agriculture-sym" style="stroke-width:2;" class=" symbol outline " transform="translate(350.79,99.01)"/>
+        </g>
+        <g role="datapoint" id="datapoint-2018_43_86_agriculture" class=" data-line datapoint ">
+      <rect id="datapoint-2018_43_86_agriculture-0" style="stroke:white;fill:white;" class=" invis " x="372.72" y="0" width="43.85" height="163.86"/>
+      <path id="datapoint-2018_43_86_agriculture-1" style="--datapoint-centroid:50% calc(100% - 0px);" class=" leg-left " d="M372.72,102.12L394.64,105.24"/>
+      <path id="datapoint-2018_43_86_agriculture-2" style="--datapoint-centroid:50% calc(100% - 0px);" class=" leg-right " d="M394.64,105.24L416.57,108.31"/>
+      <use href="#sym-circle-outline" id="datapoint-2018_43_86_agriculture-sym" style="stroke-width:2;" class=" symbol outline " transform="translate(394.64,105.24)"/>
+        </g>
+        <g role="datapoint" id="datapoint-2019_43_21_agriculture" class=" data-line datapoint ">
+      <rect id="datapoint-2019_43_21_agriculture-0" style="stroke:white;fill:white;" class=" invis " x="416.57" y="0" width="438.49" height="164.81"/>
+      <path id="datapoint-2019_43_21_agriculture-1" style="--datapoint-centroid:calc(100% - 0px) calc(100% - 0px);" class=" leg-left " d="M416.57,108.31L438.49,111.38" clip-path="url(#clip-path)"/>
+      <use href="#sym-circle-outline" id="datapoint-2019_43_21_agriculture-sym" style="stroke-width:2;" class=" symbol outline " transform="translate(438.49,111.38)"/>
+        </g>
+        </g>
+        <g id="series-services" class=" series " style="fill:hsl(75, 43%, 45%);stroke:hsl(75, 43%, 45%);stroke-width:5;">
+        <g role="datapoint" id="datapoint-2009_26_27_services" class=" data-line datapoint ">
+      <rect id="datapoint-2009_26_27_services-0" style="stroke:white;fill:white;" class=" invis " x="0" y="149.31" width="21.92" height="144.12"/>
+      <path id="datapoint-2009_26_27_services-1" style="--datapoint-centroid:0px calc(100% - 0px);" class=" leg-right " d="M0,271.42L21.92,270.00" clip-path="url(#clip-path)"/>
+      <use href="#sym-triangle_up-outline" id="datapoint-2009_26_27_services-sym" style="stroke-width:2;" class=" symbol outline " transform="translate(0,271.42)"/>
+        </g>
+        <g role="datapoint" id="datapoint-2010_26_57_services" class=" data-line datapoint ">
+      <rect id="datapoint-2010_26_57_services-0" style="stroke:white;fill:white;" class=" invis " x="21.92" y="152.90" width="43.85" height="135.47"/>
+      <path id="datapoint-2010_26_57_services-1" style="--datapoint-centroid:50% calc(100% - 0px);" class=" leg-left " d="M21.92,270.00L43.85,268.58"/>
+      <path id="datapoint-2010_26_57_services-2" style="--datapoint-centroid:50% calc(100% - 0px);" class=" leg-right " d="M43.85,268.58L65.77,264.10"/>
+      <use href="#sym-triangle_up-outline" id="datapoint-2010_26_57_services-sym" style="stroke-width:2;" class=" symbol outline " transform="translate(43.85,268.58)"/>
+        </g>
+        <g role="datapoint" id="datapoint-2011_27_52_services" class=" data-line datapoint ">
+      <rect id="datapoint-2011_27_52_services-0" style="stroke:white;fill:white;" class=" invis " x="65.77" y="158.33" width="43.85" height="120.17"/>
+      <path id="datapoint-2011_27_52_services-1" style="--datapoint-centroid:50% calc(100% - 0px);" class=" leg-left " d="M65.77,264.10L87.70,259.61"/>
+      <path id="datapoint-2011_27_52_services-2" style="--datapoint-centroid:50% calc(100% - 0px);" class=" leg-right " d="M87.70,259.61L109.62,254.32"/>
+      <use href="#sym-triangle_up-outline" id="datapoint-2011_27_52_services-sym" style="stroke-width:2;" class=" symbol outline " transform="translate(87.70,259.61)"/>
+        </g>
+        <g role="datapoint" id="datapoint-2012_28_64_services" class=" data-line datapoint ">
+      <rect id="datapoint-2012_28_64_services-0" style="stroke:white;fill:white;" class=" invis " x="109.62" y="162.30" width="43.85" height="106.94"/>
+      <path id="datapoint-2012_28_64_services-1" style="--datapoint-centroid:50% calc(100% - 0px);" class=" leg-left " d="M109.62,254.32L131.55,249.03"/>
+      <path id="datapoint-2012_28_64_services-2" style="--datapoint-centroid:50% calc(100% - 0px);" class=" leg-right " d="M131.55,249.03L153.47,247.14"/>
+      <use href="#sym-triangle_up-outline" id="datapoint-2012_28_64_services-sym" style="stroke-width:2;" class=" symbol outline " transform="translate(131.55,249.03)"/>
+        </g>
+        <g role="datapoint" id="datapoint-2013_29_04_services" class=" data-line datapoint ">
+      <rect id="datapoint-2013_29_04_services-0" style="stroke:white;fill:white;" class=" invis " x="153.47" y="162.30" width="43.85" height="105.05"/>
+      <path id="datapoint-2013_29_04_services-1" style="--datapoint-centroid:50% calc(100% - 0px);" class=" leg-left " d="M153.47,247.14L175.40,245.25"/>
+      <path id="datapoint-2013_29_04_services-2" style="--datapoint-centroid:50% calc(100% - 0px);" class=" leg-right " d="M175.40,245.25L197.32,242.84"/>
+      <use href="#sym-triangle_up-outline" id="datapoint-2013_29_04_services-sym" style="stroke-width:2;" class=" symbol outline " transform="translate(175.40,245.25)"/>
+        </g>
+        <g role="datapoint" id="datapoint-2014_29_55_services" class=" data-line datapoint ">
+      <rect id="datapoint-2014_29_55_services-0" style="stroke:white;fill:white;" class=" invis " x="197.32" y="162.40" width="43.85" height="102.45"/>
+      <path id="datapoint-2014_29_55_services-1" style="--datapoint-centroid:50% calc(100% - 0px);" class=" leg-left " d="M197.32,242.84L219.25,240.43"/>
+      <path id="datapoint-2014_29_55_services-2" style="--datapoint-centroid:50% calc(100% - 0px);" class=" leg-right " d="M219.25,240.43L241.17,237.83"/>
+      <use href="#sym-triangle_up-outline" id="datapoint-2014_29_55_services-sym" style="stroke-width:2;" class=" symbol outline " transform="translate(219.25,240.43)"/>
+        </g>
+        <g role="datapoint" id="datapoint-2015_30_1_services" class=" data-line datapoint ">
+      <rect id="datapoint-2015_30_1_services-0" style="stroke:white;fill:white;" class=" invis " x="241.17" y="162.21" width="43.85" height="100.23"/>
+      <path id="datapoint-2015_30_1_services-1" style="--datapoint-centroid:50% calc(100% - 0px);" class=" leg-left " d="M241.17,237.83L263.10,235.23"/>
+      <path id="datapoint-2015_30_1_services-2" style="--datapoint-centroid:50% calc(100% - 0px);" class=" leg-right " d="M263.10,235.23L285.02,232.92"/>
+      <use href="#sym-triangle_up-outline" id="datapoint-2015_30_1_services-sym" style="stroke-width:2;" class=" symbol outline " transform="translate(263.10,235.23)"/>
+        </g>
+        <g role="datapoint" id="datapoint-2016_30_59_services" class=" data-line datapoint ">
+      <rect id="datapoint-2016_30_59_services-0" style="stroke:white;fill:white;" class=" invis " x="285.02" y="161.97" width="43.85" height="98.39"/>
+      <path id="datapoint-2016_30_59_services-1" style="--datapoint-centroid:50% calc(100% - 0px);" class=" leg-left " d="M285.02,232.92L306.95,230.61"/>
+      <path id="datapoint-2016_30_59_services-2" style="--datapoint-centroid:50% calc(100% - 0px);" class=" leg-right " d="M306.95,230.61L328.87,228.62"/>
+      <use href="#sym-triangle_up-outline" id="datapoint-2016_30_59_services-sym" style="stroke-width:2;" class=" symbol outline " transform="translate(306.95,230.61)"/>
+        </g>
+        <g role="datapoint" id="datapoint-2017_31_01_services" class=" data-line datapoint ">
+      <rect id="datapoint-2017_31_01_services-0" style="stroke:white;fill:white;" class=" invis " x="328.87" y="162.82" width="43.85" height="94.71"/>
+      <path id="datapoint-2017_31_01_services-1" style="--datapoint-centroid:50% calc(100% - 0px);" class=" leg-left " d="M328.87,228.62L350.79,226.64"/>
+      <path id="datapoint-2017_31_01_services-2" style="--datapoint-centroid:50% calc(100% - 0px);" class=" leg-right " d="M350.79,226.64L372.72,224.56"/>
+      <use href="#sym-triangle_up-outline" id="datapoint-2017_31_01_services-sym" style="stroke-width:2;" class=" symbol outline " transform="translate(350.79,226.64)"/>
+        </g>
+        <g role="datapoint" id="datapoint-2018_31_45_services" class=" data-line datapoint ">
+      <rect id="datapoint-2018_31_45_services-0" style="stroke:white;fill:white;" class=" invis " x="372.72" y="163.86" width="43.85" height="90.55"/>
+      <path id="datapoint-2018_31_45_services-1" style="--datapoint-centroid:50% calc(100% - 0px);" class=" leg-left " d="M372.72,224.56L394.64,222.48"/>
+      <path id="datapoint-2018_31_45_services-2" style="--datapoint-centroid:50% calc(100% - 0px);" class=" leg-right " d="M394.64,222.48L416.57,220.36"/>
+      <use href="#sym-triangle_up-outline" id="datapoint-2018_31_45_services-sym" style="stroke-width:2;" class=" symbol outline " transform="translate(394.64,222.48)"/>
+        </g>
+        <g role="datapoint" id="datapoint-2019_31_9_services" class=" data-line datapoint ">
+      <rect id="datapoint-2019_31_9_services-0" style="stroke:white;fill:white;" class=" invis " x="416.57" y="164.81" width="438.49" height="86.54"/>
+      <path id="datapoint-2019_31_9_services-1" style="--datapoint-centroid:calc(100% - 0px) calc(100% - 0px);" class=" leg-left " d="M416.57,220.36L438.49,218.23" clip-path="url(#clip-path)"/>
+      <use href="#sym-triangle_up-outline" id="datapoint-2019_31_9_services-sym" style="stroke-width:2;" class=" symbol outline " transform="translate(438.49,218.23)"/>
+        </g>
+        </g>
+        <g id="series-industry" class=" series " style="fill:hsl(12, 69%, 35%);stroke:hsl(12, 69%, 35%);stroke-width:5;">
+        <g role="datapoint" id="datapoint-2009_21_61_industry" class=" data-line datapoint ">
+      <rect id="datapoint-2009_21_61_industry-0" style="stroke:white;fill:white;" class=" invis " x="0" y="293.43" width="21.92" height="37.22"/>
+      <path id="datapoint-2009_21_61_industry-1" style="--datapoint-centroid:0px calc(100% - 0px);" class=" leg-right " d="M0,315.44L21.92,311.80" clip-path="url(#clip-path)"/>
+      <use href="#sym-square-outline" id="datapoint-2009_21_61_industry-sym" style="stroke-width:2;" class=" symbol outline " transform="translate(0,315.44)"/>
+        </g>
+        <g role="datapoint" id="datapoint-2010_22_38_industry" class=" data-line datapoint ">
+      <rect id="datapoint-2010_22_38_industry-0" style="stroke:white;fill:white;" class=" invis " x="21.92" y="288.38" width="43.85" height="42.28"/>
+      <path id="datapoint-2010_22_38_industry-1" style="--datapoint-centroid:50% calc(100% - 0px);" class=" leg-left " d="M21.92,311.80L43.85,308.17"/>
+      <path id="datapoint-2010_22_38_industry-2" style="--datapoint-centroid:50% calc(100% - 0px);" class=" leg-right " d="M43.85,308.17L65.77,302.78"/>
+      <use href="#sym-square-outline" id="datapoint-2010_22_38_industry-sym" style="stroke-width:2;" class=" symbol outline " transform="translate(43.85,308.17)"/>
+        </g>
+        <g role="datapoint" id="datapoint-2011_23_52_industry" class=" data-line datapoint ">
+      <rect id="datapoint-2011_23_52_industry-0" style="stroke:white;fill:white;" class=" invis " x="65.77" y="278.50" width="43.85" height="52.15"/>
+      <path id="datapoint-2011_23_52_industry-1" style="--datapoint-centroid:50% calc(100% - 0px);" class=" leg-left " d="M65.77,302.78L87.70,297.40"/>
+      <path id="datapoint-2011_23_52_industry-2" style="--datapoint-centroid:50% calc(100% - 0px);" class=" leg-right " d="M87.70,297.40L109.62,293.43"/>
+      <use href="#sym-square-outline" id="datapoint-2011_23_52_industry-sym" style="stroke-width:2;" class=" symbol outline " transform="translate(87.70,297.40)"/>
+        </g>
+        <g role="datapoint" id="datapoint-2012_24_36_industry" class=" data-line datapoint ">
+      <rect id="datapoint-2012_24_36_industry-0" style="stroke:white;fill:white;" class=" invis " x="109.62" y="269.24" width="43.85" height="61.41"/>
+      <path id="datapoint-2012_24_36_industry-1" style="--datapoint-centroid:50% calc(100% - 0px);" class=" leg-left " d="M109.62,293.43L131.55,289.46"/>
+      <path id="datapoint-2012_24_36_industry-2" style="--datapoint-centroid:50% calc(100% - 0px);" class=" leg-right " d="M131.55,289.46L153.47,289.46"/>
+      <use href="#sym-square-outline" id="datapoint-2012_24_36_industry-sym" style="stroke-width:2;" class=" symbol outline " transform="translate(131.55,289.46)"/>
+        </g>
+        <g role="datapoint" id="datapoint-2013_24_36_industry" class=" data-line datapoint ">
+      <rect id="datapoint-2013_24_36_industry-0" style="stroke:white;fill:white;" class=" invis " x="153.47" y="267.36" width="43.85" height="63.30"/>
+      <path id="datapoint-2013_24_36_industry-1" style="--datapoint-centroid:50% calc(100% - 0px);" class=" leg-left " d="M153.47,289.46L175.40,289.46"/>
+      <path id="datapoint-2013_24_36_industry-2" style="--datapoint-centroid:50% calc(100% - 0px);" class=" leg-right " d="M175.40,289.46L197.32,289.37"/>
+      <use href="#sym-square-outline" id="datapoint-2013_24_36_industry-sym" style="stroke-width:2;" class=" symbol outline " transform="translate(175.40,289.46)"/>
+        </g>
+        <g role="datapoint" id="datapoint-2014_24_38_industry" class=" data-line datapoint ">
+      <rect id="datapoint-2014_24_38_industry-0" style="stroke:white;fill:white;" class=" invis " x="197.32" y="264.85" width="43.85" height="65.80"/>
+      <path id="datapoint-2014_24_38_industry-1" style="--datapoint-centroid:50% calc(100% - 0px);" class=" leg-left " d="M197.32,289.37L219.25,289.27"/>
+      <path id="datapoint-2014_24_38_industry-2" style="--datapoint-centroid:50% calc(100% - 0px);" class=" leg-right " d="M219.25,289.27L241.17,289.46"/>
+      <use href="#sym-square-outline" id="datapoint-2014_24_38_industry-sym" style="stroke-width:2;" class=" symbol outline " transform="translate(219.25,289.27)"/>
+        </g>
+        <g role="datapoint" id="datapoint-2015_24_34_industry" class=" data-line datapoint ">
+      <rect id="datapoint-2015_24_34_industry-0" style="stroke:white;fill:white;" class=" invis " x="241.17" y="262.44" width="43.85" height="68.21"/>
+      <path id="datapoint-2015_24_34_industry-1" style="--datapoint-centroid:50% calc(100% - 0px);" class=" leg-left " d="M241.17,289.46L263.10,289.65"/>
+      <path id="datapoint-2015_24_34_industry-2" style="--datapoint-centroid:50% calc(100% - 0px);" class=" leg-right " d="M263.10,289.65L285.02,289.89"/>
+      <use href="#sym-square-outline" id="datapoint-2015_24_34_industry-sym" style="stroke-width:2;" class=" symbol outline " transform="translate(263.10,289.65)"/>
+        </g>
+        <g role="datapoint" id="datapoint-2016_24_29_industry" class=" data-line datapoint ">
+      <rect id="datapoint-2016_24_29_industry-0" style="stroke:white;fill:white;" class=" invis " x="285.02" y="260.36" width="43.85" height="70.29"/>
+      <path id="datapoint-2016_24_29_industry-1" style="--datapoint-centroid:50% calc(100% - 0px);" class=" leg-left " d="M285.02,289.89L306.95,290.12"/>
+      <path id="datapoint-2016_24_29_industry-2" style="--datapoint-centroid:50% calc(100% - 0px);" class=" leg-right " d="M306.95,290.12L328.87,289.27"/>
+      <use href="#sym-square-outline" id="datapoint-2016_24_29_industry-sym" style="stroke-width:2;" class=" symbol outline " transform="translate(306.95,290.12)"/>
+        </g>
+        <g role="datapoint" id="datapoint-2017_24_47_industry" class=" data-line datapoint ">
+      <rect id="datapoint-2017_24_47_industry-0" style="stroke:white;fill:white;" class=" invis " x="328.87" y="257.53" width="43.85" height="73.12"/>
+      <path id="datapoint-2017_24_47_industry-1" style="--datapoint-centroid:50% calc(100% - 0px);" class=" leg-left " d="M328.87,289.27L350.79,288.42"/>
+      <path id="datapoint-2017_24_47_industry-2" style="--datapoint-centroid:50% calc(100% - 0px);" class=" leg-right " d="M350.79,288.42L372.72,287.38"/>
+      <use href="#sym-square-outline" id="datapoint-2017_24_47_industry-sym" style="stroke-width:2;" class=" symbol outline " transform="translate(350.79,288.42)"/>
+        </g>
+        <g role="datapoint" id="datapoint-2018_24_69_industry" class=" data-line datapoint ">
+      <rect id="datapoint-2018_24_69_industry-0" style="stroke:white;fill:white;" class=" invis " x="372.72" y="254.41" width="43.85" height="76.24"/>
+      <path id="datapoint-2018_24_69_industry-1" style="--datapoint-centroid:50% calc(100% - 0px);" class=" leg-left " d="M372.72,287.38L394.64,286.34"/>
+      <path id="datapoint-2018_24_69_industry-2" style="--datapoint-centroid:50% calc(100% - 0px);" class=" leg-right " d="M394.64,286.34L416.57,285.40"/>
+      <use href="#sym-square-outline" id="datapoint-2018_24_69_industry-sym" style="stroke-width:2;" class=" symbol outline " transform="translate(394.64,286.34)"/>
+        </g>
+        <g role="datapoint" id="datapoint-2019_24_89_industry" class=" data-line datapoint ">
+      <rect id="datapoint-2019_24_89_industry-0" style="stroke:white;fill:white;" class=" invis " x="416.57" y="251.34" width="438.49" height="79.31"/>
+      <path id="datapoint-2019_24_89_industry-1" style="--datapoint-centroid:calc(100% - 0px) calc(100% - 0px);" class=" leg-left " d="M416.57,285.40L438.49,284.45" clip-path="url(#clip-path)"/>
+      <use href="#sym-square-outline" id="datapoint-2019_24_89_industry-sym" style="stroke-width:2;" class=" symbol outline " transform="translate(438.49,284.45)"/>
+        </g>
+        </g>
+        </g>
+        <g id="highlights-layer">
+        </g>
+        <g id="foreground-annotation-layer">
+        <g>
+        </g>
+        <g>
+        </g>
+        <g>
+        </g>
+        <g>
+        </g>
+        </g>
+        <g id="selection-layer">
+        </g>
+        <g id="focus-layer">
+        </g>
+      </g>
+        <g id="direct-label-strip" transform="translate(489.99,58)">
+      <text class=" direct-label label " x="42.54" y="117.38" text-anchor="middle" id="Agriculture">
+        Agriculture
+      </text>
+      <text class=" direct-label label " x="35.57" y="224.23" text-anchor="middle" id="Services">
+        Services
+      </text>
+      <text class=" direct-label label " x="33.72" y="290.45" text-anchor="middle" id="Industry">
+        Industry
+      </text>
+        </g>
+        </g>
+      </svg>

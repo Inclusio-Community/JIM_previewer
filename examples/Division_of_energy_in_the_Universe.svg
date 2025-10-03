@@ -1,5 +1,5 @@
-<svg tabindex="0" aria-label="Division of energy in the Universe, accessible chart" xmlns="http://www.w3.org/2000/svg" data-charttype="bar" class="  " viewBox="0 0 635.60 466" style="font-family:Helvetica, sans-serif;font-weight:300;--axis-line-color:hsl(0, 0%, 0%);--label-color:hsl(0, 0%, 0%);" id="para4b9960f9-26b0-43d9-a3be-9eb389937eb3"><style>#para4b9960f9-26b0-43d9-a3be-9eb389937eb3 { --axis-line-color: hsl(0, 0%, 0%); --label-color: hsl(0, 0%, 0%); --tick-grid-color: hsl(270, 50%, 50%); --background-color: white; --theme-color: var(--fizz-theme-color, purple); --theme-color-light: var(--fizz-theme-color-light, hsl(275.4, 100%, 88%)); --theme-contrast-color: white; --fizz-theme-color: var(--paracharts-theme-color, navy); --fizz-theme-color-light: var(--paracharts-theme-color-light, hsl(210.5, 100%, 88%)); --visited-color: hsl(0, 100%, 50%); --visited-stroke-width: 6; --selected-color: var(--label-color); --datapoint-centroid: 50% 50%; --focus-animation: all 0.5s ease-in-out; --chart-cursor: pointer; --data-cursor: cell; --focus-shadow-color: gray; --focus-shadow: drop-shadow(0px 0px 4px var(--focus-shadow-color)); --caption-border: none; --caption-grid-template-columns: auto auto; --exploration-bar-display: flex; display: block; font-family: "Trebuchet MS", Helvetica, sans-serif; font-size: var(--chart-view-font-size, 1rem); }
-#para4b9960f9-26b0-43d9-a3be-9eb389937eb3, :root { --axis-line-color: hsl(0, 0%, 0%); --label-color: hsl(0, 0%, 0%); --tick-grid-color: hsl(270, 50%, 50%); --background-color: white; --theme-color: var(--fizz-theme-color, purple); --theme-color-light: var(--fizz-theme-color-light, hsl(275.4, 100%, 88%)); --theme-contrast-color: white; --fizz-theme-color: var(--paracharts-theme-color, navy); --fizz-theme-color-light: var(--paracharts-theme-color-light, hsl(210.5, 100%, 88%)); --selected-color: var(--label-color); --datapoint-centroid: 50% 50%; --focus-animation: all 0.5s ease-in-out; --chart-cursor: pointer; --data-cursor: cell; --color-palette-series-0: hsl(225, 30%, 52%); --color-palette-series-1: hsl(12, 69%, 35%); --color-palette-series-2: hsl(75, 43%, 45%); --color-palette-series-3: hsl(40, 100%, 49%); --color-palette-series-4: hsl(215, 37%, 66%); --color-palette-series-5: hsl(63, 100%, 23%); --color-palette-series-6: hsl(34, 57%, 46%); --color-palette-series-7: hsl(51, 56%, 64%); --color-palette-series-8: hsl(253, 26%, 43%); --color-palette-series-9: hsl(85, 65%, 36%); --focus-shadow-color: gray; --focus-shadow: drop-shadow(0px 0px 4px var(--focus-shadow-color)); }
+<svg tabindex="0" aria-label="Division of energy in the Universe, accessible chart" xmlns="http://www.w3.org/2000/svg" data-charttype="bar" class="  " viewBox="0 0 600 450" style="font-family:Helvetica, sans-serif;font-weight:300;--axis-line-color:hsl(0, 0%, 0%);--label-color:hsl(0, 0%, 0%);" id="para690326db-9aed-48af-b9f6-2e902e181d93"><style>#para690326db-9aed-48af-b9f6-2e902e181d93 { --axis-line-color: hsl(0, 0%, 0%); --label-color: hsl(0, 0%, 0%); --tick-grid-color: hsl(270, 50%, 50%); --background-color: white; --theme-color: var(--fizz-theme-color, purple); --theme-color-light: var(--fizz-theme-color-light, hsl(275.4, 100%, 88%)); --theme-contrast-color: white; --fizz-theme-color: var(--paracharts-theme-color, navy); --fizz-theme-color-light: var(--paracharts-theme-color-light, hsl(210.5, 100%, 88%)); --visited-color: hsl(0, 100%, 50%); --highlighted-color: hsl(100, 100%, 50%); --visited-stroke-width: 6; --selected-color: var(--label-color); --datapoint-centroid: 50% 50%; --focus-animation: all 0.5s ease-in-out; --chart-cursor: pointer; --data-cursor: cell; --focus-shadow-color: gray; --focus-shadow: drop-shadow(0px 0px 4px var(--focus-shadow-color)); --caption-border: none; --caption-grid-template-columns: auto auto; --exploration-bar-display: flex; --chart-font-scale: 1; --chart-title-font-size: 12pt; --horiz-axis-title-font-size: 12pt; --vert-axis-title-font-size: 12pt; --horiz-axis-tick-label-font-size: 10pt; --vert-axis-tick-label-font-size: 10pt; --direct-label-font-size: 10pt; --legend-label-font-size: 10pt; display: block; font-family: "Trebuchet MS", Helvetica, sans-serif; font-size: var(--chart-view-font-size, 1rem); }
+#para690326db-9aed-48af-b9f6-2e902e181d93, :root { --axis-line-color: hsl(0, 0%, 0%); --label-color: hsl(0, 0%, 0%); --tick-grid-color: hsl(270, 50%, 50%); --background-color: white; --theme-color: var(--fizz-theme-color, purple); --theme-color-light: var(--fizz-theme-color-light, hsl(275.4, 100%, 88%)); --theme-contrast-color: white; --fizz-theme-color: var(--paracharts-theme-color, navy); --fizz-theme-color-light: var(--paracharts-theme-color-light, hsl(210.5, 100%, 88%)); --selected-color: var(--label-color); --datapoint-centroid: 50% 50%; --focus-animation: all 0.5s ease-in-out; --chart-cursor: pointer; --data-cursor: cell; --color-palette-series-0: hsl(225, 30%, 52%); --color-palette-series-1: hsl(12, 69%, 35%); --color-palette-series-2: hsl(75, 43%, 45%); --color-palette-series-3: hsl(40, 100%, 49%); --color-palette-series-4: hsl(215, 37%, 66%); --color-palette-series-5: hsl(63, 100%, 23%); --color-palette-series-6: hsl(34, 57%, 46%); --color-palette-series-7: hsl(51, 56%, 64%); --color-palette-series-8: hsl(253, 26%, 43%); --color-palette-series-9: hsl(85, 65%, 36%); --focus-shadow-color: gray; --focus-shadow: drop-shadow(0px 0px 4px var(--focus-shadow-color)); }
 .hidden { display: none !important; }
 .sr-only { border: 0px !important; clip: rect(1px, 1px, 1px, 1px) !important; clip-path: inset(50%) !important; height: 1px !important; overflow: hidden !important; margin: -1px !important; padding: 0px !important; position: absolute !important; width: 1px !important; white-space: nowrap !important; }
 * { font-family: "Trebuchet MS", Helvetica, sans-serif; }
@@ -16,10 +16,10 @@
 .tickmark-x-0 { fill: var(--tick-grid-color); stroke: var(--tick-grid-color); opacity: 1; stroke-width: 2px; stroke-linecap: round; }
 .tick-group-x:hover, .tick-group-x:hover .tickmark_x { font-weight: bold; opacity: 1; }
 rect#data-backdrop { stroke: none; fill: none; pointer-events: all; }
-.stack { stroke-width: 0px; }
-.bar:hover, .bar:focus { fill: rgb(166, 121, 210); }
+.stack { stroke-width: 0; }
+.bar:hover, .bar:focus { fill: rgb(166, 121, 210); outline: -webkit-focus-ring-color auto 2px; }
 .datapoint_background { fill: none; stroke: none; pointer-events: all; outline: none; }
-.datapoint_background:hover, .datapoint_background:focus { box-shadow: none; }
+.datapoint_background:hover, .datapoint_background:focus { outline: -webkit-focus-ring-color auto 2px; box-shadow: none; }
 .data-line { fill: none; stroke-linecap: round; }
 .data_area { stroke: rgb(128, 64, 191); stroke-width: 3px; stroke-linecap: round; fill: none; }
 .data_area_background { stroke: none; fill: rgb(128, 64, 191); fill-opacity: 0.8; }
@@ -36,9 +36,9 @@ g.datapoint.visited { fill: var(--visited-color, red); stroke: var(--visited-col
 g.datapoint.visited:focus { transition: var(--focus-animation); filter: var(--focus-shadow); }
 [data-charttype="stepline"] g.datapoint.visited { fill: var(--visited-color, red); stroke: var(--visited-color, red); transform: none; }
 use.visited-mark { pointer-events: none; }
-@keyframes pulse-animation {
-0% { filter: drop-shadow(gray 0px 0px 0px); }
-100% { filter: drop-shadow(gray 0px 0px 12px); }
+@keyframes pulse-animation { 
+  0% { filter: drop-shadow(gray 0px 0px 0px); }
+  100% { filter: drop-shadow(gray 0px 0px 12px); }
 }
 .selected-datapoint-marker { fill: transparent; stroke: var(--selected-color); stroke-width: 3px; pointer-events: none; stroke-linejoin: round; }
 .symbol { stroke-linejoin: round; }
@@ -65,7 +65,7 @@ use.visited-mark { pointer-events: none; }
 .range-highlights rect[data-id="0"] { fill: orange; stroke: orange; }
 .range-highlights rect[data-id="1"] { fill: cyan; stroke: cyan; }
 .linebreaker[data-state="active"] .linebreaker-marker { stroke: dodgerblue; stroke-width: 3px; }
-.best_fit_line[data-state="active"] { display: inline; fill: none; stroke: rgb(222, 13, 169); stroke-width: 8px; stroke-linecap: butt; stroke-dasharray: 12px, 12px; stroke-opacity: 0.5; }
+.best_fit_line[data-state="active"] { display: inline; fill: none; stroke: rgb(222, 13, 169); stroke-width: 8px; stroke-linecap: butt; stroke-dasharray: 12, 12; stroke-opacity: 0.5; }
 .best_fit_line[data-state="inactive"] { display: none; }
 .setting-views { display: flex; gap: 1rem; }
 .setting-views + .setting-views { margin-top: 0.5rem; }
@@ -73,7 +73,7 @@ figure { display: inline-block; }
 svg { display: block; }
 .tab-content { display: flex; flex-direction: row; gap: 1rem; align-items: center; justify-content: space-between; padding: 0.2rem; }
 .tab-content.stacked { flex-direction: column; gap: 0.1rem; align-items: flex-start; justify-content: space-between; padding: 0.5rem 0.2rem; }
-#chart-colors-presets { border: medium; padding: 0px; margin: 0px; }
+#chart-colors-presets { border: none; padding: 0px; margin: 0px; }
 #chart-colors-presets label { display: flex; flex-direction: column; align-items: center; justify-content: space-between; }
 #chart-colors-presets label span { text-align: center; word-spacing: 20em; }
 #output_dialog { margin: 0px auto; }
@@ -84,7 +84,7 @@ button { margin: 0.2rem; background-color: var(--theme-color); color: var(--them
 #status_split { display: flex; flex-direction: column; justify-content: space-between; }
 [role="graphics-document"] { cursor: var(--chart-cursor); }
 #chart-layers { cursor: var(--data-cursor); }
-#para4b9960f9-26b0-43d9-a3be-9eb389937eb3 { --control-panel-icon: url(/lib/assets/info-icon-alt.svg); --summary-marker-size: 1.1rem; }
+#para690326db-9aed-48af-b9f6-2e902e181d93 { --control-panel-icon: url(/lib/assets/info-icon-alt.svg); --summary-marker-size: 1.1rem; }
 figure { display: inline-block; margin: 0px; }
 #frame { fill: var(--background-color); stroke: none; }
 #frame.pending { fill: lightgray; }
@@ -93,16 +93,21 @@ figure { display: inline-block; margin: 0px; }
 #loading-message text { fill: white; }
 .grid-horiz { stroke: var(--axis-line-color); opacity: 0.2; }
 .grid-vert { stroke: var(--axis-line-color); opacity: 0.2; }
-#grid-zero { opacity: 0.6; stroke-width: 2px; }
-.tick-horiz { stroke: black; }
-.tick-vert { stroke: black; }
+#grid-zero { opacity: 0.6; stroke-width: 2; }
+.tick { stroke: var(--label-color); }
+.chart-title { font-size: calc(var(--chart-title-font-size)*var(--chart-font-scale)); }
+.axis-title-horiz { font-size: calc(var(--horiz-axis-title-font-size)*var(--chart-font-scale)); }
+.axis-title-vert { font-size: calc(var(--vert-axis-title-font-size)*var(--chart-font-scale)); }
+.direct-label { font-size: calc(var(--direct-label-font-size)*var(--chart-font-scale)); }
+.legend-label { font-size: calc(var(--legend-label-font-size)*var(--chart-font-scale)); }
 .label { fill: var(--label-color); stroke: none; }
-.tick-label { font-size: 13px; fill: var(--label-color); }
+.tick-label-horiz { font-size: calc(var(--horiz-axis-tick-label-font-size)*var(--chart-font-scale)); }
+.tick-label-vert { font-size: calc(var(--vert-axis-tick-label-font-size)*var(--chart-font-scale)); }
 .bar-label { font-size: 13px; fill: white; }
-.radial-value-label { fill: var(--label-color); }
-.radial-cat-label-leader { fill: none; stroke-width: 2px; }
-.radial-slice { stroke: white; stroke-width: 2px; }
-.label-leader { stroke-width: 2px; }
+.pastry-inside-label { }
+.pastry-outside-label-leader { fill: none; stroke-width: 2; }
+.pastry-slice { stroke: white; stroke-width: 2; }
+.label-leader { stroke-width: 2; }
 #vert-axis-line { fill: none; stroke: var(--axis-line-color); stroke-width: 2px; stroke-linecap: round; }
 #horiz-axis-line { fill: none; stroke: var(--axis-line-color); opacity: 1; stroke-width: 2px; stroke-linecap: round; }
 rect#data-backdrop { stroke: none; fill: none; pointer-events: all; }
@@ -110,23 +115,22 @@ rect#data-backdrop { stroke: none; fill: none; pointer-events: all; }
 .symbol.outline { fill: white; }
 use.visited-mark { pointer-events: none; }
 .data-line { fill: none; stroke-linecap: round; }
-.chart-title { font-size: 1.25rem; }
 .range-highlight { fill: silver; opacity: 0.5; }
 .linebreaker-marker { fill: rgb(112, 79, 79); }
 .user-linebreaker-marker { fill: rgb(229, 16, 16); }
-.trend-line { display: inline; stroke-width: 8px; stroke-linecap: butt; stroke-dasharray: 12px, 12px; stroke-opacity: 0.8; }
-.user-trend-line { display: inline; stroke-width: 8px; stroke-linecap: butt; stroke-dasharray: 12px, 12px; stroke-opacity: 0.8; }
-.datapoint.visited { stroke: var(--visited-color); fill: var(--visited-color); stroke-width: var(--visited-stroke-width); }
+.trend-line { display: inline; stroke-width: 8px; stroke-linecap: butt; stroke-dasharray: 12, 12; stroke-opacity: 0.8; }
+.user-trend-line { display: inline; stroke-width: 8px; stroke-linecap: butt; stroke-dasharray: 12, 12; stroke-opacity: 0.8; }
+.datapoint.visited:not(.highlighted) { stroke: var(--visited-color); fill: var(--visited-color); stroke-width: var(--visited-stroke-width); }
+.datapoint.highlighted { stroke: var(--highlighted-color); fill: var(--highlighted-color); stroke-width: var(--visited-stroke-width); }
 .lowlight { opacity: 0.2; }
 .hidden { display: none; }
-.control-column { display: flex; flex-direction: column; justify-content: space-between; align-items: flex-start; gap: 0.5em; }</style>
+.invis { opacity: 0; }
+.control-column { display: flex; flex-direction: column; justify-content: space-between; align-items: flex-start; gap: 0.5em; }
+.debug-grid-territory { fill: lightblue; stroke: blue; stroke-width: 2; opacity: 0.5; }</style>
         <defs>
         </defs>
         <metadata data-type="text/jim+json">
-    {
-  "version": {
-    "jim": "0.4.1"
-  },
+          {
   "datasets": [
     {
       "title": "Division of energy in the Universe",
@@ -183,41 +187,47 @@ use.visited-mark { pointer-events: none; }
       "json": "$.datasets[0].title"
     },
     "datapoint1": {
-      "dom": "#datapoint-dark_energy_73_Proportion_of_total_energy_in_the_Universe",
+      "dom": "#datapoint-dark_energy_73_proportion_of_total_energy_in_the_universe",
       "json": [
         "$.datasets[0].series[0].name",
         "$.datasets[0].series[0].records[0].*"
       ]
     },
     "datapoint2": {
-      "dom": "#datapoint-dark_matter_23_Proportion_of_total_energy_in_the_Universe",
+      "dom": "#datapoint-dark_matter_23_proportion_of_total_energy_in_the_universe",
       "json": [
         "$.datasets[0].series[0].name",
         "$.datasets[0].series[0].records[1].*"
       ]
     },
     "datapoint3": {
-      "dom": "#datapoint-nonluminous_matter_3_6_Proportion_of_total_energy_in_the_Universe",
+      "dom": "#datapoint-nonluminous_matter_3_6_proportion_of_total_energy_in_the_universe",
       "json": [
         "$.datasets[0].series[0].name",
         "$.datasets[0].series[0].records[2].*"
       ]
     },
     "datapoint4": {
-      "dom": "#datapoint-luminous_matter_0_4_Proportion_of_total_energy_in_the_Universe",
+      "dom": "#datapoint-luminous_matter_0_4_proportion_of_total_energy_in_the_universe",
       "json": [
         "$.datasets[0].series[0].name",
         "$.datasets[0].series[0].records[3].*"
       ]
     }
+  },
+  "version": {
+    "jim": "0.4.0"
   }
 }
         </metadata>
         <rect id="frame" pointer-events="all" x="0" y="0" width="100%" height="100%">
         </rect>
-        <g role="graphics-document" aria-roledescription="donut chart" transform="translate(25.60,8)">
-      <g id="chart-layers" transform="translate(0,0)">
-        <rect id="data-backdrop" width="600" height="450"/>
+        <g role="graphics-document" aria-roledescription="pie chart" transform="translate(25.60,8)">
+      <text class=" chart-title label " role="heading" x="163.03" y="14.67" text-anchor="start" id="chart-title">
+        Division of energy in the Universe
+      </text>
+      <g id="chart-layers" transform="translate(0,58)">
+        <rect id="data-backdrop" width="564.4" height="376"/>
         <g id="background-annotation-layer">
         <g>
         </g>
@@ -228,70 +238,59 @@ use.visited-mark { pointer-events: none; }
         </g>
         <g id="data-layer" role="dataset">
         <g id="series-proportion_of_total_energy_in_the_universe" class=" series ">
-        <g role="datapoint" id="datapoint-dark_energy_73_Proportion of total energy in the Universe" class=" datapoint radial-slice ">
-        <path id="datapoint-dark_energy_73_Proportion_of_total_energy_in_the_Universe" style="fill:hsl(225, 30%, 52%);" role="datapoint" d="&#xA;      M300,146.88&#xA;      L300,68.76&#xA;      A156.24,156.24&#xA;        0 1 1&#xA;        145.00,244.58&#xA;      &#xA;          L222.50,&#xA;          234.79&#xA;          A78.12,78.12&#xA;            0 1 0&#xA;            300,146.88&#xA;        &#xA;      Z"/>
-      <path style="stroke:hsl(225, 30%, 52%);" class=" radial-cat-label-leader " d="M417.19,328.32L428.20,351.43L438.20,351.43"/>
-        <text class=" radial-category-label label " role="datapoint" x="439.70" y="347.43" text-anchor="start" id="datapoint-dark_energy_73_Proportion_of_total_energy_in_the_Universe-rlb">
-              <tspan x="439.70" dy="0">
-                73% (73)
-              </tspan>
-              <tspan x="439.70" dy="16.5">
-                Dark Energy
-              </tspan>
+        <g role="datapoint" id="datapoint-dark_energy_73_proportion_of_total_energy_in_the_universe" class=" datapoint pastry-slice ">
+      <path id="datapoint-dark_energy_73_proportion_of_total_energy_in_the_universe" style="fill:hsl(225, 30%, 52%);" role="datapoint" d="&#10;      M282.20,217&#10;      L282.20,71.84&#10;      A145.16,145.16&#10;        0 1 1&#10;        138.19,235.19&#10;      &#10;      Z"/>
+      <path style="stroke:hsl(225, 30%, 52%);" class=" pastry-outside-label-leader " d="M391.09,313.00L403.59,328.61L413.59,328.61"/>
+      <text class=" pastry-outside-label label " role="datapoint" x="413.59" y="334.28" text-anchor="start" id="datapoint-dark_energy_73_proportion_of_total_energy_in_the_universe-rlb">
+        73% (73)
+      </text>
+      <text class=" pastry-inside-label label " role="datapoint" x="335.73" y="300.06" text-anchor="middle" id="datapoint-dark_energy_73_proportion_of_total_energy_in_the_universe-vlb" style="fill:hsl(0, 0%, 100%);">
+        Dark Energy
       </text>
         </g>
-        <g role="datapoint" id="datapoint-dark_matter_23_Proportion of total energy in the Universe" class=" datapoint radial-slice ">
-        <path id="datapoint-dark_matter_23_Proportion_of_total_energy_in_the_Universe" style="fill:hsl(12, 69%, 35%);" role="datapoint" d="&#xA;      M222.50,234.79&#xA;      L145.00,244.58&#xA;      A156.24,156.24&#xA;        0 0 1&#xA;        261.15,73.67&#xA;      &#xA;          L280.57,&#xA;          149.34&#xA;          A78.12,78.12&#xA;            0 0 0&#xA;            222.50,234.79&#xA;        &#xA;      Z"/>
-      <path style="stroke:hsl(12, 69%, 35%);" class=" radial-cat-label-leader " d="M170.78,137.18L159.01,131.56L149.01,131.56"/>
-        <text class=" radial-category-label label " role="datapoint" x="147.51" y="127.56" text-anchor="end" id="datapoint-dark_matter_23_Proportion_of_total_energy_in_the_Universe-rlb">
-              <tspan x="147.51" dy="0">
-                23% (23)
-              </tspan>
-              <tspan x="147.51" dy="16.5">
-                Dark Matter
-              </tspan>
+        <g role="datapoint" id="datapoint-dark_matter_23_proportion_of_total_energy_in_the_universe" class=" datapoint pastry-slice ">
+      <path id="datapoint-dark_matter_23_proportion_of_total_energy_in_the_universe" style="fill:hsl(12, 69%, 35%);" role="datapoint" d="&#10;      M282.20,217&#10;      L138.19,235.19&#10;      A145.16,145.16&#10;        0 0 1&#10;        246.10,76.40&#10;      &#10;      Z"/>
+      <path style="stroke:hsl(12, 69%, 35%);" class=" pastry-outside-label-leader " d="M162.14,135.41L148.87,120.79L138.87,120.79"/>
+      <text class=" pastry-outside-label label " role="datapoint" x="138.87" y="126.45" text-anchor="end" id="datapoint-dark_matter_23_proportion_of_total_energy_in_the_universe-rlb">
+        23% (23)
+      </text>
+      <text class=" pastry-inside-label label " role="datapoint" x="215.93" y="158.23" text-anchor="middle" id="datapoint-dark_matter_23_proportion_of_total_energy_in_the_universe-vlb" style="fill:hsl(0, 0%, 100%);">
+        Dark Matter
       </text>
         </g>
-        <g role="datapoint" id="datapoint-nonluminous_matter_3_6_Proportion of total energy in the Universe" class=" datapoint radial-slice ">
-        <path id="datapoint-nonluminous_matter_3_6_Proportion_of_total_energy_in_the_Universe" style="fill:hsl(75, 43%, 45%);" role="datapoint" d="&#xA;      M280.57,149.34&#xA;      L261.15,73.67&#xA;      A156.24,156.24&#xA;        0 0 1&#xA;        296.07,68.81&#xA;      &#xA;          L298.04,&#xA;          146.91&#xA;          A78.12,78.12&#xA;            0 0 0&#xA;            280.57,149.34&#xA;        &#xA;      Z"/>
-      <path style="stroke:hsl(75, 43%, 45%);" class=" radial-cat-label-leader " d="M278.47,70.25L273.59,60.35L263.59,60.35"/>
-        <text class=" radial-category-label label " role="datapoint" x="262.09" y="56.35" text-anchor="end" id="datapoint-nonluminous_matter_3_6_Proportion_of_total_energy_in_the_Universe-rlb">
-              <tspan x="262.09" dy="0">
+        <g role="datapoint" id="datapoint-nonluminous_matter_3_6_proportion_of_total_energy_in_the_universe" class=" datapoint pastry-slice ">
+      <path id="datapoint-nonluminous_matter_3_6_proportion_of_total_energy_in_the_universe" style="fill:hsl(75, 43%, 45%);" role="datapoint" d="&#10;      M282.20,217&#10;      L246.10,76.40&#10;      A145.16,145.16&#10;        0 0 1&#10;        278.55,71.89&#10;      &#10;      Z"/>
+      <path style="stroke:hsl(75, 43%, 45%);" class=" pastry-outside-label-leader " d="M262.20,73.23L256.49,63.32L246.49,63.32"/>
+      <text class=" pastry-outside-label label " role="datapoint" x="245.82" y="59.99" text-anchor="end" id="datapoint-nonluminous_matter_3_6_proportion_of_total_energy_in_the_universe-rlb">
+              <tspan x="245.82" dy="0">
                 4% (3.6)
               </tspan>
-              <tspan x="262.09" dy="16.5">
+              <tspan x="245.82" dy="18">
                 Nonluminous Matter
               </tspan>
       </text>
         </g>
-        <g role="datapoint" id="datapoint-luminous_matter_0_4_Proportion of total energy in the Universe" class=" datapoint radial-slice ">
-        <path id="datapoint-luminous_matter_0_4_Proportion_of_total_energy_in_the_Universe" style="fill:hsl(40, 98%, 69%);" role="datapoint" d="&#xA;      M298.04,146.91&#xA;      L296.07,68.81&#xA;      A156.24,156.24&#xA;        0 0 1&#xA;        300,68.76&#xA;      &#xA;          L300,&#xA;          146.88&#xA;          A78.12,78.12&#xA;            0 0 0&#xA;            298.04,146.91&#xA;        &#xA;      Z"/>
-      <path style="stroke:hsl(40, 98%, 69%);" class=" radial-cat-label-leader " d="M298.04,68.78L294.41,16.35L284.41,16.35"/>
-        <text class=" radial-category-label label " role="datapoint" x="282.91" y="12.35" text-anchor="end" id="datapoint-luminous_matter_0_4_Proportion_of_total_energy_in_the_Universe-rlb">
-              <tspan x="282.91" dy="0">
+        <g role="datapoint" id="datapoint-luminous_matter_0_4_proportion_of_total_energy_in_the_universe" class=" datapoint pastry-slice ">
+      <path id="datapoint-luminous_matter_0_4_proportion_of_total_energy_in_the_universe" style="fill:hsl(40, 98%, 69%);" role="datapoint" d="&#10;      M282.20,217&#10;      L278.55,71.89&#10;      A145.16,145.16&#10;        0 0 1&#10;        282.20,71.84&#10;      &#10;      Z"/>
+      <path style="stroke:hsl(40, 98%, 69%);" class=" pastry-outside-label-leader " d="M280.38,71.85L275.92,17.32L265.92,17.32"/>
+      <text class=" pastry-outside-label label " role="datapoint" x="265.25" y="13.99" text-anchor="end" id="datapoint-luminous_matter_0_4_proportion_of_total_energy_in_the_universe-rlb">
+              <tspan x="265.25" dy="0">
                 0% (0.4)
               </tspan>
-              <tspan x="282.91" dy="16.5">
+              <tspan x="265.25" dy="18">
                 Luminous Matter
               </tspan>
       </text>
         </g>
         </g>
-      <text class=" chart-title label " x="300" y="209.75" text-anchor="middle" id="chart-title">
-              <tspan x="300" dy="0">
-                Division of
-              </tspan>
-              <tspan x="300" dy="20.5">
-                energy in the
-              </tspan>
-              <tspan x="300" dy="20.5">
-                Universe
-              </tspan>
-      </text>
         </g>
         <g id="highlights-layer">
         </g>
         <g id="foreground-annotation-layer">
+        <g>
+        </g>
+        <g>
+        </g>
         <g>
         </g>
         <g>

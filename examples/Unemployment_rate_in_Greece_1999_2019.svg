@@ -1,0 +1,580 @@
+<svg tabindex="0" aria-label="Unemployment rate in Greece 1999-2019, accessible chart" xmlns="http://www.w3.org/2000/svg" data-charttype="bar" class="  " viewBox="0 0 600 450" style="font-family:Helvetica, sans-serif;font-weight:300;--axis-line-color:hsl(0, 0%, 0%);--label-color:hsl(0, 0%, 0%);" id="para7e00360f-13f8-4640-9e3c-b68cdd376691"><style>#para7e00360f-13f8-4640-9e3c-b68cdd376691 { --axis-line-color: hsl(0, 0%, 0%); --label-color: hsl(0, 0%, 0%); --tick-grid-color: hsl(270, 50%, 50%); --background-color: white; --theme-color: var(--fizz-theme-color, purple); --theme-color-light: var(--fizz-theme-color-light, hsl(275.4, 100%, 88%)); --theme-contrast-color: white; --fizz-theme-color: var(--paracharts-theme-color, navy); --fizz-theme-color-light: var(--paracharts-theme-color-light, hsl(210.5, 100%, 88%)); --visited-color: hsl(0, 100%, 50%); --highlighted-color: hsl(100, 100%, 50%); --visited-stroke-width: 6; --selected-color: var(--label-color); --datapoint-centroid: 50% 50%; --focus-animation: all 0.5s ease-in-out; --chart-cursor: pointer; --data-cursor: cell; --focus-shadow-color: gray; --focus-shadow: drop-shadow(0px 0px 4px var(--focus-shadow-color)); --caption-border: none; --caption-grid-template-columns: auto auto; --exploration-bar-display: flex; --chart-font-scale: 1; --chart-title-font-size: 12pt; --horiz-axis-title-font-size: 12pt; --vert-axis-title-font-size: 12pt; --horiz-axis-tick-label-font-size: 10pt; --vert-axis-tick-label-font-size: 10pt; --direct-label-font-size: 10pt; --legend-label-font-size: 10pt; display: block; font-family: "Trebuchet MS", Helvetica, sans-serif; font-size: var(--chart-view-font-size, 1rem); }
+#para7e00360f-13f8-4640-9e3c-b68cdd376691, :root { --axis-line-color: hsl(0, 0%, 0%); --label-color: hsl(0, 0%, 0%); --tick-grid-color: hsl(270, 50%, 50%); --background-color: white; --theme-color: var(--fizz-theme-color, purple); --theme-color-light: var(--fizz-theme-color-light, hsl(275.4, 100%, 88%)); --theme-contrast-color: white; --fizz-theme-color: var(--paracharts-theme-color, navy); --fizz-theme-color-light: var(--paracharts-theme-color-light, hsl(210.5, 100%, 88%)); --selected-color: var(--label-color); --datapoint-centroid: 50% 50%; --focus-animation: all 0.5s ease-in-out; --chart-cursor: pointer; --data-cursor: cell; --color-palette-series-0: hsl(225, 30%, 52%); --color-palette-series-1: hsl(12, 69%, 35%); --color-palette-series-2: hsl(75, 43%, 45%); --color-palette-series-3: hsl(40, 100%, 49%); --color-palette-series-4: hsl(215, 37%, 66%); --color-palette-series-5: hsl(63, 100%, 23%); --color-palette-series-6: hsl(34, 57%, 46%); --color-palette-series-7: hsl(51, 56%, 64%); --color-palette-series-8: hsl(253, 26%, 43%); --color-palette-series-9: hsl(85, 65%, 36%); --focus-shadow-color: gray; --focus-shadow: drop-shadow(0px 0px 4px var(--focus-shadow-color)); }
+.hidden { display: none !important; }
+.sr-only { border: 0px !important; clip: rect(1px, 1px, 1px, 1px) !important; clip-path: inset(50%) !important; height: 1px !important; overflow: hidden !important; margin: -1px !important; padding: 0px !important; position: absolute !important; width: 1px !important; white-space: nowrap !important; }
+* { font-family: "Trebuchet MS", Helvetica, sans-serif; }
+#y-axis-line { fill: none; stroke: var(--axis-line-color); stroke-width: 2px; stroke-linecap: round; }
+#x-axis-line { fill: none; stroke: var(--axis-line-color); opacity: 1; stroke-width: 2px; stroke-linecap: round; }
+.chart-title { font-size: 1.25rem; }
+.label { display: block; fill: var(--label-color); }
+.axis-title { text-anchor: middle; }
+.tick-label { fill: var(--label-color); }
+.tickmark-y { opacity: 0.2; }
+.tickmark-y-0 { fill: var(--tick-grid-color); stroke: var(--tick-grid-color); opacity: 1; stroke-width: 2px; stroke-linecap: round; }
+.tick-group-y:hover, .tick-group-y:hover .tickmark-y { font-weight: bold; opacity: 1; }
+.tickmark-x { opacity: 0.2; }
+.tickmark-x-0 { fill: var(--tick-grid-color); stroke: var(--tick-grid-color); opacity: 1; stroke-width: 2px; stroke-linecap: round; }
+.tick-group-x:hover, .tick-group-x:hover .tickmark_x { font-weight: bold; opacity: 1; }
+rect#data-backdrop { stroke: none; fill: none; pointer-events: all; }
+.stack { stroke-width: 0; }
+.bar:hover, .bar:focus { fill: rgb(166, 121, 210); outline: -webkit-focus-ring-color auto 2px; }
+.datapoint_background { fill: none; stroke: none; pointer-events: all; outline: none; }
+.datapoint_background:hover, .datapoint_background:focus { outline: -webkit-focus-ring-color auto 2px; box-shadow: none; }
+.data-line { fill: none; stroke-linecap: round; }
+.data_area { stroke: rgb(128, 64, 191); stroke-width: 3px; stroke-linecap: round; fill: none; }
+.data_area_background { stroke: none; fill: rgb(128, 64, 191); fill-opacity: 0.8; }
+.trendline { stroke: red; stroke-width: 3px; fill: none; }
+.center_label &gt; tspan.subtext { font-size: 2rem; text-anchor: middle; }
+g.datapoint { transform-origin: var(--datapoint-centroid); }
+g.datapoint g.datapoint_popup rect { fill: rgb(64, 64, 64); }
+g.datapoint g.datapoint_popup text { fill: white; font-size: 1rem; text-anchor: middle; }
+g.datapoint g.datapoint_popup { stroke: none; opacity: 0; transition: opacity 0.3s ease-in-out; }
+g.datapoint:focus g.datapoint_popup, g.datapoint:hover g.datapoint_popup { opacity: 1; transition: opacity 0.3s ease-in-out; }
+g.datapoint g.datapoint_popup .desc { opacity: 0; }
+g.datapoint:focus g.datapoint_popup .desc, g.datapoint:hover g.datapoint_popup .desc { opacity: 1; transition: opacity 0.3s ease-in-out 2s; }
+g.datapoint.visited { fill: var(--visited-color, red); stroke: var(--visited-color, red); transform-box: fill-box; }
+g.datapoint.visited:focus { transition: var(--focus-animation); filter: var(--focus-shadow); }
+[data-charttype="stepline"] g.datapoint.visited { fill: var(--visited-color, red); stroke: var(--visited-color, red); transform: none; }
+use.visited-mark { pointer-events: none; }
+@keyframes pulse-animation { 
+  0% { filter: drop-shadow(gray 0px 0px 0px); }
+  100% { filter: drop-shadow(gray 0px 0px 12px); }
+}
+.selected-datapoint-marker { fill: transparent; stroke: var(--selected-color); stroke-width: 3px; pointer-events: none; stroke-linejoin: round; }
+.symbol { stroke-linejoin: round; }
+.symbol.outline { fill: white; }
+.slice path { stroke: none; }
+.slice text { fill: black; stroke: black; text-anchor: middle; }
+:fullscreen, ::backdrop { background-color: var(--background-color); }
+.theme-diva { --color-palette-series-0: hsl(225, 30%, 52%); --color-palette-series-1: hsl(12, 69%, 35%); --color-palette-series-2: hsl(75, 43%, 45%); --color-palette-series-3: hsl(40, 100%, 49%); --color-palette-series-4: hsl(215, 37%, 66%); --color-palette-series-5: hsl(63, 100%, 23%); --color-palette-series-6: hsl(34, 57%, 46%); --color-palette-series-7: hsl(51, 56%, 64%); --color-palette-series-8: hsl(253, 26%, 43%); --color-palette-series-9: hsl(85, 65%, 36%); }
+.theme-deutan { --color-palette-series-0: #800080; --color-palette-series-1: #ff00ff; --color-palette-series-2: #ca0088; --color-palette-series-3: #fa0080; --color-palette-series-4: #b400b4; --color-palette-series-5: #4477AA; --color-palette-series-6: #EE6677; --color-palette-series-7: #228833; --color-palette-series-8: #CCBB44; --color-palette-series-9: #66CCEE; --color-palette-series-10: #AA3377; }
+.theme-protan { --color-palette-series-0: hsl(39, 70%, 54%); --color-palette-series-1: hsl(206, 68%, 66%); --color-palette-series-2: hsl(154, 39%, 44%); --color-palette-series-3: hsl(56, 81%, 66%); --color-palette-series-4: hsl(209, 57%, 43%); --color-palette-series-5: hsl(24, 68%, 46%); --color-palette-series-6: hsl(324, 35%, 62%); }
+.theme-tritan { --color-palette-series-0: #77AADD; --color-palette-series-1: #99DDFF; --color-palette-series-2: #44BB99; --color-palette-series-3: #BBCC33; --color-palette-series-4: #AAAAOO; --color-palette-series-5: #EEDD88; --color-palette-series-6: #FFAABB; }
+.theme-grayscale { --color-palette-series-0: #262626; --color-palette-series-1: #595959; --color-palette-series-2: #7f7f7f; --color-palette-series-3: #a1a1a1; --color-palette-series-4: #bababa; --color-palette-series-5: #d4d4d4; --color-palette-series-6: #ededed; }
+.series-0 { fill: var(--color-palette-series-0); stroke: var(--color-palette-series-0); }
+.series-1 { fill: var(--color-palette-series-1); stroke: var(--color-palette-series-1); }
+.series-2 { fill: var(--color-palette-series-2); stroke: var(--color-palette-series-2); }
+.series-3 { fill: var(--color-palette-series-3); stroke: var(--color-palette-series-3); }
+.series-4 { fill: var(--color-palette-series-4); stroke: var(--color-palette-series-4); }
+.series-5 { fill: var(--color-palette-series-5); stroke: var(--color-palette-series-5); }
+.series-6 { fill: var(--color-palette-series-6); stroke: var(--color-palette-series-6); }
+.series-7 { fill: var(--color-palette-series-7); stroke: var(--color-palette-series-7); }
+.series-8 { fill: var(--color-palette-series-8); stroke: var(--color-palette-series-8); }
+.series-9 { fill: var(--color-palette-series-9); stroke: var(--color-palette-series-9); }
+.range-highlights { fill: pink; stroke: pink; fill-opacity: 0.25; stroke-width: 4px; stroke-opacity: 0.5; }
+.range-highlights rect[data-id="0"] { fill: orange; stroke: orange; }
+.range-highlights rect[data-id="1"] { fill: cyan; stroke: cyan; }
+.linebreaker[data-state="active"] .linebreaker-marker { stroke: dodgerblue; stroke-width: 3px; }
+.best_fit_line[data-state="active"] { display: inline; fill: none; stroke: rgb(222, 13, 169); stroke-width: 8px; stroke-linecap: butt; stroke-dasharray: 12, 12; stroke-opacity: 0.5; }
+.best_fit_line[data-state="inactive"] { display: none; }
+.setting-views { display: flex; gap: 1rem; }
+.setting-views + .setting-views { margin-top: 0.5rem; }
+figure { display: inline-block; }
+svg { display: block; }
+.tab-content { display: flex; flex-direction: row; gap: 1rem; align-items: center; justify-content: space-between; padding: 0.2rem; }
+.tab-content.stacked { flex-direction: column; gap: 0.1rem; align-items: flex-start; justify-content: space-between; padding: 0.5rem 0.2rem; }
+#chart-colors-presets { border: none; padding: 0px; margin: 0px; }
+#chart-colors-presets label { display: flex; flex-direction: column; align-items: center; justify-content: space-between; }
+#chart-colors-presets label span { text-align: center; word-spacing: 20em; }
+#output_dialog { margin: 0px auto; }
+#output-dialog::backdrop { background: repeating-linear-gradient(45deg, rgba(128, 0, 128, 0.2), rgba(128, 0, 128, 0.2) 1px, rgba(128, 0, 128, 0.3) 1px, rgba(128, 0, 128, 0.3) 20px); }
+#output-dialog button { color: white; background-color: var(--theme-color); border: 1px solid var(--theme-color); }
+#output-dialog h1 { color: black; font-size: 1.3rem; font-weight: normal; }
+button { margin: 0.2rem; background-color: var(--theme-color); color: var(--theme-contrast-color); border: thin solid var(--theme-color); border-radius: 0.2em; padding: 0.2em; }
+#status_split { display: flex; flex-direction: column; justify-content: space-between; }
+[role="graphics-document"] { cursor: var(--chart-cursor); }
+#chart-layers { cursor: var(--data-cursor); }
+#para7e00360f-13f8-4640-9e3c-b68cdd376691 { --control-panel-icon: url(/lib/assets/info-icon-alt.svg); --summary-marker-size: 1.1rem; }
+figure { display: inline-block; margin: 0px; }
+#frame { fill: var(--background-color); stroke: none; }
+#frame.pending { fill: lightgray; }
+.darkmode { --axis-line-color: ghostwhite; --label-color: ghostwhite; --background-color: black; }
+#loading-message { fill: black; }
+#loading-message text { fill: white; }
+.grid-horiz { stroke: var(--axis-line-color); opacity: 0.2; }
+.grid-vert { stroke: var(--axis-line-color); opacity: 0.2; }
+#grid-zero { opacity: 0.6; stroke-width: 2; }
+.tick { stroke: var(--label-color); }
+.chart-title { font-size: calc(var(--chart-title-font-size)*var(--chart-font-scale)); }
+.axis-title-horiz { font-size: calc(var(--horiz-axis-title-font-size)*var(--chart-font-scale)); }
+.axis-title-vert { font-size: calc(var(--vert-axis-title-font-size)*var(--chart-font-scale)); }
+.direct-label { font-size: calc(var(--direct-label-font-size)*var(--chart-font-scale)); }
+.legend-label { font-size: calc(var(--legend-label-font-size)*var(--chart-font-scale)); }
+.label { fill: var(--label-color); stroke: none; }
+.tick-label-horiz { font-size: calc(var(--horiz-axis-tick-label-font-size)*var(--chart-font-scale)); }
+.tick-label-vert { font-size: calc(var(--vert-axis-tick-label-font-size)*var(--chart-font-scale)); }
+.bar-label { font-size: 13px; fill: white; }
+.pastry-inside-label { }
+.pastry-outside-label-leader { fill: none; stroke-width: 2; }
+.pastry-slice { stroke: white; stroke-width: 2; }
+.label-leader { stroke-width: 2; }
+#vert-axis-line { fill: none; stroke: var(--axis-line-color); stroke-width: 2px; stroke-linecap: round; }
+#horiz-axis-line { fill: none; stroke: var(--axis-line-color); opacity: 1; stroke-width: 2px; stroke-linecap: round; }
+rect#data-backdrop { stroke: none; fill: none; pointer-events: all; }
+.symbol { stroke-linejoin: round; }
+.symbol.outline { fill: white; }
+use.visited-mark { pointer-events: none; }
+.data-line { fill: none; stroke-linecap: round; }
+.range-highlight { fill: silver; opacity: 0.5; }
+.linebreaker-marker { fill: rgb(112, 79, 79); }
+.user-linebreaker-marker { fill: rgb(229, 16, 16); }
+.trend-line { display: inline; stroke-width: 8px; stroke-linecap: butt; stroke-dasharray: 12, 12; stroke-opacity: 0.8; }
+.user-trend-line { display: inline; stroke-width: 8px; stroke-linecap: butt; stroke-dasharray: 12, 12; stroke-opacity: 0.8; }
+.datapoint.visited:not(.highlighted) { stroke: var(--visited-color); fill: var(--visited-color); stroke-width: var(--visited-stroke-width); }
+.datapoint.highlighted { stroke: var(--highlighted-color); fill: var(--highlighted-color); stroke-width: var(--visited-stroke-width); }
+.lowlight { opacity: 0.2; }
+.hidden { display: none; }
+.invis { opacity: 0; }
+.control-column { display: flex; flex-direction: column; justify-content: space-between; align-items: flex-start; gap: 0.5em; }
+.debug-grid-territory { fill: lightblue; stroke: blue; stroke-width: 2; opacity: 0.5; }</style>
+        <defs>
+            <clipPath id="clip-path">
+              <rect x="0" y="0" width="513.57" height="330.65159797668457">
+              </rect>
+            </clipPath>
+        </defs>
+        <metadata data-type="text/jim+json">
+          {
+  "datasets": [
+    {
+      "title": "Unemployment rate in Greece 1999-2019",
+      "facets": {
+        "x": {
+          "label": "Year",
+          "variableType": "independent",
+          "measure": "interval",
+          "datatype": "date",
+          "units": "year",
+          "displayType": {
+            "type": "axis"
+          }
+        },
+        "y": {
+          "label": "Unemployment rate",
+          "variableType": "dependent",
+          "measure": "ratio",
+          "datatype": "number",
+          "multiplier": 0.01,
+          "displayType": {
+            "type": "axis"
+          }
+        }
+      },
+      "series": [
+        {
+          "name": "Unemployment rate",
+          "type": "column",
+          "records": [
+            {
+              "x": "1999",
+              "y": "11.85"
+            },
+            {
+              "x": "2000",
+              "y": "11.25"
+            },
+            {
+              "x": "2001",
+              "y": "10.46"
+            },
+            {
+              "x": "2002",
+              "y": "9.98"
+            },
+            {
+              "x": "2003",
+              "y": "9.41"
+            },
+            {
+              "x": "2004",
+              "y": "10.31"
+            },
+            {
+              "x": "2005",
+              "y": "9.99"
+            },
+            {
+              "x": "2006",
+              "y": "9.01"
+            },
+            {
+              "x": "2007",
+              "y": "8.4"
+            },
+            {
+              "x": "2008",
+              "y": "7.76"
+            },
+            {
+              "x": "2009",
+              "y": "9.62"
+            },
+            {
+              "x": "2010",
+              "y": "12.71"
+            },
+            {
+              "x": "2011",
+              "y": "17.86"
+            },
+            {
+              "x": "2012",
+              "y": "24.44"
+            },
+            {
+              "x": "2013",
+              "y": "27.47"
+            },
+            {
+              "x": "2014",
+              "y": "26.49"
+            },
+            {
+              "x": "2015",
+              "y": "24.9"
+            },
+            {
+              "x": "2016",
+              "y": "23.54"
+            },
+            {
+              "x": "2017",
+              "y": "21.49"
+            },
+            {
+              "x": "2018",
+              "y": "19.21"
+            },
+            {
+              "x": "2019",
+              "y": "18.08"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "selectors": {
+    "chartTitle": {
+      "dom": "#chart-title",
+      "json": "$.datasets[0].title"
+    },
+    "datapoint1": {
+      "dom": "#datapoint-1999_11_85_unemployment_rate",
+      "json": [
+        "$.datasets[0].series[0].name",
+        "$.datasets[0].series[0].records[0].*"
+      ]
+    },
+    "datapoint2": {
+      "dom": "#datapoint-2000_11_25_unemployment_rate",
+      "json": [
+        "$.datasets[0].series[0].name",
+        "$.datasets[0].series[0].records[1].*"
+      ]
+    },
+    "datapoint3": {
+      "dom": "#datapoint-2001_10_46_unemployment_rate",
+      "json": [
+        "$.datasets[0].series[0].name",
+        "$.datasets[0].series[0].records[2].*"
+      ]
+    },
+    "datapoint4": {
+      "dom": "#datapoint-2002_9_98_unemployment_rate",
+      "json": [
+        "$.datasets[0].series[0].name",
+        "$.datasets[0].series[0].records[3].*"
+      ]
+    },
+    "datapoint5": {
+      "dom": "#datapoint-2003_9_41_unemployment_rate",
+      "json": [
+        "$.datasets[0].series[0].name",
+        "$.datasets[0].series[0].records[4].*"
+      ]
+    },
+    "datapoint6": {
+      "dom": "#datapoint-2004_10_31_unemployment_rate",
+      "json": [
+        "$.datasets[0].series[0].name",
+        "$.datasets[0].series[0].records[5].*"
+      ]
+    },
+    "datapoint7": {
+      "dom": "#datapoint-2005_9_99_unemployment_rate",
+      "json": [
+        "$.datasets[0].series[0].name",
+        "$.datasets[0].series[0].records[6].*"
+      ]
+    },
+    "datapoint8": {
+      "dom": "#datapoint-2006_9_01_unemployment_rate",
+      "json": [
+        "$.datasets[0].series[0].name",
+        "$.datasets[0].series[0].records[7].*"
+      ]
+    },
+    "datapoint9": {
+      "dom": "#datapoint-2007_8_4_unemployment_rate",
+      "json": [
+        "$.datasets[0].series[0].name",
+        "$.datasets[0].series[0].records[8].*"
+      ]
+    },
+    "datapoint10": {
+      "dom": "#datapoint-2008_7_76_unemployment_rate",
+      "json": [
+        "$.datasets[0].series[0].name",
+        "$.datasets[0].series[0].records[9].*"
+      ]
+    },
+    "datapoint11": {
+      "dom": "#datapoint-2009_9_62_unemployment_rate",
+      "json": [
+        "$.datasets[0].series[0].name",
+        "$.datasets[0].series[0].records[10].*"
+      ]
+    },
+    "datapoint12": {
+      "dom": "#datapoint-2010_12_71_unemployment_rate",
+      "json": [
+        "$.datasets[0].series[0].name",
+        "$.datasets[0].series[0].records[11].*"
+      ]
+    },
+    "datapoint13": {
+      "dom": "#datapoint-2011_17_86_unemployment_rate",
+      "json": [
+        "$.datasets[0].series[0].name",
+        "$.datasets[0].series[0].records[12].*"
+      ]
+    },
+    "datapoint14": {
+      "dom": "#datapoint-2012_24_44_unemployment_rate",
+      "json": [
+        "$.datasets[0].series[0].name",
+        "$.datasets[0].series[0].records[13].*"
+      ]
+    },
+    "datapoint15": {
+      "dom": "#datapoint-2013_27_47_unemployment_rate",
+      "json": [
+        "$.datasets[0].series[0].name",
+        "$.datasets[0].series[0].records[14].*"
+      ]
+    },
+    "datapoint16": {
+      "dom": "#datapoint-2014_26_49_unemployment_rate",
+      "json": [
+        "$.datasets[0].series[0].name",
+        "$.datasets[0].series[0].records[15].*"
+      ]
+    },
+    "datapoint17": {
+      "dom": "#datapoint-2015_24_9_unemployment_rate",
+      "json": [
+        "$.datasets[0].series[0].name",
+        "$.datasets[0].series[0].records[16].*"
+      ]
+    },
+    "datapoint18": {
+      "dom": "#datapoint-2016_23_54_unemployment_rate",
+      "json": [
+        "$.datasets[0].series[0].name",
+        "$.datasets[0].series[0].records[17].*"
+      ]
+    },
+    "datapoint19": {
+      "dom": "#datapoint-2017_21_49_unemployment_rate",
+      "json": [
+        "$.datasets[0].series[0].name",
+        "$.datasets[0].series[0].records[18].*"
+      ]
+    },
+    "datapoint20": {
+      "dom": "#datapoint-2018_19_21_unemployment_rate",
+      "json": [
+        "$.datasets[0].series[0].name",
+        "$.datasets[0].series[0].records[19].*"
+      ]
+    },
+    "datapoint21": {
+      "dom": "#datapoint-2019_18_08_unemployment_rate",
+      "json": [
+        "$.datasets[0].series[0].name",
+        "$.datasets[0].series[0].records[20].*"
+      ]
+    }
+  },
+  "version": {
+    "jim": "0.4.0"
+  }
+}
+        </metadata>
+        <rect id="frame" pointer-events="all" x="0" y="0" width="100%" height="100%">
+        </rect>
+        <g role="graphics-document" aria-roledescription="column chart" transform="translate(25.60,8)">
+      <text class=" chart-title label " role="heading" x="135.00" y="14.67" text-anchor="start" id="chart-title">
+        Unemployment rate in Greece 1999-2019
+      </text>
+        <g id="vert-axis" role="graphics-object" aria-roledescription="y-axis" transform="translate(0,58)">
+      <text class=" axis-title-vert label " role="heading" x="14.67" y="165.33" text-anchor="middle" transform="&#10;        translate(14.67,165.33)&#10;        rotate(-90)&#10;        translate(-14.67,-165.33)" id="axis-title-vert">
+        Unemployment rate
+      </text>
+        <g id="tick-label-tier-vert-0" transform="translate(26,0)">
+      <text class=" tick-label tick-label-vert west label " role="axislabel" x="14.83" y="335.54" text-anchor="end" id="tick-label-vert-0">
+        0
+      </text>
+      <text class=" tick-label tick-label-vert west label " role="axislabel" x="14.83" y="280.43" text-anchor="end" id="tick-label-vert-1">
+        5
+      </text>
+      <text class=" tick-label tick-label-vert west label " role="axislabel" x="14.83" y="225.32" text-anchor="end" id="tick-label-vert-2">
+        10
+      </text>
+      <text class=" tick-label tick-label-vert west label " role="axislabel" x="14.83" y="170.21" text-anchor="end" id="tick-label-vert-3">
+        15
+      </text>
+      <text class=" tick-label tick-label-vert west label " role="axislabel" x="14.83" y="115.11" text-anchor="end" id="tick-label-vert-4">
+        20
+      </text>
+      <text class=" tick-label tick-label-vert west label " role="axislabel" x="14.83" y="60.00" text-anchor="end" id="tick-label-vert-5">
+        25
+      </text>
+      <text class=" tick-label tick-label-vert west label " role="axislabel" x="14.83" y="4.89" text-anchor="end" id="tick-label-vert-6">
+        30
+      </text>
+        </g>
+        <g id="vert-axis-tick-strip" transform="translate(40.83,0)">
+      <path id="" class=" tick tick-vert " d="M10,0 h-10"/>
+      <path id="" class=" tick tick-vert " d="M10,55.11 h-10"/>
+      <path id="" class=" tick tick-vert " d="M10,110.22 h-10"/>
+      <path id="" class=" tick tick-vert " d="M10,165.33 h-10"/>
+      <path id="" class=" tick tick-vert " d="M10,220.43 h-10"/>
+      <path id="" class=" tick tick-vert " d="M10,275.54 h-10"/>
+      <path id="" class=" tick tick-vert " d="M10,330.65 h-10"/>
+      <path id="" class=" grid grid-vert " d="M10,0 h513.57"/>
+      <path id="" class=" grid grid-vert " d="M10,55.11 h513.57"/>
+      <path id="" class=" grid grid-vert " d="M10,110.22 h513.57"/>
+      <path id="" class=" grid grid-vert " d="M10,165.33 h513.57"/>
+      <path id="" class=" grid grid-vert " d="M10,220.43 h513.57"/>
+      <path id="" class=" grid grid-vert " d="M10,275.54 h513.57"/>
+      <path id="grid-zero" class=" grid grid-vert " d="M10,330.65 h513.57"/>
+        </g>
+      <path transform="translate(50.83,0)" id="vert-axis-line" class=" axis-line axis-line-vert " d="M0,0 v340.65"/>
+        </g>
+        <g id="horiz-axis" role="graphics-object" aria-roledescription="x-axis" transform="translate(50.83,388.65)">
+      <path id="horiz-axis-line" class=" axis-line axis-line-horiz " d="M-10,0 h523.57"/>
+        <g id="horiz-axis-tick-strip">
+      <path id="" class=" tick tick-horiz " d="M24.46,0 v10"/>
+      <path id="" class=" tick tick-horiz " d="M48.91,0 v10"/>
+      <path id="" class=" tick tick-horiz " d="M73.37,0 v10"/>
+      <path id="" class=" tick tick-horiz " d="M97.82,0 v10"/>
+      <path id="" class=" tick tick-horiz " d="M122.28,0 v10"/>
+      <path id="" class=" tick tick-horiz " d="M146.73,0 v10"/>
+      <path id="" class=" tick tick-horiz " d="M171.19,0 v10"/>
+      <path id="" class=" tick tick-horiz " d="M195.65,0 v10"/>
+      <path id="" class=" tick tick-horiz " d="M220.10,0 v10"/>
+      <path id="" class=" tick tick-horiz " d="M244.56,0 v10"/>
+      <path id="" class=" tick tick-horiz " d="M269.01,0 v10"/>
+      <path id="" class=" tick tick-horiz " d="M293.47,0 v10"/>
+      <path id="" class=" tick tick-horiz " d="M317.92,0 v10"/>
+      <path id="" class=" tick tick-horiz " d="M342.38,0 v10"/>
+      <path id="" class=" tick tick-horiz " d="M366.84,0 v10"/>
+      <path id="" class=" tick tick-horiz " d="M391.29,0 v10"/>
+      <path id="" class=" tick tick-horiz " d="M415.75,0 v10"/>
+      <path id="" class=" tick tick-horiz " d="M440.20,0 v10"/>
+      <path id="" class=" tick tick-horiz " d="M464.66,0 v10"/>
+      <path id="" class=" tick tick-horiz " d="M489.11,0 v10"/>
+      <path id="" class=" tick tick-horiz " d="M513.57,0 v10"/>
+        </g>
+        <g id="tick-label-tier-horiz-0" transform="translate(0,18)">
+      <text class=" tick-label tick-label-horiz south label " role="axislabel" x="20.71" y="8.49" text-anchor="end" transform="&#10;        translate(20.71,8.49)&#10;        rotate(-45)&#10;        translate(-20.71,-8.49)" id="tick-label-horiz-0">
+        1999
+      </text>
+      <text class=" tick-label tick-label-horiz south label " role="axislabel" x="69.62" y="8.49" text-anchor="end" transform="&#10;        translate(69.62,8.49)&#10;        rotate(-45)&#10;        translate(-69.62,-8.49)" id="tick-label-horiz-2">
+        2001
+      </text>
+      <text class=" tick-label tick-label-horiz south label " role="axislabel" x="118.54" y="8.49" text-anchor="end" transform="&#10;        translate(118.54,8.49)&#10;        rotate(-45)&#10;        translate(-118.54,-8.49)" id="tick-label-horiz-4">
+        2003
+      </text>
+      <text class=" tick-label tick-label-horiz south label " role="axislabel" x="167.45" y="8.49" text-anchor="end" transform="&#10;        translate(167.45,8.49)&#10;        rotate(-45)&#10;        translate(-167.45,-8.49)" id="tick-label-horiz-6">
+        2005
+      </text>
+      <text class=" tick-label tick-label-horiz south label " role="axislabel" x="216.36" y="8.49" text-anchor="end" transform="&#10;        translate(216.36,8.49)&#10;        rotate(-45)&#10;        translate(-216.36,-8.49)" id="tick-label-horiz-8">
+        2007
+      </text>
+      <text class=" tick-label tick-label-horiz south label " role="axislabel" x="265.27" y="8.49" text-anchor="end" transform="&#10;        translate(265.27,8.49)&#10;        rotate(-45)&#10;        translate(-265.27,-8.49)" id="tick-label-horiz-10">
+        2009
+      </text>
+      <text class=" tick-label tick-label-horiz south label " role="axislabel" x="314.18" y="8.49" text-anchor="end" transform="&#10;        translate(314.18,8.49)&#10;        rotate(-45)&#10;        translate(-314.18,-8.49)" id="tick-label-horiz-12">
+        2011
+      </text>
+      <text class=" tick-label tick-label-horiz south label " role="axislabel" x="363.09" y="8.49" text-anchor="end" transform="&#10;        translate(363.09,8.49)&#10;        rotate(-45)&#10;        translate(-363.09,-8.49)" id="tick-label-horiz-14">
+        2013
+      </text>
+      <text class=" tick-label tick-label-horiz south label " role="axislabel" x="412.00" y="8.49" text-anchor="end" transform="&#10;        translate(412.00,8.49)&#10;        rotate(-45)&#10;        translate(-412.00,-8.49)" id="tick-label-horiz-16">
+        2015
+      </text>
+      <text class=" tick-label tick-label-horiz south label " role="axislabel" x="460.92" y="8.49" text-anchor="end" transform="&#10;        translate(460.92,8.49)&#10;        rotate(-45)&#10;        translate(-460.92,-8.49)" id="tick-label-horiz-18">
+        2017
+      </text>
+      <text class=" tick-label tick-label-horiz south label " role="axislabel" x="509.83" y="8.49" text-anchor="end" transform="&#10;        translate(509.83,8.49)&#10;        rotate(-45)&#10;        translate(-509.83,-8.49)" id="tick-label-horiz-20">
+        2019
+      </text>
+        </g>
+        </g>
+      <g id="chart-layers" transform="translate(50.83,58)">
+        <rect id="data-backdrop" width="513.57" height="330.65159797668457"/>
+        <g id="background-annotation-layer">
+        <g>
+        </g>
+        <g>
+        </g>
+        <g>
+        </g>
+        </g>
+        <g id="data-layer" role="dataset">
+        <g id="series-unemployment_rate" class=" series " style="fill:hsl(225, 30%, 52%);stroke:hsl(225, 30%, 52%);stroke-width:4;">
+      <rect id="datapoint-1999_11_85_unemployment_rate" style="stroke-width:0;" class=" bar datapoint " role="datapoint" x="1.53" y="200.04" width="21.40" height="130.61"/>
+      <rect id="datapoint-2000_11_25_unemployment_rate" style="stroke-width:0;" class=" bar datapoint " role="datapoint" x="25.98" y="206.66" width="21.40" height="123.99"/>
+      <rect id="datapoint-2001_10_46_unemployment_rate" style="stroke-width:0;" class=" bar datapoint " role="datapoint" x="50.44" y="215.36" width="21.40" height="115.29"/>
+      <rect id="datapoint-2002_9_98_unemployment_rate" style="stroke-width:0;" class=" bar datapoint " role="datapoint" x="74.90" y="220.65" width="21.40" height="110.00"/>
+      <rect id="datapoint-2003_9_41_unemployment_rate" style="stroke-width:0;" class=" bar datapoint " role="datapoint" x="99.35" y="226.94" width="21.40" height="103.71"/>
+      <rect id="datapoint-2004_10_31_unemployment_rate" style="stroke-width:0;" class=" bar datapoint " role="datapoint" x="123.81" y="217.02" width="21.40" height="113.63"/>
+      <rect id="datapoint-2005_9_99_unemployment_rate" style="stroke-width:0;" class=" bar datapoint " role="datapoint" x="148.26" y="220.54" width="21.40" height="110.11"/>
+      <rect id="datapoint-2006_9_01_unemployment_rate" style="stroke-width:0;" class=" bar datapoint " role="datapoint" x="172.72" y="231.35" width="21.40" height="99.31"/>
+      <rect id="datapoint-2007_8_4_unemployment_rate" style="stroke-width:0;" class=" bar datapoint " role="datapoint" x="197.17" y="238.07" width="21.40" height="92.58"/>
+      <rect id="datapoint-2008_7_76_unemployment_rate" style="stroke-width:0;" class=" bar datapoint " role="datapoint" x="221.63" y="245.12" width="21.40" height="85.53"/>
+      <rect id="datapoint-2009_9_62_unemployment_rate" style="stroke-width:0;" class=" bar datapoint " role="datapoint" x="246.09" y="224.62" width="21.40" height="106.03"/>
+      <rect id="datapoint-2010_12_71_unemployment_rate" style="stroke-width:0;" class=" bar datapoint " role="datapoint" x="270.54" y="190.57" width="21.40" height="140.09"/>
+      <rect id="datapoint-2011_17_86_unemployment_rate" style="stroke-width:0;" class=" bar datapoint " role="datapoint" x="295.00" y="133.80" width="21.40" height="196.85"/>
+      <rect id="datapoint-2012_24_44_unemployment_rate" style="stroke-width:0;" class=" bar datapoint " role="datapoint" x="319.45" y="61.28" width="21.40" height="269.37"/>
+      <rect id="datapoint-2013_27_47_unemployment_rate" style="stroke-width:0;" class=" bar datapoint " role="datapoint" x="343.91" y="27.88" width="21.40" height="302.77"/>
+      <rect id="datapoint-2014_26_49_unemployment_rate" style="stroke-width:0;" class=" bar datapoint " role="datapoint" x="368.36" y="38.69" width="21.40" height="291.97"/>
+      <rect id="datapoint-2015_24_9_unemployment_rate" style="stroke-width:0;" class=" bar datapoint " role="datapoint" x="392.82" y="56.21" width="21.40" height="274.44"/>
+      <rect id="datapoint-2016_23_54_unemployment_rate" style="stroke-width:0;" class=" bar datapoint " role="datapoint" x="417.28" y="71.20" width="21.40" height="259.45"/>
+      <rect id="datapoint-2017_21_49_unemployment_rate" style="stroke-width:0;" class=" bar datapoint " role="datapoint" x="441.73" y="93.79" width="21.40" height="236.86"/>
+      <rect id="datapoint-2018_19_21_unemployment_rate" style="stroke-width:0;" class=" bar datapoint " role="datapoint" x="466.19" y="118.92" width="21.40" height="211.73"/>
+      <rect id="datapoint-2019_18_08_unemployment_rate" style="stroke-width:0;" class=" bar datapoint " role="datapoint" x="490.64" y="131.38" width="21.40" height="199.27"/>
+        </g>
+        </g>
+        <g id="highlights-layer">
+        </g>
+        <g id="foreground-annotation-layer">
+        <g>
+        </g>
+        <g>
+        </g>
+        <g>
+        </g>
+        <g>
+        </g>
+        </g>
+        <g id="selection-layer">
+        </g>
+        <g id="focus-layer">
+        </g>
+      </g>
+        </g>
+      </svg>
