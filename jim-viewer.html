@@ -291,6 +291,7 @@
                 <div id="status-messages" aria-live="polite" aria-atomic="true"></div>
             </section>
 
+            <div id="selector-list-panel" style="margin-bottom:16px;display:none;"></div>
             <section class="viewer-section" aria-labelledby="visualization-heading">
                 <h2 id="visualization-heading">Interactive Visualization</h2>
                 <div id="visualization" aria-live="polite" aria-label="SVG visualization display area">
@@ -848,15 +849,47 @@
         // --- Behavior validation ---
         if (Object.keys(selectors).length) {
             const selectorKeys = Object.keys(selectors);
-            const selectorsWithBehavior = new Set(behaviors.map(b => b.target?.selector).filter(Boolean));
-            const missing = selectorKeys.filter(key => {
+            const mapped = [];
+            const missing = [];
+            const behaviorWarnings = [];
+            var svg = this.currentDoc.querySelector('svg');
+            for (let j = 0; j < behaviors.length; j++) {
+                const tgtSelector = behaviors[j].target && behaviors[j].target.selector;
+                if (tgtSelector) {
+                    let B = [];
+                    try { B = Array.from(svg.querySelectorAll(tgtSelector)); } catch (e) {}
+                    if (B.length === 0) behaviorWarnings.push(`Behavior[${j}] target.selector '${tgtSelector}' matched no SVG elements.`);
+                }
+            }
+            for (let i = 0; i < selectorKeys.length; i++) {
+                const key = selectorKeys[i];
                 const dom = selectors[key]?.dom;
-                return dom && !selectorsWithBehavior.has(dom);
-            });
+                let isMapped = false;
+                let behaviorElsewhere = false;
+                let A = [];
+                try { A = Array.from(svg.querySelectorAll(dom)); } catch (e) {}
+                for (let j = 0; j < behaviors.length; j++) {
+                    const tgtSelector = behaviors[j].target && behaviors[j].target.selector;
+                    if (tgtSelector) {
+                        let B = [];
+                        try { B = Array.from(svg.querySelectorAll(tgtSelector)); } catch (e) {}
+                        // Intersection
+                        if (A.some(n => n.matches && n.matches(tgtSelector))) { isMapped = true; break; }
+                        // Behavior ancestor of selector
+                        if (A.some(a => B.some(b => b.contains && b.contains(a)))) { isMapped = true; break; }
+                        // Selector ancestor of behavior
+                        if (B.some(b => A.some(a => a.contains && a.contains(b)))) { isMapped = true; break; }
+                        if (B.length && !isMapped) behaviorElsewhere = true;
+                    }
+                }
+                if (isMapped) mapped.push(key);
+                else missing.push(key);
+            }
             results.behaviorSummary = {
                 missing,
                 total: selectorKeys.length,
-                mapped: selectorsWithBehavior.size
+                mapped: mapped.length,
+                warnings: behaviorWarnings
             };
         }
         // --- SVG Element Inventory: ALWAYS run ---
@@ -1126,6 +1159,50 @@
                 }
             }
             displayMetadataSummary() {
+                // Render selector list panel if JIM metadata is present
+                var selectorPanel = document.getElementById('selector-list-panel');
+                if (this.jimData && this.jimData.selectors && Object.keys(this.jimData.selectors).length) {
+                    var selectorKeys = Object.keys(this.jimData.selectors);
+                    var behaviors = this.jimData.behaviors || [];
+                    var selectorPanelHtml = "<div style='background:#f8fafc;border:1px solid #e2e8f0;border-radius:6px;padding:12px 16px;margin-bottom:8px;'>";
+                    selectorPanelHtml += "<strong style='color:#1e293b;font-size:15px;'>Selectors</strong>";
+                    selectorPanelHtml += "<div style='display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;'>";
+                    var svg = this.currentDoc.querySelector('svg');
+                    for (var k = 0; k < selectorKeys.length; k++) {
+                        var key = selectorKeys[k];
+                        var dom = this.jimData.selectors[key].dom;
+                        var hasBehavior = false;
+                        var behaviorElsewhere = false;
+                        var A = [];
+                        try { A = Array.from(svg.querySelectorAll(dom)); } catch (e) {}
+                        for (var j = 0; j < behaviors.length; j++) {
+                            var tgtSelector = behaviors[j].target && behaviors[j].target.selector;
+                            if (tgtSelector) {
+                                var B = [];
+                                try { B = Array.from(svg.querySelectorAll(tgtSelector)); } catch (e) {}
+                                // Intersection
+                                if (A.some(n => n.matches && n.matches(tgtSelector))) { hasBehavior = true; break; }
+                                // Behavior ancestor of selector
+                                if (A.some(a => B.some(b => b.contains && b.contains(a)))) { hasBehavior = true; break; }
+                                // Selector ancestor of behavior
+                                if (B.some(b => A.some(a => a.contains && a.contains(b)))) { hasBehavior = true; break; }
+                                if (B.length && !hasBehavior) behaviorElsewhere = true;
+                            }
+                        }
+                        var style = hasBehavior
+                            ? "background:#d1fae5;border:1px solid #10b981;color:#065f46;"
+                            : "background:#e0e7ef;border:none;color:#1e293b;";
+                        var icon = hasBehavior ? "<span style='margin-right:4px;'>✓</span>" : "";
+                        var hint = "";
+                        selectorPanelHtml += "<button style='"+style+" padding:6px 12px;border-radius:4px;cursor:pointer;font-size:13px;margin-bottom:6px;' onclick='window.jimViewer.showElementInfo(\""+key+"\", \"select\", null);'>"+icon+key+hint+"</button>";
+                    }
+                    selectorPanelHtml += "</div></div>";
+                    selectorPanel.innerHTML = selectorPanelHtml;
+                    selectorPanel.style.display = '';
+                } else {
+                    selectorPanel.innerHTML = '';
+                    selectorPanel.style.display = 'none';
+                }
                 console.log('displayMetadataSummary called, JIM data present:', !!this.jimData);
                 const summary = document.getElementById('metadata-summary');
                 // Show spec compliance box if preflight found errors/warnings
@@ -1336,19 +1413,19 @@
                 if (!items.length) return;
                 const label = category[0].toUpperCase() + category.slice(1) + ' Elements';
                 html += `<h5 style="margin:8px 0 6px; font-size:13px; color:#374151; font-weight:600;">${label} (${items.length})</h5>`;
-                html += '<ul style="list-style:none; padding:0; margin:0;">';
+                html += '<div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:8px;">';
 
                 items.forEach((item, idx) => {
                     const jimBadge = item.hasJIM
-                        ? '<span style="background:#10b981;color:#fff;padding:2px 6px;border-radius:3px;font-size:11px;margin-left:8px;">JIM</span>'
-                        : '<span style="background:#94a3b8;color:#fff;padding:2px 6px;border-radius:3px;font-size:11px;margin-left:8px;">No JIM</span>';
+                        ? '<span style="background:#10b981;color:#fff;padding:2px 6px;border-radius:3px;font-size:11px;display:inline-block;vertical-align:middle;margin-left:4px;">JIM</span>'
+                        : '<span style="background:#94a3b8;color:#fff;padding:2px 6px;border-radius:3px;font-size:11px;display:inline-block;vertical-align:middle;margin-left:4px;">No JIM</span>';
 
                     const clickHandler = `handleInventoryItemClick('${category}', ${idx})`;
                     html += `
-                        <li tabindex="0" style="background:#f8fafc;border:1px solid #e2e8f0;padding:8px;margin:6px 0;border-radius:4px;font-size:12px;cursor:pointer;"
+                        <div tabindex="0" style="background:#f8fafc;border:1px solid #e2e8f0;padding:8px;border-radius:4px;font-size:12px;cursor:pointer;box-sizing:border-box;display:inline-block;vertical-align:top;margin-bottom:4px;"
                                 onclick="${clickHandler}"
                                 onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();${clickHandler};}">
-                            <div><code>${item.selector}</code> ${jimBadge}</div>
+                            <div style="display:inline-flex;align-items:center;"><code>${item.selector}</code>${jimBadge}</div>
                             ${item.textContent ? `<div style="color:#64748b;margin-top:4px;">Text: \"${item.textContent}\"</div>` : ''}
                             <div style="margin-top:4px; color:#64748b;">
                                 ${item.accessibility.tabindex !== null ? `tabindex=\"${item.accessibility.tabindex}\" ` : ''}
@@ -1361,10 +1438,10 @@
                                 ${item.accessibility.hasDesc ? '&lt;desc&gt; ' : ''}
                             </div>
                             ${item.suggestions?.length ? `<div style=\"color:#d97706; margin-top:4px; font-size:11px;\">💡 ${item.suggestions.join('; ')}</div>` : ''}
-                        </li>`;
+                        </div>`;
                 });
 
-                html += '</ul>';
+                html += '</div>';
             });
 
             return html;
