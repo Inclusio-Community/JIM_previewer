@@ -1,14 +1,28 @@
+
+> **License:** MIT — See [LICENSE](LICENSE) for details.
+
+
+## About / Project Status
+
+This is a public, open source repository supporting the [JIM (JSON for Interactive Media) specification](https://inclusio-community.github.io/json-image-metadata/). The JIM Metadata Viewer is designed for developers, researchers, and accessibility advocates working with SVG graphics and JIM metadata. It provides robust validation, accessibility inspection, and interactive visualization for JIM-enabled and standard SVG files.
+
 # JIM Metadata Viewer
 
 An interactive tool for analyzing and validating JSON for Interactive Media (JIM) metadata embedded in SVG files. Also functions as a comprehensive SVG accessibility inspector.
 
 ## Features
 
-- **JIM Validation**: Validates JIM metadata against specification requirements
-- **Interactive Visualization**: Click SVG elements to inspect their JIM mappings and data
-- **Accessibility Audit**: Analyzes SVG accessibility attributes and provides recommendations
-- **SVG-Only Mode**: Works with regular SVG files even without JIM metadata
-- **Screen Reader Support**: Full keyboard navigation and ARIA implementation
+- **Robust JIM Validation**: Preflight normalization, error/warning reporting, and spec compliance checks for JIM metadata
+- **SVG Accessibility Audit**: Analyzes ARIA, roles, labels, keyboard navigation, and accessibility attributes
+- **Interactive Visualization**: Click or focus SVG elements to inspect JIM mappings, behaviors, and accessibility info
+- **Selector List Panel**: Displays all JIM selectors and visually indicates which are mapped by behaviors (including wildcards and compound selectors)
+- **Detailed Analysis Panel**: Shows validation results, orphaned selectors, facet coverage, and a categorized inventory of SVG elements
+- **Advanced Selector Support**: Handles wildcards, descendant, and compound CSS selectors in behavior mapping
+- **Screen Reader & Keyboard Accessibility**: Includes skip links, live regions, and focus management for accessible navigation
+- **SVG & HTML File Support**: Works with both SVG and HTML files containing SVG elements
+- **SVG-Only Mode**: Provides accessibility audit and inventory for regular SVG files without JIM metadata
+- **Comprehensive Error/Warning Reporting**: Surfaces invalid selectors, behaviors, and metadata structure issues
+- **Example Files Included**: Ready-to-use SVGs for testing and demonstration
 
 ## Quick Start
 
@@ -20,7 +34,14 @@ An interactive tool for analyzing and validating JSON for Interactive Media (JIM
 ## Files
 
 - `jim-viewer.html`: Interactive HTML viewer for SVGs with JIM metadata
-- `triangle-complete-with-jim-metadata.svg`: Example SVG file containing JIM metadata
+- `examples/`: Example SVG files for testing and demonstration:
+	- `triangle-complete-with-jim-metadata.svg`
+	- `testimage_0.svg`, `testimage_1.svg`, `testimage_2.svg`, `testimage_3.svg`, `testimage_4.svg`
+	- `Division_of_energy_in_the_Universe.svg`
+	- `College_enrollment_in_public_and_private_institutions_in_the_U_S__1965_to_2028.svg`
+	- `Distribution_of_the_workforce_across_economic_sectors_in_India_2019.svg`
+	- `Number_of_Xbox_Live_MAU_Q1_2016___Q4_2019.svg`
+	- `Unemployment_rate_in_Greece_1999_2019.svg`
 
 ## Use Cases
 
@@ -33,6 +54,12 @@ An interactive tool for analyzing and validating JSON for Interactive Media (JIM
 
 This project demonstrates how to preview, validate, and inspect SVG files that include JIM metadata, useful for development and testing of JIM-enabled graphics and accessibility.
 
+
+## Contributors & Credits
+
+- Example SVGs provided by Dan Gardner, UNAR (testimages), and Fizz Studio with Paracharts (chart examples).
+- Contributions, feedback, and new example files are welcome! Please open an issue or pull request.
+
 ## License
 
-Specify your license here (e.g., MIT, Apache 2.0, etc.).
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
