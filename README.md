@@ -26,7 +26,7 @@ An interactive tool for analyzing and validating JSON for Interactive Media (JIM
 
 ## Quick Start
 
-1. Open `jim-viewer.html` in your browser
+1. Open `jim-viewer.html` in your browser, or visit the [JIM Viewer webapp](https://inclusio-community.github.io/JIM_previewer/jim-viewer.html)
 2. Upload an SVG file (with or without JIM metadata)
 3. Click elements in the visualization to inspect their properties
 4. Review validation results and accessibility recommendations
