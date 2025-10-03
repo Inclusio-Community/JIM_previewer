@@ -183,20 +183,32 @@ use.visited-mark { pointer-events: none; }
       "json": "$.datasets[0].title"
     },
     "datapoint1": {
-        "dom": "#datapoint-dark_energy_73_Proportion_of_total_energy_in_the_Universe",
-      "json": "$.datasets[0].series[0].records[0]"
+      "dom": "#datapoint-dark_energy_73_Proportion_of_total_energy_in_the_Universe",
+      "json": [
+        "$.datasets[0].series[0].name",
+        "$.datasets[0].series[0].records[0].*"
+      ]
     },
     "datapoint2": {
-        "dom": "#datapoint-dark_matter_23_Proportion_of_total_energy_in_the_Universe",
-      "json": "$.datasets[0].series[0].records[1]"
+      "dom": "#datapoint-dark_matter_23_Proportion_of_total_energy_in_the_Universe",
+      "json": [
+        "$.datasets[0].series[0].name",
+        "$.datasets[0].series[0].records[1].*"
+      ]
     },
     "datapoint3": {
-        "dom": "#datapoint-nonluminous_matter_3_6_Proportion_of_total_energy_in_the_Universe",
-      "json": "$.datasets[0].series[0].records[2]"
+      "dom": "#datapoint-nonluminous_matter_3_6_Proportion_of_total_energy_in_the_Universe",
+      "json": [
+        "$.datasets[0].series[0].name",
+        "$.datasets[0].series[0].records[2].*"
+      ]
     },
     "datapoint4": {
-        "dom": "#datapoint-luminous_matter_0_4_Proportion_of_total_energy_in_the_Universe",
-      "json": "$.datasets[0].series[0].records[3]"
+      "dom": "#datapoint-luminous_matter_0_4_Proportion_of_total_energy_in_the_Universe",
+      "json": [
+        "$.datasets[0].series[0].name",
+        "$.datasets[0].series[0].records[3].*"
+      ]
     }
   }
 }

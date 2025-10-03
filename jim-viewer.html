@@ -398,17 +398,29 @@
                             }
                             if (!('json' in sel)) {
                                 errors.push(`Selector '${key}' missing 'json' property.`);
-                            } else if (typeof sel.json !== 'string') {
-                                if (Array.isArray(sel.json)) {
-                                    errors.push(`Selector '${key}' 'json' should be a string, not an array. Found array: ${JSON.stringify(sel.json)}.`);
-                                } else {
-                                    errors.push(`Selector '${key}' 'json' should be a string. Found type: ${typeof sel.json}.`);
-                                }
-                            } else if (!sel.json.trim()) {
-                                errors.push(`Selector '${key}' 'json' is an empty string.`);
+                            } else if (
+                                !(typeof sel.json === 'string' && sel.json.trim()) &&
+                                !(Array.isArray(sel.json) && sel.json.length > 0 && sel.json.every(j => typeof j === 'string' && j.trim()))
+                            ) {
+                                errors.push(`Selector '${key}' 'json' must be a non-empty string or array of non-empty strings.`);
                             }
                         }
                     }
+                        // Warn if there are records but no facets defined
+                        const hasFacets = jim.datasets && Array.isArray(jim.datasets) && jim.datasets[0] && jim.datasets[0].facets && Object.keys(jim.datasets[0].facets).length > 0;
+                        const hasSeries = jim.datasets && Array.isArray(jim.datasets) && jim.datasets[0] && Array.isArray(jim.datasets[0].series) && jim.datasets[0].series.length > 0;
+                        let hasRecords = false;
+                        if (hasSeries) {
+                            for (const s of jim.datasets[0].series) {
+                                if (Array.isArray(s.records) && s.records.length > 0) {
+                                    hasRecords = true;
+                                    break;
+                                }
+                            }
+                        }
+                        if (!hasFacets && hasRecords) {
+                            warnings.push("Records are present, but no facets are defined. Consider adding facet definitions for better semantic clarity and accessibility.");
+                        }
 
                     // — Optional: behaviors (default to [])
                     if (!('behaviors' in jim)) {
@@ -631,14 +643,38 @@
                 class JIMViewer {
     // Robust JSONPath lookup for JIM metadata (supports $.foo[0].bar)
     getDataFromJSONPath(path) {
-        if (!path || typeof path !== 'string' || !this.jimData) return null;
+        if (!path || !this.jimData) return null;
+        // If path is an array, resolve each and merge results
+        if (Array.isArray(path)) {
+            const results = path.map(p => this.getDataFromJSONPath(p)).filter(v => v !== null && v !== undefined);
+            if (results.length === 0) return null;
+            if (results.every(v => typeof v !== 'object' || v === null)) return results;
+            return [].concat(...results.map(v => Array.isArray(v) ? v : [v]));
+        }
+        if (typeof path === 'string' && path.includes(',')) {
+            // Support comma-separated paths as array
+            const paths = path.split(',').map(p => p.trim()).filter(Boolean);
+            return this.getDataFromJSONPath(paths);
+        }
+        if (typeof path !== 'string') return null;
         let val = this.jimData;
+        // Wildcard support: if path ends with .* return all key-value pairs
+        let wildcard = false;
+        let pathStr = path;
+        if (path.endsWith('.*')) {
+            wildcard = true;
+            pathStr = path.slice(0, -2);
+        }
         // Remove leading $. and convert [n] to .n for easier splitting
-        const parts = path.replace(/^\$\./, '').replace(/\[(\d+)\]/g, '.$1').split('.');
+        const parts = pathStr.replace(/^\$\./, '').replace(/\[(\d+)\]/g, '.$1').split('.');
         for (const key of parts) {
             if (val && key in val) val = val[key];
             else if (Array.isArray(val) && !isNaN(Number(key))) val = val[Number(key)];
             else return null;
+        }
+        if (wildcard && val && typeof val === 'object') {
+            // Return all key-value pairs as a flat object
+            return Object.assign({}, val);
         }
         return val;
     }
@@ -871,14 +907,74 @@
     }
     // Returns a default announcement string from a data object, or null if not present
     getDefaultAnnouncement(data) {
-        if (!data || typeof data !== 'object') return null;
-        // Try to build a simple summary from the object's key-value pairs
-        const parts = [];
-        for (const [key, value] of Object.entries(data)) {
-            if (typeof value === 'object' && value !== null) continue;
-            parts.push(`${key}: ${value}`);
+        // Use facet labels and ordering for semantic output
+        const facets = this.jimData?.datasets?.[0]?.facets || {};
+        // Build facet info: { key, label, role }
+        const facetInfo = Object.entries(facets).map(([key, f]) => ({
+            key,
+            label: f.label || key,
+            role: f.variableType || 'other'
+        }));
+        // Helper to order keys: dependent first, then independent, then others
+        function orderKeys(keys) {
+            const dep = facetInfo.filter(f => f.role === 'dependent').map(f => f.key);
+            const indep = facetInfo.filter(f => f.role === 'independent').map(f => f.key);
+            const rest = keys.filter(k => !dep.includes(k) && !indep.includes(k));
+            return [...dep, ...indep, ...rest];
         }
-        return parts.length ? parts.join(', ') : null;
+        // Recursively flatten arrays and objects, using facet labels and ordering
+        function flatten(obj, parentKey = null) {
+            if (Array.isArray(obj)) {
+                // Array of primitives
+                if (obj.every(v => typeof v === 'string' || typeof v === 'number' || typeof v === 'boolean')) {
+                    return parentKey ? `${parentKey}: ${obj.join(', ')}` : obj.join(', ');
+                }
+                // Array of objects
+                return obj.map(o => flatten(o)).filter(Boolean).join('; ');
+            } else if (obj && typeof obj === 'object') {
+                const keys = Object.keys(obj);
+                const facetKeys = orderKeys(keys).filter(k => facetInfo.find(f => f.key === k));
+                const nonFacetKeys = keys.filter(k => !facetInfo.find(f => f.key === k));
+                const parts = [];
+                // Facet fields first
+                for (const key of facetKeys) {
+                    if (!(key in obj)) continue;
+                    const value = obj[key];
+                    const facet = facetInfo.find(f => f.key === key);
+                    const label = facet ? facet.label : key;
+                    if (Array.isArray(value)) {
+                        parts.push(flatten(value, label));
+                    } else if (value && typeof value === 'object') {
+                        const nested = flatten(value, label);
+                        if (nested) parts.push(nested);
+                    } else if (value !== undefined && value !== null) {
+                        parts.push(`${label}: ${value}`);
+                    }
+                }
+                // Non-facet fields, italicized
+                const nonFacetParts = [];
+                for (const key of nonFacetKeys) {
+                    if (!(key in obj)) continue;
+                    const value = obj[key];
+                    const label = key;
+                    if (Array.isArray(value)) {
+                        nonFacetParts.push(flatten(value, label));
+                    } else if (value && typeof value === 'object') {
+                        const nested = flatten(value, label);
+                        if (nested) nonFacetParts.push(nested);
+                    } else if (value !== undefined && value !== null) {
+                        nonFacetParts.push(`${label}: ${value}`);
+                    }
+                }
+                if (nonFacetParts.length) parts.push(`<i>${nonFacetParts.join(', ')}</i>`);
+                return parts.join(', ');
+            } else if (obj !== undefined && obj !== null && (typeof obj === 'string' || typeof obj === 'number' || typeof obj === 'boolean')) {
+                return String(obj);
+            }
+            return null;
+        }
+        const result = flatten(data);
+        return result && result.trim() ? result : null;
     }
     // Returns the announcement object (name/description) from a behavior, or null if not present
     getExplicitAnnouncement(behavior) {
@@ -1477,8 +1573,6 @@
         const facets = this.jimData?.datasets?.[0]?.facets || {};
         const selector = this.jimData.selectors?.[selectorKey];
         if (!selector) return;
-        const data = this.getDataFromJSONPath(selector.json);
-        const defaultAnnouncement = this.getDefaultAnnouncement(data);
 
         // Find the element in the live visualization SVG
         let vizElement = null;
@@ -1493,6 +1587,8 @@
         if (!vizElement) vizElement = element;
 
         let html = '';
+        const data = this.getDataFromJSONPath(selector.json);
+        const defaultAnnouncement = this.getDefaultAnnouncement(data);
         // JIM-specific info
         html += `<div><strong>JIM Selector Key:</strong> <code>${selectorKey}</code></div>`;
         html += `<div><strong>Event:</strong> <code>${eventType}</code></div>`;
@@ -1529,8 +1625,14 @@
         }
         // Show default announcement box if present and different from explicit
         if (defaultAnnouncement && (!explicitAnn || (typeof explicitAnn === 'object' ? explicitAnn.description : explicitAnn) !== defaultAnnouncement)) {
+            let facetNote = '';
+            const facetsExist = !!this.jimData?.datasets?.[0]?.facets && Object.keys(this.jimData.datasets[0].facets).length > 0;
+            if (facetsExist) {
+                facetNote = `<div style='color:#64748b;font-size:12px;margin-top:6px;'><i>Note: Italicized fields are not covered by facet definitions.</i></div>`;
+            }
             html += `<div class="announcement" style="margin-top:8px; padding:8px; background:#f1f5f9; border-left:4px solid #64748b; border-radius:4px;">
                 <strong>Default Announcement:</strong><br>${defaultAnnouncement}
+                ${facetNote}
             </div>`;
         }
         // Show full JSON view of the first matched behavior if present
