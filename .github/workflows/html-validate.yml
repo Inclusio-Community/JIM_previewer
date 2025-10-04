@@ -48,14 +48,40 @@ jobs:
         run: |
           npm install -g http-server
 
-      - name: Start simple static server
+      - name: Run pa11y accessibility scan (capture output)
+        id: pa11y
         run: |
-          # serve the repository root so test harness is reachable
+          # Start a local static server in the background and capture its PID
           npx http-server -p 8080 &
+          SERVER_PID=$!
           # give server a moment to start
           sleep 2
 
-      - name: Run pa11y accessibility scan
-        # pa11y will use a headless Chromium under the hood; run against the auto-load test harness
+          # Run pa11y and tee output to a file. Capture the exit code so we can upload the output
+          # even if pa11y fails, then explicitly fail the job after uploading.
+          set +e
+          npx --yes pa11y http://127.0.0.1:8080/tests/auto-load.html 2>&1 | tee pa11y-output.txt
+          PA11Y_EXIT=${PIPESTATUS[0]}
+          echo "$PA11Y_EXIT" > pa11y-exit
+          set -e
+
+          # Stop the server we started
+          kill $SERVER_PID || true
+
+      - name: Upload pa11y output
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pa11y-output
+          path: pa11y-output.txt
+
+      - name: Fail job when pa11y failed
+        if: always()
         run: |
-          npx --yes pa11y http://127.0.0.1:8080/tests/auto-load.html || (echo "pa11y reported accessibility issues" && exit 1)
+          if [ -f pa11y-exit ]; then
+            code=$(cat pa11y-exit)
+            if [ "$code" -ne 0 ]; then
+              echo "pa11y failed with exit code $code";
+              exit $code;
+            fi
+          fi
