@@ -2207,6 +2207,57 @@
         // Ensure the JIMViewer is initialized when the DOM is ready
         document.addEventListener('DOMContentLoaded', () => {
             window.jimViewer = new JIMViewer();
+
+            // Auto-load example via query parameter, e.g. ?example=examples/testimage_0.svg
+            (async function tryAutoLoadFromQuery() {
+                try {
+                    const params = new URLSearchParams(window.location.search);
+                    const examplePath = params.get('example');
+                    if (examplePath) {
+                        try {
+                            const res = await fetch(examplePath);
+                            if (res && res.ok) {
+                                const text = await res.text();
+                                const ext = examplePath.split('.').pop().toLowerCase();
+                                window.jimViewer.handleFileLoad(text, ext);
+                            } else {
+                                console.warn('[JIMViewer] Failed to fetch example from query param:', examplePath, res && res.status);
+                            }
+                        } catch (e) {
+                            console.warn('[JIMViewer] Error fetching example from query param:', e);
+                        }
+                    }
+                } catch (e) {
+                    // ignore URL parsing errors in odd environments
+                }
+            })();
+
+            // Listen for postMessage from an embedding harness (tests/auto-load.html)
+            // Expected message shape: { type: 'autoLoadExample', path: '/examples/testimage_0.svg' }
+            window.addEventListener('message', async (ev) => {
+                try {
+                    // Only accept same-origin messages for safety in CI/local runs
+                    if (!ev || ev.origin !== window.location.origin) return;
+                    const data = ev.data || {};
+                    if (data.type !== 'autoLoadExample' || !data.path) return;
+                    try {
+                        const res = await fetch(data.path);
+                        if (!res || !res.ok) {
+                            console.warn('[JIMViewer] Failed to fetch auto-load path:', data.path, res && res.status);
+                            return;
+                        }
+                        const text = await res.text();
+                        const ext = data.path.split('.').pop().toLowerCase();
+                        if (window.jimViewer && typeof window.jimViewer.handleFileLoad === 'function') {
+                            window.jimViewer.handleFileLoad(text, ext);
+                        }
+                    } catch (e) {
+                        console.warn('[JIMViewer] Error fetching auto-load path:', e);
+                    }
+                } catch (e) {
+                    // swallow any message handler errors
+                }
+            });
         });
 
         // Global function to handle inventory item clicks
