@@ -65,8 +65,6 @@ This project demonstrates how to preview, validate, and inspect SVG files that i
 - Robust selector handling: selectors that do not match any DOM element are skipped during rendering (avoids TypeError).
 - Inventory extended: "Other Elements" category now includes basic SVG shapes (polygon, rect, circle, ellipse, line, polyline, path).
 - Dev tokens & styles consolidated: color tokens and repeated inline styles were centralized to improve contrast and make future CSS refactors easier.
-- Diagnostics: a generated `inline-style-report.txt` (developer artifact) was produced during refactoring; if you removed it locally, consider whether to keep, move to `docs/`, or add to `.gitignore`.
-
 
 ## Contributors & Credits
 
