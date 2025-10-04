@@ -24,6 +24,9 @@
         .spec-heading { margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--metadata-border); font-size: 15px; color: var(--text-normal); }
         .inventory-button { background: #f8fafc; border: 1px solid #e2e8f0; padding: 8px; border-radius: 4px; font-size: 12px; cursor: pointer; box-sizing: border-box; display: inline-block; vertical-align: top; margin-bottom: 4px; color: var(--text-normal); }
     .warning-text { color: var(--status-warning); }
+        .status-success-line { color: var(--status-success); margin:4px 0; font-weight:600; }
+        .status-warning-line { color: var(--status-warning); margin:4px 0; }
+        .status-error-line { color: var(--status-error); margin:4px 0; }
         * { box-sizing: border-box; }
         
         body {
@@ -1436,9 +1439,9 @@
         }
         renderValidationSummary(validation) {
             let html = '';
-            validation.errors.forEach(err => { html += `<div style="color:#dc2626; margin:4px 0;">✗ ${err}</div>`; });
-            validation.warnings.forEach(w => { html += `<div style="color:var(--status-warning); margin:4px 0;">⚠ ${w}</div>`; });
-            validation.passed.forEach(p => { html += `<div style="color:var(--status-success); margin:4px 0; font-weight:600;">✓ ${p}</div>`; });
+            validation.errors.forEach(err => { html += `<div class="status-error-line">✗ ${err}</div>`; });
+            validation.warnings.forEach(w => { html += `<div class="status-warning-line">⚠ ${w}</div>`; });
+            validation.passed.forEach(p => { html += `<div class="status-success-line">✓ ${p}</div>`; });
 
             if (validation.orphanedSelectors?.length) {
                 html += '<div style="margin-top:12px; padding-top:12px; border-top:1px solid #e2e8f0;"><strong style="color:#1e293b;">Orphaned Selectors (not in DOM):</strong></div>';
@@ -1563,9 +1566,9 @@
                 });
 
                 let html = '';
-                html += `<div style="color: #059669; margin: 4px 0;">✓ Found ${interactiveCount} interactive elements</div>`;
-                html += `<div style="color: #059669; margin: 4px 0;">✓ Found ${textCount} text elements</div>`;
-                html += `<div style="color: #059669; margin: 4px 0;">✓ ${accessibleCount} elements have accessibility labels</div>`;
+                html += `<div class="status-success-line">✓ Found ${interactiveCount} interactive elements</div>`;
+                html += `<div class="status-success-line">✓ Found ${textCount} text elements</div>`;
+                html += `<div class="status-success-line">✓ ${accessibleCount} elements have accessibility labels</div>`;
 
                 if (issues.length > 0) {
                     issues.slice(0, 3).forEach(issue => {
@@ -1916,12 +1919,12 @@
                 }
                 // Selector/DOM validation
                 if (validation.selectorSummary) {
-                    html += `<div style="color:#059669; margin:4px 0;">✓ ${validation.selectorSummary.domValid} DOM selector(s) valid</div>`;
-                    html += `<div style="color:#059669; margin:4px 0;">✓ ${validation.selectorSummary.jsonValid} JSON path(s) valid</div>`;
+                    html += `<div class="status-success-line">✓ ${validation.selectorSummary.domValid} DOM selector(s) valid</div>`;
+                    html += `<div class="status-success-line">✓ ${validation.selectorSummary.jsonValid} JSON path(s) valid</div>`;
                 }
                 // Behavior mapping
                 if (validation.behaviorSummary && typeof validation.behaviorSummary.mapped === 'number') {
-                    html += `<div style="color:#059669; margin:4px 0;">✓ ${validation.behaviorSummary.mapped} behavior(s) properly mapped</div>`;
+                    html += `<div class="status-success-line">✓ ${validation.behaviorSummary.mapped} behavior(s) properly mapped</div>`;
                 }
                 // Errors, warnings, passes
                 validation.errors?.forEach(err => {
