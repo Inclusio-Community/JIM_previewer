@@ -27,6 +27,17 @@
         .status-success-line { color: var(--status-success); margin:4px 0; font-weight:600; }
         .status-warning-line { color: var(--status-warning); margin:4px 0; }
         .status-error-line { color: var(--status-error); margin:4px 0; }
+            /* Spec compliance box variants (used in metadata summary) */
+            .spec-box { padding: 12px 16px; border-radius: 6px; margin-bottom: 16px; }
+            .spec-box--error { background: #fee2e2; border: 1px solid #dc2626; }
+            .spec-box--warning { background: #fef9c3; border: 1px solid #f59e0b; }
+            .spec-box--success { background: #dcfce7; border: 1px solid #22c55e; }
+            .spec-box-heading { font-size: 15px; }
+            .spec-box-list { margin: 8px 0 0 18px; padding: 0; }
+            .spec-box-fixes { color: var(--status-success); font-size: 12px; margin-top: 8px; font-weight: 600; }
+            /* Announcement variants used inside element info panels */
+            .announcement-note { margin-top:8px; padding:8px; background:#f1f5f9; border-left:4px solid #64748b; border-radius:4px; }
+            .announcement-success { margin-top:12px; padding:10px; background:#f0fdf4; border-left:4px solid #10b981; border-radius:4px; }
         * { box-sizing: border-box; }
         
         body {
@@ -1276,25 +1287,24 @@
                 // Show spec compliance box if preflight found errors/warnings
                                 let specBox = '';
                                 if (this.specIssues) {
-                                    if (this.specIssues.errors.length || this.specIssues.warnings.length) {
-                                        const color = this.specIssues.errors.length ? '#fee2e2' : '#fef9c3';
-                                        const border = this.specIssues.errors.length ? '#dc2626' : '#f59e0b';
-                                        const headingColor = this.specIssues.errors.length ? '#dc2626' : '#92400e';
-                                        const icon = this.specIssues.errors.length ? '✗' : '⚠';
-                                        specBox = `<div style="background:${color};border:1px solid ${border};padding:12px 16px;border-radius:6px;margin-bottom:16px;">
-                                            <strong style="color:${headingColor};font-size:15px;">Spec compliance</strong><ul style="margin:8px 0 0 18px;padding:0;">
-                                                                    ${this.specIssues.errors.map(e=>`<li style='color:var(--status-error);'>✗ ${e}</li>`).join('')}
-                                                                    ${this.specIssues.warnings.map(w=>`<li style='color:var(--status-warning);'>⚠ ${w}</li>`).join('')}
-                                                                    </ul>
-                                                                    ${this.specIssues.fixes.length ? `<div style='color:var(--status-success);font-size:12px;margin-top:8px;font-weight:600;'>Normalizations: ${this.specIssues.fixes.join(', ')}</div>` : ''}
-                                        </div>`;
-                                    } else {
-                                        // No errors or warnings: show green success box
-                                        specBox = `<div style="background:#dcfce7;border:1px solid #22c55e;padding:12px 16px;border-radius:6px;margin-bottom:16px;">
-                                            <strong style="color:#22c55e;font-size:15px;">✓ No JIM issues found</strong>
-                                        </div>`;
-                                    }
-                                }
+                                                    if (this.specIssues.errors.length || this.specIssues.warnings.length) {
+                                                        const variant = this.specIssues.errors.length ? 'error' : 'warning';
+                                                        const headingColor = this.specIssues.errors.length ? 'var(--status-error)' : 'var(--status-warning)';
+                                                        specBox = `<div class="spec-box spec-box--${variant}">
+                                                            <strong class="spec-box-heading" style="color:${headingColor};">Spec compliance</strong>
+                                                            <ul class="spec-box-list">
+                                                                ${this.specIssues.errors.map(e=>`<li class="status-error-line">✗ ${e}</li>`).join('')}
+                                                                ${this.specIssues.warnings.map(w=>`<li class="status-warning-line">⚠ ${w}</li>`).join('')}
+                                                            </ul>
+                                                            ${this.specIssues.fixes.length ? `<div class="spec-box-fixes">Normalizations: ${this.specIssues.fixes.join(', ')}</div>` : ''}
+                                                        </div>`;
+                                                    } else {
+                                                        // No errors or warnings: show green success box
+                                                        specBox = `<div class="spec-box spec-box--success">
+                                                            <strong class="spec-box-heading" style="color:var(--status-success);">✓ No JIM issues found</strong>
+                                                        </div>`;
+                                                    }
+                                                }
 
                 if (!this.jimData) {
                     // SVG-only mode: build an inventory that includes basic shapes (other)
@@ -1755,7 +1765,7 @@
             }
         }
         if (explicitAnn) {
-            html += `<div class="announcement" style="margin-top:12px; padding:10px; background:#f0fdf4; border-left:4px solid #10b981; border-radius:4px;">
+            html += `<div class="announcement announcement-success">
                 <strong>Explicit Announcement:</strong><br>${typeof explicitAnn === 'object' ? (explicitAnn.description || JSON.stringify(explicitAnn)) : explicitAnn}
             </div>`;
         }
@@ -1764,9 +1774,9 @@
             let facetNote = '';
             const facetsExist = !!this.jimData?.datasets?.[0]?.facets && Object.keys(this.jimData.datasets[0].facets).length > 0;
             if (facetsExist) {
-                facetNote = `<div style='color:#64748b;font-size:12px;margin-top:6px;'><i>Note: Italicized fields are not covered by facet definitions.</i></div>`;
+                facetNote = `<div class="muted" style="font-size:12px;margin-top:6px;"><i>Note: Italicized fields are not covered by facet definitions.</i></div>`;
             }
-            html += `<div class="announcement" style="margin-top:8px; padding:8px; background:#f1f5f9; border-left:4px solid #64748b; border-radius:4px;">
+            html += `<div class="announcement announcement-note">
                 <strong>Default Announcement:</strong><br>${defaultAnnouncement}
                 ${facetNote}
             </div>`;
