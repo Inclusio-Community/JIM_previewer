@@ -41,6 +41,9 @@
         /* Orphaned selector card and meta text */
         .orphaned-item { background:#eff6ff; border-left:3px solid #3b82f6; padding:8px; margin:8px 0; border-radius:4px; font-size:13px; color:#1e293b; }
         .meta-text { color:#334155; font-size:12px; }
+    .details-summary { cursor: pointer; color: #0ea5e9; }
+    .error-box { background:#fee2e2; border:1px solid #dc2626; padding:12px 16px; border-radius:6px; margin-bottom:16px; }
+    .error-text { color: var(--status-error); font-size:15px; }
         * { box-sizing: border-box; }
         
         body {
@@ -1158,11 +1161,11 @@
                             // Show a snippet around the error
                             snippet = jimText.slice(Math.max(0, pos-40), pos+40);
                         }
-                        let errorHtml = `<div style='background:#fee2e2;border:1px solid #dc2626;padding:12px 16px;border-radius:6px;margin-bottom:16px;'>` +
-                            `<strong style='color:#dc2626;font-size:15px;'>✗ Invalid JIM JSON in file${lineInfo}</strong><br>` +
-                            `<div style='margin-top:8px;color:#dc2626;'>${e.message}</div>` +
-                            (snippet ? `<pre style='background:#fff0f0;color:#dc2626;padding:8px;border-radius:4px;margin-top:8px;max-height:120px;overflow:auto;'>${snippet.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</pre>` : '') +
-                            `<div style='margin-top:8px;color:#64748b;font-size:13px;'>Tip: Check for missing commas, brackets, or invalid array/object usage. You can copy and validate this JSON at <a href='https://jsonlint.com/' target='_blank' style='color:#2563eb;'>jsonlint.com</a>.</div>` +
+                        let errorHtml = `<div class="error-box">` +
+                            `<strong class="error-text">✗ Invalid JIM JSON in file${lineInfo}</strong><br>` +
+                            `<div style='margin-top:8px;color:var(--status-error);'>${e.message}</div>` +
+                            (snippet ? `<pre style='background:#fff0f0;color:var(--status-error);padding:8px;border-radius:4px;margin-top:8px;max-height:120px;overflow:auto;'>${snippet.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</pre>` : '') +
+                            `<div style='margin-top:8px;color:var(--muted);font-size:13px;'>Tip: Check for missing commas, brackets, or invalid array/object usage. You can copy and validate this JSON at <a href='https://jsonlint.com/' target='_blank' style='color:#2563eb;'>jsonlint.com</a>.</div>` +
                             `</div>`;
                         document.getElementById('metadata-summary').innerHTML = errorHtml;
                         this.specIssues = null;
@@ -1171,10 +1174,10 @@
                     }
                 } else {
                     console.warn('[JIMViewer] No JIM metadata found in file.');
-                    const errorHtml = `<div style='background:#fee2e2;border:1px solid #dc2626;padding:12px 16px;border-radius:6px;margin-bottom:16px;'>` +
-                        `<strong style='color:#dc2626;font-size:15px;'>✗ No JIM metadata found in file</strong><br>` +
-                        `<div style='margin-top:8px;color:#dc2626;'>JIM metadata must be in a &lt;script type="application/json+jim"&gt; or &lt;metadata data-type="text/jim+json"&gt; block.</div>` +
-                        `<div style='margin-top:8px;color:#64748b;font-size:13px;'>Tip: Check your SVG for a valid JIM metadata block.</div>` +
+                    const errorHtml = `<div class="error-box">` +
+                        `<strong class="error-text">✗ No JIM metadata found in file</strong><br>` +
+                        `<div style='margin-top:8px;color:var(--status-error);'>JIM metadata must be in a &lt;script type="application/json+jim"&gt; or &lt;metadata data-type="text/jim+json"&gt; block.</div>` +
+                        `<div style='margin-top:8px;color:var(--muted);font-size:13px;'>Tip: Check your SVG for a valid JIM metadata block.</div>` +
                         `</div>`;
                     document.getElementById('metadata-summary').innerHTML = errorHtml;
                     this.specIssues = null;
@@ -1469,7 +1472,7 @@
                 });
             }
 
-            if (!html) html = '<div style="color:#1e293b; font-style:italic;">No validation data available</div>';
+            if (!html) html = '<div class="muted-italic">No validation data available</div>';
             return html;
         }
 
@@ -1786,7 +1789,7 @@
         }
         // Show full JSON view of the first matched behavior if present
         if (matchedBehaviors.length) {
-            html += `<details open style="margin-top:10px;"><summary style="cursor:pointer; color:#0ea5e9;">Show/Hide Full Behavior JSON</summary><pre style="background:#f8fafc; padding:8px; border-radius:4px; margin-top:6px;" class="meta-text">${JSON.stringify(matchedBehaviors[0], null, 2)}</pre></details>`;
+            html += `<details open style="margin-top:10px;"><summary class="details-summary">Show/Hide Full Behavior JSON</summary><pre style="background:#f8fafc; padding:8px; border-radius:4px; margin-top:6px;" class="meta-text">${JSON.stringify(matchedBehaviors[0], null, 2)}</pre></details>`;
         }
 
         // Accessibility attributes section
