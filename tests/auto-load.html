@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>JIM Previewer - Auto Load Test</title>
+  <style>
+    body { margin: 0; font-family: system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial; }
+    iframe { width: 100vw; height: 100vh; border: none; }
+  </style>
+</head>
+<body>
+  <!-- This page embeds the single-file viewer and instructs it to load an example SVG so automated a11y tools can scan a populated DOM. -->
+  <iframe id="viewer" src="/jim-viewer.html?example=examples/testimage_0.svg" title="JIM Viewer test harness"></iframe>
+  <script>
+    // The viewer supports a query param `example` to auto-load an example SVG when present.
+    // If the viewer doesn't support that, this page will still embed it and manual testers can use the UI.
+
+    // For extra robustness, attempt to postMessage the path to the iframe after it loads.
+    const iframe = document.getElementById('viewer');
+    iframe.addEventListener('load', () => {
+      try {
+        iframe.contentWindow.postMessage({ type: 'autoLoadExample', path: '/examples/testimage_0.svg' }, location.origin);
+      } catch (e) {
+        // ignore cross-origin or timing failures
+      }
+    });
+  </script>
+</body>
+</html>

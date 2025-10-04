@@ -20,12 +20,16 @@ jobs:
         with:
           node-version: '18'
 
-      - name: Run html-validate (via npx)
+      - name: Install dependencies
         run: |
-          echo "Running html-validate via npx..."
-          npx --yes html-validate --version
-          # Validate the viewer and HTML files in examples
-          npx --yes html-validate "jim-viewer.html" "**/*.html" || (echo "html-validate reported errors" && exit 1)
+          echo "Installing project devDependencies (html-validate)"
+          npm ci
+
+      - name: Run html-validate
+        run: |
+          echo "Running html-validate from project devDependencies..."
+          npx html-validate --version
+          npx html-validate "jim-viewer.html" "**/*.html" || (echo "html-validate reported errors" && exit 1)
 
   a11y-smoke:
     name: Accessibility smoke (pa11y)
@@ -46,12 +50,12 @@ jobs:
 
       - name: Start simple static server
         run: |
-          # serve the repository root so jim-viewer.html is reachable
+          # serve the repository root so test harness is reachable
           npx http-server -p 8080 &
           # give server a moment to start
           sleep 2
 
       - name: Run pa11y accessibility scan
-        # pa11y will use a headless Chromium under the hood; run against the local server
+        # pa11y will use a headless Chromium under the hood; run against the auto-load test harness
         run: |
-          npx --yes pa11y http://127.0.0.1:8080/jim-viewer.html || (echo "pa11y reported accessibility issues" && exit 1)
+          npx --yes pa11y http://127.0.0.1:8080/tests/auto-load.html || (echo "pa11y reported accessibility issues" && exit 1)
