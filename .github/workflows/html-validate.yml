@@ -75,46 +75,37 @@ jobs:
           name: pa11y-output
           path: pa11y-output.txt
 
-      - name: Comment on PR with pa11y output
+      - name: Comment on PR with pa11y output (update existing bot comment)
         if: always() && github.event_name == 'pull_request'
         uses: actions/github-script@v6
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             const fs = require('fs');
-            const path = 'pa11y-output.txt';
+            const outPath = 'pa11y-output.txt';
             let output = '';
-            try {
-              if (fs.existsSync(path)) {
-                output = fs.readFileSync(path, 'utf8');
-              } else {
-                output = 'No pa11y output file found.';
-              }
-            } catch (err) {
-              output = `Error reading pa11y output: ${err.message}`;
-            }
-
+            try { output = fs.existsSync(outPath) ? fs.readFileSync(outPath, 'utf8') : 'No pa11y output file found.'; } catch (err) { output = `Error reading pa11y output: ${err.message}`; }
             const exitPath = 'pa11y-exit';
             let exitCode = 'unknown';
-            try {
-              if (fs.existsSync(exitPath)) exitCode = fs.readFileSync(exitPath, 'utf8').trim();
-            } catch (e) {}
+            try { if (fs.existsSync(exitPath)) exitCode = fs.readFileSync(exitPath, 'utf8').trim(); } catch (e) {}
 
             const pr = context.payload.pull_request;
-            if (!pr) {
-              core.info('Not a pull_request event; skipping pa11y PR comment.');
-              return;
-            }
-
+            if (!pr) return;
             const issue_number = pr.number;
-            const body = `### pa11y accessibility scan\n\nExit code: ${exitCode}\n\n<details><summary>pa11y output</summary>\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\` + '```\n' + (output.length > 60000 ? output.slice(0,60000) + '\n\n...truncated...' : output) + '\n```\n</details>`;
 
-            await github.rest.issues.createComment({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number,
-              body
-            });
+            const marker = '<!-- pa11y-bot-comment -->';
+            const header = `${marker}\n### pa11y accessibility scan\n\nExit code: ${exitCode}\n\n`;
+            const bodyContent = (output.length > 60000 ? output.slice(0,60000) + '\n\n...truncated...' : output);
+            const fullBody = header + `<details><summary>pa11y output</summary>\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\` + '```text\n' + bodyContent + '\n```\n</details>';
+
+            // List existing comments on the PR and update the bot comment if present
+            const { data: comments } = await github.rest.issues.listComments({ owner: context.repo.owner, repo: context.repo.repo, issue_number });
+            const existing = comments.find(c => c.body && c.body.startsWith(marker));
+            if (existing) {
+              await github.rest.issues.updateComment({ owner: context.repo.owner, repo: context.repo.repo, comment_id: existing.id, body: fullBody });
+            } else {
+              await github.rest.issues.createComment({ owner: context.repo.owner, repo: context.repo.repo, issue_number, body: fullBody });
+            }
 
       - name: Fail job when pa11y failed
         if: always()
