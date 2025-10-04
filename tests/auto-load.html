@@ -8,23 +8,78 @@
     body { margin: 0; font-family: system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial; }
     iframe { width: 100vw; height: 100vh; border: none; }
   </style>
+  <style>
+    #controls { position:fixed; left:8px; top:8px; z-index:9999; background:#fff; padding:8px; border-radius:6px; border:1px solid #e2e8f0; box-shadow:0 2px 6px rgba(0,0,0,0.08); }
+    #current { margin:0 8px; font-size:13px; }
+    #controls button { padding:6px 8px; }
+  </style>
 </head>
 <body>
   <!-- This page embeds the single-file viewer and instructs it to load an example SVG so automated a11y tools can scan a populated DOM. -->
+  <div id="controls">
+    <button id="prev" type="button">◀ Prev</button>
+    <span id="current"></span>
+    <button id="next" type="button">Next ▶</button>
+  </div>
   <iframe id="viewer" src="/jim-viewer.html?example=examples/testimage_0.svg" title="JIM Viewer test harness"></iframe>
   <script>
-    // The viewer supports a query param `example` to auto-load an example SVG when present.
-    // If the viewer doesn't support that, this page will still embed it and manual testers can use the UI.
+    // Support multiple examples via ?examples=examples/testimage_0.svg,examples/testimage_1.svg
+    const defaultExamples = [
+      '/examples/testimage_0.svg',
+      '/examples/testimage_1.svg',
+      '/examples/testimage_2.svg'
+    ];
 
-    // For extra robustness, attempt to postMessage the path to the iframe after it loads.
-    const iframe = document.getElementById('viewer');
-    iframe.addEventListener('load', () => {
+    function parseExamplesFromQuery() {
       try {
-        iframe.contentWindow.postMessage({ type: 'autoLoadExample', path: '/examples/testimage_0.svg' }, location.origin);
+        const params = new URLSearchParams(window.location.search);
+        const ex = params.get('examples');
+        if (!ex) return defaultExamples.slice();
+        return ex.split(',').map(s => s.trim()).filter(Boolean).map(p => p.startsWith('/') ? p : '/' + p);
+      } catch (e) {
+        return defaultExamples.slice();
+      }
+    }
+
+    const examples = parseExamplesFromQuery();
+    let idx = 0;
+    const iframe = document.getElementById('viewer');
+    const currentLabel = document.getElementById('current');
+    const prevBtn = document.getElementById('prev');
+    const nextBtn = document.getElementById('next');
+
+    function updateUi() {
+      currentLabel.textContent = `${idx+1} / ${examples.length}`;
+      const path = examples[idx];
+      // Update iframe src query param for compatibility
+      iframe.src = `/jim-viewer.html?example=${encodeURIComponent(path.replace(/^\//,''))}`;
+    }
+
+    function postLoad() {
+      const path = examples[idx];
+      try {
+        iframe.contentWindow.postMessage({ type: 'autoLoadExample', path }, location.origin);
       } catch (e) {
         // ignore cross-origin or timing failures
       }
+    }
+
+    iframe.addEventListener('load', () => {
+      // post the load message once the iframe finishes loading
+      postLoad();
     });
+
+    prevBtn.addEventListener('click', () => {
+      idx = (idx - 1 + examples.length) % examples.length;
+      updateUi();
+    });
+    nextBtn.addEventListener('click', () => {
+      idx = (idx + 1) % examples.length;
+      updateUi();
+    });
+
+    // initialize
+    updateUi();
   </script>
 </body>
 </html>
