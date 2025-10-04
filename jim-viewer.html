@@ -352,33 +352,32 @@
 </head>
 <body>
     <a href="#main-content" class="skip-link">Skip to main content</a>
-    
     <div class="container">
         <!-- Screen reader help for SVG navigation -->
         <div id="svg-sr-help" class="sr-only" aria-live="polite">
             Visualization area. Press 'i' to jump to the first available list (Spec Compliance and then Orphaned Selectors if present, otherwise SVG Element Inventory). In the SVG Element Inventory, use Tab to move between items and Enter to open details. The Spec Compliance and Orphaned Selectors lists are not interactive.
         </div>
-        <header role="banner">
+        <header>
             <h1>JIM Metadata Viewer</h1>
             <p class="subtitle">Load and explore JSON for Interactive Media (JIM) documents</p>
         </header>
 
-        <main id="main-content" role="main">
+        <main id="main-content">
             <section class="input-section" aria-labelledby="upload-heading">
                 <h2 id="upload-heading" class="sr-only">File Upload</h2>
                 <div class="file-input-wrapper">
                     <label for="jim-file">Upload SVG or HTML file:</label>
-                    <input type="file" id="jim-file" accept=".svg,.html,.htm" aria-describedby="file-help" />
+                    <input type="file" id="jim-file" accept=".svg,.html,.htm" aria-describedby="file-help">
                     <div id="file-help" class="file-help">Supported: SVG files (with or without JIM metadata) and HTML files containing SVG elements.</div>
                 </div>
                 <div id="metadata-summary" aria-live="polite"></div>
                 <div id="status-messages" aria-live="polite" aria-atomic="true"></div>
             </section>
 
-            <div id="selector-list-panel" class="selector-panel hidden"></div>
+            <section id="selector-list-panel" class="selector-panel hidden"></section>
             <section class="viewer-section" aria-labelledby="visualization-heading">
                 <h2 id="visualization-heading">Interactive Visualization</h2>
-                <div id="visualization" aria-live="polite" aria-label="SVG visualization display area">
+                <div id="visualization" aria-live="polite" aria-labelledby="visualization-heading">
                     <div class="empty-state">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
                             <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
@@ -397,7 +396,7 @@
         <aside id="info-panel" class="info-panel" role="region" aria-labelledby="element-info-heading" tabindex="-1">
             <div class="info-panel-header">
                 <h3 id="element-info-heading">Element Information</h3>
-                <button class="close-btn" aria-label="Close information panel">&times;</button>
+                <button type="button" class="close-btn" aria-label="Close information panel">&times;</button>
             </div>
             <div id="info-content" class="info-content"></div>
         </aside>
