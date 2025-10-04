@@ -54,6 +54,17 @@ An interactive tool for analyzing and validating JSON for Interactive Media (JIM
 
 This project demonstrates how to preview, validate, and inspect SVG files that include JIM metadata, useful for development and testing of JIM-enabled graphics and accessibility.
 
+## What's new (feat/centralize-styles)
+
+- Selector panel & SVG inventory parity: selectors now render with a semantic H2 heading and selector buttons follow the same accessible pattern as SVG inventory items.
+- Group behaviors: selectors that match multiple elements are surfaced under "Group Behaviors" with a keyboard-focusable group button and member preview buttons.
+- Accessibility improvements:
+	- Decorative icons/emoji are marked aria-hidden and readable labels are provided via sr-only text where appropriate.
+	- Inventory and selector buttons are reachable via keyboard (Enter/Space activates them).
+	- Info panels update an aria-live region for screen-reader announcements.
+- Robust selector handling: selectors that do not match any DOM element are skipped during rendering (avoids TypeError).
+- Inventory extended: "Other Elements" category now includes basic SVG shapes (polygon, rect, circle, ellipse, line, polyline, path).
+- Dev tokens & styles consolidated: color tokens and repeated inline styles were centralized to improve contrast and make future CSS refactors easier.
 
 ## Contributors & Credits
 

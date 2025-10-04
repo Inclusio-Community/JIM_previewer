@@ -5,6 +5,89 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>JIM Metadata Viewer - Accessible SVG Analysis Tool</title>
     <style>
+        :root {
+            /* Color tokens */
+            --bg-page: #f5f7fa;
+            --text-normal: #1e293b;
+            --muted: #64748b;
+            /* Higher-contrast muted token for small/italic notes (helps Lighthouse) */
+            --muted-contrast: #334155;
+            --metadata-bg: #ffffff;
+            --metadata-border: #e6eef6;
+            --status-error: #9b1c1c;
+            --status-warning: #7c2d12;
+            --status-success: #022f26;
+            --badge-bg-jim: #047857;
+            --badge-bg-nojim: #334155;
+            /* High-contrast link color for small inline controls */
+            --link: #0369a1;
+        }
+        /* Utility classes extracted from repeated inline styles (Batch A) */
+        .muted { color: var(--muted); }
+        .muted-italic { color: var(--muted); font-style: italic; }
+        .spec-heading { margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--metadata-border); font-size: 15px; color: var(--text-normal); }
+        .inventory-button { background: #f8fafc; border: 1px solid #e2e8f0; padding: 8px; border-radius: 4px; font-size: 12px; cursor: pointer; box-sizing: border-box; display: inline-block; vertical-align: top; margin-bottom: 4px; color: var(--text-normal); }
+    .warning-text { color: var(--status-warning); }
+        .status-success-line { color: var(--status-success); margin:4px 0; font-weight:600; }
+        .status-warning-line { color: var(--status-warning); margin:4px 0; }
+        .status-error-line { color: var(--status-error); margin:4px 0; }
+            /* Spec compliance box variants (used in metadata summary) */
+            .spec-box { padding: 12px 16px; border-radius: 6px; margin-bottom: 16px; }
+            .spec-box--error { background: #fee2e2; border: 1px solid #dc2626; }
+            .spec-box--warning { background: #fef9c3; border: 1px solid #f59e0b; }
+            .spec-box--success { background: #dcfce7; border: 1px solid #22c55e; }
+            .spec-box-heading { font-size: 15px; }
+            /* Let spec-box variants control heading color */
+            .spec-box--error .spec-box-heading { color: var(--status-error); }
+            .spec-box--warning .spec-box-heading { color: var(--status-warning); }
+            .spec-box--success .spec-box-heading { color: var(--status-success); }
+            .spec-box-list { margin: 8px 0 0 18px; padding: 0; }
+            .spec-box-fixes { color: var(--status-success); font-size: 12px; margin-top: 8px; font-weight: 600; }
+            /* Announcement variants used inside element info panels */
+            .announcement-note { margin-top:8px; padding:8px; background:#f1f5f9; border-left:4px solid #64748b; border-radius:4px; }
+            .announcement-success { margin-top:12px; padding:10px; background:#f0fdf4; border-left:4px solid #10b981; border-radius:4px; }
+                /* Canonical panels, buttons and reusable fragments (consolidation) */
+                .panel { padding: 12px 16px; border-radius: 6px; margin-bottom: 16px; background: var(--metadata-bg); border: 1px solid var(--metadata-border); }
+                .panel--error { background: #fee2e2; border-color: #dc2626; }
+                .panel--warning { background: #fffbeb; border-color: #f59e0b; }
+                .panel--success { background: #ecfdf5; border-color: #10b981; }
+                .panel__heading { font-size: 15px; color: var(--text-normal); margin-bottom:8px; }
+                .btn { display: inline-flex; align-items: center; padding:6px 12px; border-radius:4px; cursor:pointer; font-size:13px; margin-bottom:6px; border:1px solid transparent; background: #e6eef6; color: var(--text-normal); }
+                .btn:focus { outline: 2px solid #3b82f6; outline-offset: 2px; }
+                .btn--selector { background: #e0e7ef; }
+                .btn--selector--mapped { background: #d1fae5; border-color: #10b981; color: #022f26; }
+                .btn--selector--group { background: #fef9c3; border-color: #f59e0b; color: #92400e; }
+                .selector-panel { background: #f8fafc; border:1px solid #e2e8f0; border-radius:6px; padding:12px 16px; margin-bottom:8px; }
+                .selector-row { display:flex; flex-wrap:wrap; gap:8px; margin-top:8px; }
+                .badge { padding:2px 6px; border-radius:3px; font-size:11px; display:inline-block; vertical-align:middle; margin-left:4px; color: #fff; }
+                .badge--jim { background: var(--badge-bg-jim); }
+                .badge--nojim { background: var(--badge-bg-nojim); }
+                .snippet { background:#f8fafc; padding:8px; border-radius:4px; margin-top:6px; max-height:120px; overflow:auto; }
+                .snippet--error { background:#fff0f0; color:var(--status-error); }
+                .muted-note { color: var(--muted-contrast); font-size:13px; margin-top:8px; }
+                .computed-dot { display:inline-block; width:12px; height:12px; border-radius:50%; margin-right:6px; vertical-align:middle; }
+        /* Orphaned selector card and meta text */
+        .orphaned-item { background:#eff6ff; border-left:3px solid #3b82f6; padding:8px; margin:8px 0; border-radius:4px; font-size:13px; color:#1e293b; }
+        .meta-text { color:#334155; font-size:12px; }
+    /* Additional utility classes for consolidated inline styles */
+    .hidden { display: none !important; }
+    .section-heading { margin-top: 16px; margin-bottom: 8px; font-size:16px; color: #1f2937; }
+    .wrap-chips { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:8px; }
+    .inline-row { display:inline-flex; align-items:center; }
+    .inline-code { color:var(--text-normal); }
+    .inline-text { color:var(--text-normal); margin-top:4px; }
+    .details--spaced { margin-top:10px; }
+    .pre-meta { background:#f8fafc; padding:8px; border-radius:4px; margin-top:6px; }
+    .badge--muted { background:#e0e7ef; color:#1e293b; padding:2px 6px; margin-right:4px; }
+    .muted-note.italic { font-style: italic; color: var(--muted-contrast); }
+    .orphaned-list { padding-left:0; margin:8px 0; list-style:none; }
+    .details-summary { cursor: pointer; color: var(--link); text-decoration: underline; }
+    .details-summary:focus {
+        outline: 2px solid #3b82f6;
+        outline-offset: 2px;
+    }
+    .error-box { background:#fee2e2; border:1px solid #dc2626; padding:12px 16px; border-radius:6px; margin-bottom:16px; }
+    .error-text { color: var(--status-error); font-size:15px; }
         * { box-sizing: border-box; }
         
         body {
@@ -226,12 +309,12 @@
         }
 
         .metadata-summary {
-            background: #ffffff; /* lighten to improve contrast for status text */
-            border: 1px solid #e6eef6; /* subtle cool border for separation */
+            background: var(--metadata-bg); /* lighten to improve contrast for status text */
+            border: 1px solid var(--metadata-border); /* subtle cool border for separation */
             border-radius: 6px;
             padding: 16px;
             margin-bottom: 20px;
-            color: #1e293b;
+            color: var(--text-normal);
         }
 
         .metadata-summary h3 {
@@ -292,7 +375,7 @@
                 <div id="status-messages" aria-live="polite" aria-atomic="true"></div>
             </section>
 
-            <div id="selector-list-panel" style="margin-bottom:16px;display:none;"></div>
+            <div id="selector-list-panel" class="selector-panel hidden"></div>
             <section class="viewer-section" aria-labelledby="visualization-heading">
                 <h2 id="visualization-heading">Interactive Visualization</h2>
                 <div id="visualization" aria-live="polite" aria-label="SVG visualization display area">
@@ -305,7 +388,7 @@
                 </div>
             </section>
 
-            <section class="viewer-section" id="analysis-section" aria-labelledby="analysis-heading" style="display:none;">
+                        <section class="viewer-section hidden" id="analysis-section" aria-labelledby="analysis-heading">
               <h2 id="analysis-heading">Detailed Analysis</h2>
               <div id="analysis-content"></div>
             </section>
@@ -323,7 +406,6 @@
     </div>
 
     <script>
-        // Keyboard shortcut: Press 'i' in the visualization area to jump to the inventory list
         document.addEventListener('DOMContentLoaded', function () {
             const viz = document.getElementById('visualization');
             const inventorySection = document.getElementById('analysis-section');
@@ -1022,6 +1104,15 @@
         const result = flatten(data);
         return result && result.trim() ? result : null;
     }
+    // Simple HTML escaper for injection-safe display
+    escapeHtml(str) {
+        return String(str)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;');
+    }
     // Returns the announcement object (name/description) from a behavior, or null if not present
     getExplicitAnnouncement(behavior) {
         if (behavior && behavior.enter && behavior.enter.announcement) {
@@ -1051,6 +1142,47 @@
                 if (closeBtn) {
                     closeBtn.addEventListener('click', () => this.hideInfoPanel());
                 }
+                // Delegated click/keyboard handlers for inventory and selector buttons
+                document.addEventListener('click', (e) => {
+                    const btn = e.target.closest && e.target.closest('.inventory-button, .selector-button');
+                    if (!btn) return;
+                    if (btn.classList.contains('inventory-button')) {
+                        const category = btn.dataset.category;
+                        const idx = Number(btn.dataset.idx);
+                        if (!Number.isNaN(idx)) {
+                            // Special case: group-preview elements rendered inside group behavior info
+                            if (category === 'group-preview') {
+                                const el = this._groupPreviewElements && this._groupPreviewElements[idx];
+                                if (el) {
+                                    // Inspect the actual element from the visualization
+                                    this.showNonJIMElementInfo(el, 'select');
+                                }
+                            } else {
+                                // Use global handler for inventory items
+                                window.handleInventoryItemClick && window.handleInventoryItemClick(category, idx);
+                            }
+                        }
+                    } else if (btn.classList.contains('selector-button')) {
+                        const key = btn.dataset.key;
+                        if (key) {
+                            this.showElementInfo(key, 'select', null);
+                        } else if (btn.dataset.selector) {
+                            // Group behavior button: primary action is to open full element info
+                            const sel = btn.dataset.selector;
+                            if (sel) this.showGroupPrimaryAction(sel);
+                        }
+                    }
+                });
+
+                document.addEventListener('keydown', (e) => {
+                    if (e.key !== 'Enter' && e.key !== ' ') return;
+                    const active = document.activeElement;
+                    if (!active) return;
+                    if (active.classList && (active.classList.contains('inventory-button') || active.classList.contains('selector-button'))) {
+                        e.preventDefault();
+                        active.click();
+                    }
+                });
             }
 
             handleFileLoad(text, ext) {
@@ -1063,7 +1195,8 @@
                 document.getElementById('metadata-summary').innerHTML = '';
                 document.getElementById('visualization').innerHTML = '';
                 document.getElementById('analysis-content').innerHTML = '';
-                document.getElementById('analysis-section').style.display = 'none';
+                const analysisSectionEl = document.getElementById('analysis-section');
+                if (analysisSectionEl) analysisSectionEl.classList.add('hidden');
                 this.hideInfoPanel();
 
                 // Parse file
@@ -1123,11 +1256,11 @@
                             // Show a snippet around the error
                             snippet = jimText.slice(Math.max(0, pos-40), pos+40);
                         }
-                        let errorHtml = `<div style='background:#fee2e2;border:1px solid #dc2626;padding:12px 16px;border-radius:6px;margin-bottom:16px;'>` +
-                            `<strong style='color:#dc2626;font-size:15px;'>✗ Invalid JIM JSON in file${lineInfo}</strong><br>` +
-                            `<div style='margin-top:8px;color:#dc2626;'>${e.message}</div>` +
-                            (snippet ? `<pre style='background:#fff0f0;color:#dc2626;padding:8px;border-radius:4px;margin-top:8px;max-height:120px;overflow:auto;'>${snippet.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</pre>` : '') +
-                            `<div style='margin-top:8px;color:#64748b;font-size:13px;'>Tip: Check for missing commas, brackets, or invalid array/object usage. You can copy and validate this JSON at <a href='https://jsonlint.com/' target='_blank' style='color:#2563eb;'>jsonlint.com</a>.</div>` +
+                        let errorHtml = `<div class="error-box">` +
+                            `<strong class="error-text"><span class="sr-only">Error: </span><span aria-hidden="true" class="status-icon">✗</span> Invalid JIM JSON in file${lineInfo}</strong><br>` +
+                            `<div class='muted-note' style='color:var(--status-error);'>${e.message}</div>` +
+                            (snippet ? `<pre class='snippet snippet--error'>${snippet.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</pre>` : '') +
+                            `<div class='muted-note'>Tip: Check for missing commas, brackets, or invalid array/object usage. You can copy and validate this JSON at <a href='https://jsonlint.com/' target='_blank' style='color:#2563eb;'>jsonlint.com</a>.</div>` +
                             `</div>`;
                         document.getElementById('metadata-summary').innerHTML = errorHtml;
                         this.specIssues = null;
@@ -1136,10 +1269,10 @@
                     }
                 } else {
                     console.warn('[JIMViewer] No JIM metadata found in file.');
-                    const errorHtml = `<div style='background:#fee2e2;border:1px solid #dc2626;padding:12px 16px;border-radius:6px;margin-bottom:16px;'>` +
-                        `<strong style='color:#dc2626;font-size:15px;'>✗ No JIM metadata found in file</strong><br>` +
-                        `<div style='margin-top:8px;color:#dc2626;'>JIM metadata must be in a &lt;script type="application/json+jim"&gt; or &lt;metadata data-type="text/jim+json"&gt; block.</div>` +
-                        `<div style='margin-top:8px;color:#64748b;font-size:13px;'>Tip: Check your SVG for a valid JIM metadata block.</div>` +
+                    const errorHtml = `<div class="error-box">` +
+                        `<strong class="error-text"><span class="sr-only">Error: </span><span aria-hidden="true" class="status-icon">✗</span> No JIM metadata found in file</strong><br>` +
+                        `<div class='muted-note' style='color:var(--status-error);'>JIM metadata must be in a &lt;script type="application/json+jim"&gt; or &lt;metadata data-type="text/jim+json"&gt; block.</div>` +
+                        `<div class='muted-note'>Tip: Check your SVG for a valid JIM metadata block.</div>` +
                         `</div>`;
                     document.getElementById('metadata-summary').innerHTML = errorHtml;
                     this.specIssues = null;
@@ -1177,9 +1310,9 @@
                 if (this.jimData && this.jimData.selectors && Object.keys(this.jimData.selectors).length) {
                     var selectorKeys = Object.keys(this.jimData.selectors);
                     var behaviors = this.jimData.behaviors || [];
-                    var selectorPanelHtml = "<div style='background:#f8fafc;border:1px solid #e2e8f0;border-radius:6px;padding:12px 16px;margin-bottom:8px;'>";
-                    selectorPanelHtml += "<strong style='color:#1e293b;font-size:15px;'>Selectors</strong>";
-                    selectorPanelHtml += "<div style='display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;'>";
+                    var selectorPanelHtml = "<div class='selector-panel'>";
+                    selectorPanelHtml += "<h2 class='panel__heading'>Selectors</h2>";
+                    selectorPanelHtml += "<div class='selector-row'>";
                     var svg = this.currentDoc.querySelector('svg');
                     // Track group behaviors
                     var groupBehaviors = [];
@@ -1215,65 +1348,72 @@
                                 }
                             }
                         }
-                        var style = hasBehavior
-                            ? "background:#d1fae5;border:1px solid #10b981;color:#022f26;"
-                            : isGroupMapped
-                                ? "background:#fef9c3;border:1px solid #f59e0b;color:#92400e;"
-                                : "background:#e0e7ef;border:none;color:#1e293b;";
-                        var icon = hasBehavior
-                            ? "<span style='margin-right:4px;' aria-label='Directly mapped by behavior' role='img'>✓</span>"
-                            : isGroupMapped
-                                ? "<span style='margin-right:4px;' aria-label='Covered by group behavior' role='img'>👥</span>"
-                                : "";
-                        selectorPanelHtml += "<button style='"+style+" padding:6px 12px;border-radius:4px;cursor:pointer;font-size:13px;margin-bottom:6px;' onclick='window.jimViewer.showElementInfo(\""+key+"\", \"select\", null);'>"+icon+key+"</button>";
+                        var cls = 'btn selector-button';
+                        if (hasBehavior) cls += ' btn--selector--mapped';
+                        else if (isGroupMapped) cls += ' btn--selector--group';
+                        else cls += ' btn--selector';
+                        var icon = hasBehavior ? "<span class='sr-only'>Mapped: </span><span style='margin-right:4px;' aria-hidden='true' class='status-icon'>✓</span>" : (isGroupMapped ? "<span class='sr-only'>Group: </span><span style='margin-right:4px;' aria-hidden='true' class='status-icon'>👥</span>" : "");
+                        var ariaState = hasBehavior ? ', mapped' : (isGroupMapped ? ', group mapped' : ', not mapped');
+                        var ariaLabel = `Selector ${key}${ariaState}`;
+                        selectorPanelHtml += `<button class='${cls} selector-button' data-key='${key}' aria-label='${ariaLabel}'>${icon}${key}</button>`;
                     }
                     selectorPanelHtml += "</div>";
                     // Add group behaviors section
                     if (groupBehaviors.length) {
-                        selectorPanelHtml += `<div style='margin-top:16px;'><strong style='color:#1e293b;font-size:15px;'>Group Behaviors</strong><div style='display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;'>`;
+                        // Build interactive group behavior controls: header button + member preview buttons
+                        selectorPanelHtml += `<div style='margin-top:16px;'><h3 class='panel__heading'>Group Behaviors</h3><div class='wrap-chips' aria-hidden='false'>`;
+                        // We'll collect referenced elements so the delegated handler can inspect them
+                        var _groupPreviewEls = [];
+                        var _gpIndex = 0;
                         groupBehaviors.forEach(gb => {
-                            selectorPanelHtml += `<div style='background:#fef9c3;border:1px solid #f59e0b;color:#92400e;padding:8px 12px;border-radius:4px;font-size:13px;display:inline-flex;align-items:center;margin-bottom:8px;'>`;
-                            selectorPanelHtml += `<span style='font-weight:600;margin-right:8px;'>${gb.selector}</span> <span style='font-size:12px;margin-right:8px;'>(matches ${gb.elements.length} elements)</span>`;
+                            selectorPanelHtml += `<div class='panel panel--warning' style='display:inline-flex;align-items:center;margin-bottom:8px;padding:8px 12px;'>`;
+                            // Make the group selector a focusable button so it can be keyboard-activated
+                            selectorPanelHtml += `<button class='btn selector-button btn--selector--group' data-selector='${gb.selector}' aria-label='Group ${gb.selector}, matches ${gb.elements.length} elements' style='font-weight:600;margin-right:8px;'>${gb.selector}</button>`;
+                            selectorPanelHtml += `<span style='font-size:12px;margin-right:8px;' aria-hidden='true'>(matches ${gb.elements.length} elements)</span>`;
                             gb.elements.slice(0,6).forEach(el => {
-                                var label = el.id ? `#${el.id}` : el.classList.length ? '.' + Array.from(el.classList).join('.') : el.tagName;
-                                selectorPanelHtml += `<span style='background:#e0e7ef;color:#1e293b;padding:2px 6px;border-radius:3px;font-size:11px;display:inline-block;vertical-align:middle;margin-right:4px;'>${label}</span>`;
+                                var label = el.id ? `#${el.id}` : (el.classList && el.classList.length) ? '.' + Array.from(el.classList).join('.') : el.tagName;
+                                // Render member previews as small inventory buttons so they are tabbable
+                                selectorPanelHtml += `<button class='inventory-button badge badge--muted' data-category='group-preview' data-idx='${_gpIndex}' aria-label='SVG element ${label}' style='margin-right:6px;'>${label}</button>`;
+                                _groupPreviewEls.push(el);
+                                _gpIndex++;
                             });
-                            if (gb.elements.length > 6) selectorPanelHtml += `<span style='color:#64748b;font-size:11px;'>...and ${gb.elements.length-6} more</span>`;
+                            if (gb.elements.length > 6) selectorPanelHtml += `<span class='muted-note'>...and ${gb.elements.length-6} more</span>`;
                             selectorPanelHtml += `</div>`;
                         });
                         selectorPanelHtml += `</div></div>`;
+                        // Attach the preview element references to the instance for the delegated click handler
+                        try { this._groupPreviewElements = _groupPreviewEls; } catch (e) { /* ignore if not in class context */ }
                     }
                     selectorPanelHtml += "</div>";
                     selectorPanel.innerHTML = selectorPanelHtml;
-                    selectorPanel.style.display = '';
+                    selectorPanel.classList.remove('hidden');
                 } else {
                     selectorPanel.innerHTML = '';
-                    selectorPanel.style.display = 'none';
+                    selectorPanel.classList.add('hidden');
                 }
                 console.log('displayMetadataSummary called, JIM data present:', !!this.jimData);
                 const summary = document.getElementById('metadata-summary');
                 // Show spec compliance box if preflight found errors/warnings
                                 let specBox = '';
-                                if (this.specIssues) {
-                                    if (this.specIssues.errors.length || this.specIssues.warnings.length) {
-                                        const color = this.specIssues.errors.length ? '#fee2e2' : '#fef9c3';
-                                        const border = this.specIssues.errors.length ? '#dc2626' : '#f59e0b';
-                                        const headingColor = this.specIssues.errors.length ? '#dc2626' : '#92400e';
-                                        const icon = this.specIssues.errors.length ? '✗' : '⚠';
-                                        specBox = `<div style="background:${color};border:1px solid ${border};padding:12px 16px;border-radius:6px;margin-bottom:16px;">
-                                            <strong style="color:${headingColor};font-size:15px;">Spec compliance</strong><ul style="margin:8px 0 0 18px;padding:0;">
-                                            ${this.specIssues.errors.map(e=>`<li style='color:#9b1c1c;'>✗ ${e}</li>`).join('')}
-                                            ${this.specIssues.warnings.map(w=>`<li style='color:#7c2d12;'>⚠ ${w}</li>`).join('')}
-                                            </ul>
-                                            ${this.specIssues.fixes.length ? `<div style='color:#022f26;font-size:12px;margin-top:8px;font-weight:600;'>Normalizations: ${this.specIssues.fixes.join(', ')}</div>` : ''}
-                                        </div>`;
-                                    } else {
-                                        // No errors or warnings: show green success box
-                                        specBox = `<div style="background:#dcfce7;border:1px solid #22c55e;padding:12px 16px;border-radius:6px;margin-bottom:16px;">
-                                            <strong style="color:#22c55e;font-size:15px;">✓ No JIM issues found</strong>
-                                        </div>`;
-                                    }
-                                }
+                                                if (this.specIssues) {
+                                                                    if (this.specIssues.errors.length || this.specIssues.warnings.length) {
+                                                                        const variant = this.specIssues.errors.length ? 'error' : 'warning';
+                                                                        const headingColor = this.specIssues.errors.length ? 'var(--status-error)' : 'var(--status-warning)';
+                                                                        specBox = `<div class="spec-box spec-box--${variant}">
+                                                                            <strong class="spec-box-heading">Spec compliance</strong>
+                                                                            <ul class="spec-box-list">
+                                                                                ${this.specIssues.errors.map(e=>`<li class="status-error-line"><span class="sr-only">Error: </span><span aria-hidden="true" class="status-icon">✗</span> ${e}</li>`).join('')}
+                                                                                ${this.specIssues.warnings.map(w=>`<li class="status-warning-line"><span class="sr-only">Warning: </span><span aria-hidden="true" class="status-icon">⚠</span> ${w}</li>`).join('')}
+                                                                            </ul>
+                                                                            ${this.specIssues.fixes.length ? `<div class="spec-box-fixes">Normalizations: ${this.specIssues.fixes.join(', ')}</div>` : ''}
+                                                                        </div>`;
+                                                                    } else {
+                                                                        // No errors or warnings: show green success box
+                                                                        specBox = `<div class="spec-box spec-box--success">
+                                                                            <strong class="spec-box-heading"><span class="sr-only">Success: </span><span aria-hidden="true" class="status-icon">✓</span> No JIM issues found</strong>
+                                                                        </div>`;
+                                                                    }
+                                                                }
 
                 if (!this.jimData) {
                     // SVG-only mode: build an inventory that includes basic shapes (other)
@@ -1288,13 +1428,13 @@
                             </div>
                             <div class="metadata-item">
                                 <span class="key">JIM Metadata:</span>
-                                <span class="value" style="color: #d97706;">Not present</span>
+                                <span class="value warning-text">Not present</span>
                             </div>
                             <div class="metadata-item">
                                 <span class="key">Features:</span>
                                 <span class="value">Element inspection, accessibility audit, style analysis</span>
                             </div>
-                            <h3 style="margin-top: 16px; margin-bottom: 8px;">SVG Accessibility Audit</h3>
+                            <h3 class="section-heading">SVG Accessibility Audit</h3>
                             ${this.renderAccessibilityAudit()}
                         </div>
                     `;
@@ -1331,14 +1471,14 @@
                         ` : `
                             <div class="metadata-item">
                                 <span class="key">Datasets:</span>
-                                <span class="value" style="color: #d97706;">Not present</span>
+                                <span class="value warning-text">Not present</span>
                             </div>
                         `}
                         <div class="metadata-item">
                             <span class="key">JIM Version:</span>
                             <span class="value">${this.jimData.version?.jim || 'Unknown'}</span>
                         </div>
-                        <h3 style="margin-top: 16px; margin-bottom: 8px;">JIM Validation</h3>
+                        <h3 class="section-heading">JIM Validation</h3>
                         ${this.renderValidationResults(validation)}
                     </div>
                 `;
@@ -1356,12 +1496,12 @@
             html += `<div><strong>Event:</strong> <code>${eventType}</code></div>`;
 
             // Accessibility attributes section
-            html += '<h4 style="margin-top: 12px; padding-top: 12px; border-top: 1px solid #e2e8f0; font-size: 15px; color: #1e293b;">Accessibility Attributes</h4>';
-            html += `<div><strong>aria-label:</strong> ${element.getAttribute('aria-label') || '<span style="color: #94a3b8;">Not present</span>'}</div>`;
-            html += `<div><strong>aria-labelledby:</strong> ${element.getAttribute('aria-labelledby') || '<span style="color: #94a3b8;">Not present</span>'}</div>`;
-            html += `<div><strong>aria-describedby:</strong> ${element.getAttribute('aria-describedby') || '<span style="color: #94a3b8;">Not present</span>'}</div>`;
-            html += `<div><strong>role:</strong> ${element.getAttribute('role') || '<span style="color: #94a3b8;">Not present</span>'}</div>`;
-            html += `<div><strong>tabindex:</strong> ${element.getAttribute('tabindex') !== null ? element.getAttribute('tabindex') : '<span style="color: #94a3b8;">Not present</span>'}</div>`;
+            html += '<h4 class="spec-heading">Accessibility Attributes</h4>';
+            html += `<div><strong>aria-label:</strong> ${element.getAttribute('aria-label') || '<span class="muted">Not present</span>'}</div>`;
+            html += `<div><strong>aria-labelledby:</strong> ${element.getAttribute('aria-labelledby') || '<span class="muted">Not present</span>'}</div>`;
+            html += `<div><strong>aria-describedby:</strong> ${element.getAttribute('aria-describedby') || '<span class="muted">Not present</span>'}</div>`;
+            html += `<div><strong>role:</strong> ${element.getAttribute('role') || '<span class="muted">Not present</span>'}</div>`;
+            html += `<div><strong>tabindex:</strong> ${element.getAttribute('tabindex') !== null ? element.getAttribute('tabindex') : '<span class="muted">Not present</span>'}</div>`;
 
             let titleText = null;
             let descText = null;
@@ -1370,15 +1510,15 @@
             titleText = titleEl ? titleEl.textContent : titleAttr;
             const descEl = element.querySelector('desc');
             descText = descEl ? descEl.textContent : null;
-            html += `<div><strong>&lt;title&gt;:</strong> ${titleText || '<span style=\"color: #94a3b8;\">Not present</span>'}</div>`;
-            html += `<div><strong>&lt;desc&gt;:</strong> ${descText || '<span style=\"color: #94a3b8;\">Not present</span>'}</div>`;
-            html += `<div><strong>aria-hidden:</strong> ${element.getAttribute('aria-hidden') || '<span style=\"color: #94a3b8;">Not present</span>'}</div>`;
-            html += `<div><strong>aria-live:</strong> ${element.getAttribute('aria-live') || '<span style=\"color: #94a3b8;">Not present</span>'}</div>`;
+            html += `<div><strong>&lt;title&gt;:</strong> ${titleText || '<span class="muted">Not present</span>'}</div>`;
+            html += `<div><strong>&lt;desc&gt;:</strong> ${descText || '<span class="muted">Not present</span>'}</div>`;
+            html += `<div><strong>aria-hidden:</strong> ${element.getAttribute('aria-hidden') || '<span class="muted">Not present</span>'}</div>`;
+            html += `<div><strong>aria-live:</strong> ${element.getAttribute('aria-live') || '<span class="muted">Not present</span>'}</div>`;
 
             // Computed styles section
             if (window.getComputedStyle) {
                 const computed = window.getComputedStyle(element);
-                html += '<h4 style="margin-top: 12px; padding-top: 12px; border-top: 1px solid #e2e8f0; font-size: 15px; color: #1e293b;">Computed Styles</h4>';
+                html += '<h4 class="spec-heading">Computed Styles</h4>';
                 html += `<div><strong>fill:</strong> <span style="color: ${computed.fill};">●</span> ${computed.fill}</div>`;
                 html += `<div><strong>stroke:</strong> <span style="color: ${computed.stroke};">●</span> ${computed.stroke}</div>`;
                 html += `<div><strong>stroke-width:</strong> ${computed.strokeWidth}</div>`;
@@ -1392,7 +1532,7 @@
                     html += `<div><strong>font-weight:</strong> ${computed.fontWeight}</div>`;
                     const textContent = element.textContent.trim();
                     if (textContent) {
-                        html += `<div style="margin-top: 8px;"><strong>Text Content:</strong> "${textContent}"</div>`;
+                        html += `<div class="inline-text"><strong>Text Content:</strong> "${textContent}"</div>`;
                     }
                 }
             }
@@ -1410,32 +1550,163 @@
                 });
             }
         }
+
+        // Show a summary/info panel for a group behavior selector (lists member elements)
+        showGroupBehaviorInfo(selector) {
+            if (!selector) return;
+            const svg = this.currentDoc && (this.currentDoc.querySelector('svg') || (this.currentDoc.documentElement && this.currentDoc.documentElement.tagName.toLowerCase() === 'svg' ? this.currentDoc.documentElement : null));
+            if (!svg) return;
+
+            let members = [];
+            try {
+                members = Array.from(svg.querySelectorAll(selector));
+            } catch (e) {
+                members = [];
+            }
+            // Collect any JIM behaviors that target this selector so we can show behavior-level info
+            const behaviors = this.jimData?.behaviors ? (this.jimData.behaviors.filter(b => b?.target?.selector === selector)) : [];
+
+            let html = `<div><strong>Group Selector:</strong> <code>${selector}</code></div>`;
+
+            // If behaviors exist for this selector, render their announcements and a full JSON view
+            if (behaviors.length) {
+                const matchLabel = behaviors.length === 1 ? '1 behavior' : `${behaviors.length} behaviors`;
+                html += `<div style='margin-top:8px; margin-bottom:8px;'><strong>Behavior(s):</strong> ${matchLabel}</div>`;
+                // Show any explicit announcements (enter) for the group behavior
+                const explicitAnns = behaviors.map(b => b.enter?.announcement).filter(Boolean);
+                if (explicitAnns.length) {
+                    explicitAnns.forEach((ann, i) => {
+                        // Prefer human-friendly fields: description then name, fallback to serialized keys
+                        let desc = '';
+                        if (typeof ann === 'string') {
+                            desc = ann;
+                        } else if (ann && typeof ann === 'object') {
+                            if (ann.description && String(ann.description).trim()) desc = ann.description;
+                            else if (ann.name && String(ann.name).trim()) desc = ann.name;
+                            else {
+                                // Build a compact summary from known fields if available
+                                const parts = [];
+                                if (ann.name) parts.push(`Name: ${ann.name}`);
+                                if (ann.description) parts.push(`Description: ${ann.description}`);
+                                if (ann.hint) parts.push(`Hint: ${ann.hint}`);
+                                desc = parts.length ? parts.join(' — ') : JSON.stringify(ann);
+                            }
+                        } else {
+                            desc = String(ann);
+                        }
+                        // Use the same label as element-level panels: 'Explicit Announcement:'
+                        const label = explicitAnns.length === 1 ? 'Explicit Announcement:' : `Explicit Announcement ${i+1} of ${explicitAnns.length}:`;
+                        html += `<div class='announcement announcement-success' style='margin-top:8px;'><strong>${this.escapeHtml(label)}</strong><br><code>${this.escapeHtml(String(desc))}</code></div>`;
+                    });
+                }
+                // Provide a toggle to view full behavior JSON for debugging/inspection
+                const detailsOpen = behaviors.length === 1 ? ' open' : '';
+                html += `<details${detailsOpen} class="details--spaced"><summary class="details-summary">Show/Hide Behavior JSON</summary><pre class="pre-meta meta-text">${JSON.stringify(behaviors, null, 2)}</pre></details>`;
+                html += `<div style='margin-top:8px; margin-bottom:8px;'><strong>Members:</strong></div>`;
+            } else {
+                html += `<div style='margin-top:8px; margin-bottom:8px;'><strong>Members:</strong></div>`;
+            }
+
+            // Note: element-specific attributes (aria-label, computed styles) are available by opening member details.
+            if (!members.length) {
+                html += `<div class='muted-note'>No matching elements found in the visualization.</div>`;
+            } else {
+                html += `<div class='wrap-chips'>`;
+                // Ensure we can inspect each member by making buttons that map back to real elements
+                // Reset the preview elements on each open to avoid array growth across repeated opens
+                this._groupPreviewElements = [];
+                members.forEach((el, i) => {
+                    const label = el.id ? `#${el.id}` : (el.classList && el.classList.length) ? '.' + Array.from(el.classList).join('.') : el.tagName;
+                    // store reference and render a button that the delegated handler will pick up
+                    const idx = this._groupPreviewElements.push(el) - 1;
+                    html += `<button class='inventory-button badge badge--muted' data-category='group-preview' data-idx='${idx}' aria-label='SVG element ${label}' style='margin-right:6px;margin-bottom:6px;'>${label}</button>`;
+                });
+                html += `</div>`;
+            }
+
+            this.infoContent.innerHTML = html;
+            this.infoPanel.classList.add('visible');
+
+            // Update live region
+            const liveRegion = document.getElementById('info-panel-live');
+            if (liveRegion) {
+                const label = `Group info panel opened for selector ${selector}, ${members.length} members`;
+                liveRegion.textContent = '';
+                requestAnimationFrame(() => { liveRegion.textContent = label; });
+            }
+        }
+
+        // Primary action for a group selector: open full element info for the first matched member
+        showGroupPrimaryAction(selector) {
+            if (!selector) return;
+            const svg = this.currentDoc && (this.currentDoc.querySelector('svg') || (this.currentDoc.documentElement && this.currentDoc.documentElement.tagName.toLowerCase() === 'svg' ? this.currentDoc.documentElement : null));
+            if (!svg) return;
+
+            let members = [];
+            try {
+                members = Array.from(svg.querySelectorAll(selector));
+            } catch (e) {
+                members = [];
+            }
+
+            if (!members.length) {
+                // Fall back to showing a group summary if no members
+                this.showGroupBehaviorInfo(selector);
+                return;
+            }
+
+            // If there are JIM behaviors that target this selector, show the behavior-level info first
+            const behaviors = this.jimData?.behaviors ? (this.jimData.behaviors.filter(b => b?.target?.selector === selector)) : [];
+            if (behaviors.length) {
+                // Show the behavior panel (includes members and announcements)
+                this.showGroupBehaviorInfo(selector);
+                return;
+            }
+
+            // Prefer showing full JIM element info if the first member matches a JIM selector key
+            const selectors = this.jimData?.selectors || {};
+            let first = members[0];
+            let selectorKey = null;
+            for (const [key, sel] of Object.entries(selectors)) {
+                try {
+                    if (first.matches(sel.dom)) { selectorKey = key; break; }
+                } catch(_) {}
+            }
+
+            if (selectorKey) {
+                // Show JIM-based element info; find corresponding element in visualization
+                this.showElementInfo(selectorKey, 'select', first);
+            } else {
+                // Fallback: show the non-JIM element info directly
+                this.showNonJIMElementInfo(first, 'select');
+            }
+        }
         updateDetailedAnalysis() {
             const section = document.getElementById('analysis-section');
             const content = document.getElementById('analysis-content');
-            content.innerHTML = this.detailedAnalysis || '<div style="color:#64748b; font-style:italic;">No inventory available.</div>';
-            section.style.display = 'block';
+            content.innerHTML = this.detailedAnalysis || '<div class="muted-italic">No inventory available.</div>';
+            section.classList.remove('hidden');
         }
         renderValidationSummary(validation) {
             let html = '';
-            validation.errors.forEach(err => { html += `<div style="color:#dc2626; margin:4px 0;">✗ ${err}</div>`; });
-            validation.warnings.forEach(w => { html += `<div style="color:#7c2d12; margin:4px 0;">⚠ ${w}</div>`; });
-            validation.passed.forEach(p => { html += `<div style="color:#022f26; margin:4px 0; font-weight:600;">✓ ${p}</div>`; });
+            validation.errors.forEach(err => { html += `<div class="status-error-line"><span class="sr-only">Error: </span><span aria-hidden="true" class="status-icon">✗</span> ${err}</div>`; });
+            validation.warnings.forEach(w => { html += `<div class="status-warning-line"><span class="sr-only">Warning: </span><span aria-hidden="true" class="status-icon">⚠</span> ${w}</div>`; });
+            validation.passed.forEach(p => { html += `<div class="status-success-line"><span class="sr-only">Success: </span><span aria-hidden="true" class="status-icon">✓</span> ${p}</div>`; });
 
             if (validation.orphanedSelectors?.length) {
-                html += '<div style="margin-top:12px; padding-top:12px; border-top:1px solid #e2e8f0;"><strong style="color:#1e293b;">Orphaned Selectors (not in DOM):</strong></div>';
-                validation.orphanedSelectors.forEach(orphan => {
+                html += `<div class='spec-heading' style='margin-top:12px; padding-top:12px; border-top:1px solid var(--metadata-border);'><strong>Orphaned Selectors (not in DOM):</strong></div>`;
+                    validation.orphanedSelectors.forEach(orphan => {
                     html += `
-                        <div style="background:#eff6ff; border-left:3px solid #3b82f6; padding:8px; margin:8px 0; border-radius:4px; font-size:13px; color:#1e293b;">
+                        <div class="orphaned-item">
                             <div><strong>${orphan.key}</strong></div>
-                            <div style="color:#334155; font-size:12px;">Selector: <code>${orphan.selector}</code></div>
-                            <div style="color:#334155; font-size:12px;">JSON Path: <code>${orphan.jsonPath}</code></div>
-                            ${orphan.data ? `<div style="margin-top:4px;"><strong>Data:</strong> <code>${JSON.stringify(orphan.data)}</code></div>` : ''}
+                            <div class="meta-text">Selector: <code>${orphan.selector}</code></div>
+                            <div class="meta-text">JSON Path: <code>${orphan.jsonPath}</code></div>
+                            ${orphan.data ? `<div class="muted-note"><strong>Data:</strong> <code>${JSON.stringify(orphan.data)}</code></div>` : ''}
                         </div>`;
                 });
             }
 
-            if (!html) html = '<div style="color:#1e293b; font-style:italic;">No validation data available</div>';
+            if (!html) html = '<div class="muted-italic">No validation data available</div>';
             return html;
         }
 
@@ -1456,7 +1727,7 @@
             };
 
             let html = `
-                <h3 style="margin-top:0; margin-bottom:8px; font-size:18px; color:#1e293b;">
+                <h3 class="section-heading">
                     SVG Element Inventory
                     <div class="sr-only" aria-live="polite">This list is interactive. Use Tab to move between items and Enter to open details. Press 'i' to jump here from the visualization area. JIM and No JIM badges are announced for screen readers.</div>
                 </h3>
@@ -1466,25 +1737,20 @@
                 if (!items.length) return;
                 let label = category[0].toUpperCase() + category.slice(1) + ' Elements';
                 if (category === 'other') label = 'Other Elements';
-                html += `<h4 style="margin:8px 0 6px; font-size:15px; color:#374151; font-weight:600;">${label} (${items.length})</h4>`;
-                html += '<div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:8px;">';
+                html += `<h4 class="spec-heading">${label} (${items.length})</h4>`;
+                html += '<div class="wrap-chips">';
 
                 items.forEach((item, idx) => {
                     const jimBadge = item.hasJIM
-                        ? '<span style="background:#047857;color:#fff;padding:2px 6px;border-radius:3px;font-size:11px;display:inline-block;vertical-align:middle;margin-left:4px;" aria-label="JIM mapped" role="status">JIM</span>'
-                        : '<span style="background:#334155;color:#fff;padding:2px 6px;border-radius:3px;font-size:11px;display:inline-block;vertical-align:middle;margin-left:4px;" aria-label="No JIM mapping" role="status">No JIM</span>';
+                        ? '<span class="badge badge--jim" aria-label="JIM mapped" role="status">JIM</span>'
+                        : '<span class="badge badge--nojim" aria-label="No JIM mapping" role="status">No JIM</span>';
                     // Render 'other' items as clickable buttons so users can inspect shapes
-                    const clickHandler = `handleInventoryItemClick('${category}', ${idx})`;
                     html += `
-                        <button style="background:#f8fafc;border:1px solid #e2e8f0;padding:8px;border-radius:4px;font-size:12px;cursor:pointer;box-sizing:border-box;display:inline-block;vertical-align:top;margin-bottom:4px;color:#1e293b;"
-                                onclick="${clickHandler}"
-                                onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();${clickHandler};}"
-                                aria-label="SVG element ${item.selector}${item.hasJIM ? ', JIM mapped' : ', No JIM mapping'}"
-                                role="button">
-                            <div style="display:inline-flex;align-items:center;"><code style="color:#1e293b;">${item.selector}</code>${jimBadge}</div>
-                            ${item.textContent ? `<div style="color:#1e293b;margin-top:4px;">Text: \"${item.textContent}\"</div>` : ''}
+                        <button class="inventory-button" data-category="${category}" data-idx="${idx}" aria-label="SVG element ${item.selector}${item.hasJIM ? ', JIM mapped' : ', No JIM mapping'}" role="button">
+                            <div class="inline-row"><code class="inline-code">${item.selector}</code>${jimBadge}</div>
+                            ${item.textContent ? `<div class="inline-text">Text: \"${item.textContent}\"</div>` : ''}
                             <!-- Accessibility attributes removed from visual output -->
-                            ${item.suggestions?.length ? `<div style=\"color:#92400e; margin-top:4px; font-size:11px;\"><span aria-label=\"Suggestion\">💡</span> ${item.suggestions.join('; ')}</div>` : ''}
+                                            ${item.suggestions?.length ? `<div class="muted-note"><span class="sr-only">Suggestion: </span><span aria-hidden="true" class="status-icon">💡</span> ${item.suggestions.join('; ')}</div>` : ''}
                         </button>`;
                 });
 
@@ -1504,14 +1770,14 @@
             }
 
             renderAccessibilityAudit() {
-                if (!this.currentDoc) return '<div style="color: #64748b; font-style: italic;">No document to audit</div>';
+                if (!this.currentDoc) return '<div class="muted-italic">No document to audit</div>';
 
                 let svg = this.currentDoc.querySelector('svg');
                 if (!svg && this.currentDoc.documentElement && this.currentDoc.documentElement.tagName.toLowerCase() === 'svg') {
                     svg = this.currentDoc.documentElement;
                 }
 
-                if (!svg) return '<div style="color: #dc2626;">No SVG found in document</div>';
+                if (!svg) return '<div class="status-error-line">No SVG found in document</div>';
 
                 const allElements = svg.querySelectorAll('*');
                 let interactiveCount = 0;
@@ -1545,16 +1811,16 @@
                 });
 
                 let html = '';
-                html += `<div style="color: #059669; margin: 4px 0;">✓ Found ${interactiveCount} interactive elements</div>`;
-                html += `<div style="color: #059669; margin: 4px 0;">✓ Found ${textCount} text elements</div>`;
-                html += `<div style="color: #059669; margin: 4px 0;">✓ ${accessibleCount} elements have accessibility labels</div>`;
+                html += `<div class="status-success-line"><span class="sr-only">Success: </span><span aria-hidden="true" class="status-icon">✓</span> Found ${interactiveCount} interactive elements</div>`;
+                html += `<div class="status-success-line"><span class="sr-only">Success: </span><span aria-hidden="true" class="status-icon">✓</span> Found ${textCount} text elements</div>`;
+                html += `<div class="status-success-line"><span class="sr-only">Success: </span><span aria-hidden="true" class="status-icon">✓</span> ${accessibleCount} elements have accessibility labels</div>`;
 
                 if (issues.length > 0) {
                     issues.slice(0, 3).forEach(issue => {
-                        html += `<div style="color: #d97706; margin: 4px 0;">⚠ ${issue}</div>`;
+                        html += `<div class="status-warning-line"><span class="sr-only">Warning: </span><span aria-hidden="true" class="status-icon">⚠</span> ${issue}</div>`;
                     });
                     if (issues.length > 3) {
-                        html += `<div style="color: #64748b; margin: 4px 0; font-style: italic;">... and ${issues.length - 3} more issues</div>`;
+                        html += `<div class="muted-note italic">... and ${issues.length - 3} more issues</div>`;
                     }
                 }
 
@@ -1734,7 +2000,7 @@
             }
         }
         if (explicitAnn) {
-            html += `<div class="announcement" style="margin-top:12px; padding:10px; background:#f0fdf4; border-left:4px solid #10b981; border-radius:4px;">
+            html += `<div class="announcement announcement-success">
                 <strong>Explicit Announcement:</strong><br>${typeof explicitAnn === 'object' ? (explicitAnn.description || JSON.stringify(explicitAnn)) : explicitAnn}
             </div>`;
         }
@@ -1743,25 +2009,25 @@
             let facetNote = '';
             const facetsExist = !!this.jimData?.datasets?.[0]?.facets && Object.keys(this.jimData.datasets[0].facets).length > 0;
             if (facetsExist) {
-                facetNote = `<div style='color:#64748b;font-size:12px;margin-top:6px;'><i>Note: Italicized fields are not covered by facet definitions.</i></div>`;
+                facetNote = `<div class="muted-note italic"><i>Note: Italicized fields are not covered by facet definitions.</i></div>`;
             }
-            html += `<div class="announcement" style="margin-top:8px; padding:8px; background:#f1f5f9; border-left:4px solid #64748b; border-radius:4px;">
+            html += `<div class="announcement announcement-note">
                 <strong>Default Announcement:</strong><br>${defaultAnnouncement}
                 ${facetNote}
             </div>`;
         }
         // Show full JSON view of the first matched behavior if present
         if (matchedBehaviors.length) {
-            html += `<details open style="margin-top:10px;"><summary style="cursor:pointer; color:#0ea5e9;">Show/Hide Full Behavior JSON</summary><pre style="background:#f8fafc; color:#334155; font-size:12px; padding:8px; border-radius:4px; margin-top:6px;">${JSON.stringify(matchedBehaviors[0], null, 2)}</pre></details>`;
+            html += `<details open class="details--spaced"><summary class="details-summary">Show/Hide Full Behavior JSON</summary><pre class="pre-meta meta-text">${JSON.stringify(matchedBehaviors[0], null, 2)}</pre></details>`;
         }
 
         // Accessibility attributes section
-        html += '<h4 style="margin-top: 12px; padding-top: 12px; border-top: 1px solid #e2e8f0; font-size: 15px; color: #1e293b;">Accessibility Attributes</h4>';
-        html += `<div><strong>aria-label:</strong> ${vizElement.getAttribute('aria-label') || '<span style="color: #94a3b8;">Not present</span>'}</div>`;
-        html += `<div><strong>aria-labelledby:</strong> ${vizElement.getAttribute('aria-labelledby') || '<span style="color: #94a3b8;">Not present</span>'}</div>`;
-        html += `<div><strong>aria-describedby:</strong> ${vizElement.getAttribute('aria-describedby') || '<span style="color: #94a3b8;">Not present</span>'}</div>`;
-        html += `<div><strong>role:</strong> ${vizElement.getAttribute('role') || '<span style="color: #94a3b8;">Not present</span>'}</div>`;
-        html += `<div><strong>tabindex:</strong> ${vizElement.getAttribute('tabindex') !== null ? vizElement.getAttribute('tabindex') : '<span style="color: #94a3b8;">Not present</span>'}</div>`;
+    html += '<h4 class="spec-heading">Accessibility Attributes</h4>';
+    html += `<div><strong>aria-label:</strong> ${vizElement.getAttribute('aria-label') || '<span class="muted">Not present</span>'}</div>`;
+    html += `<div><strong>aria-labelledby:</strong> ${vizElement.getAttribute('aria-labelledby') || '<span class="muted">Not present</span>'}</div>`;
+    html += `<div><strong>aria-describedby:</strong> ${vizElement.getAttribute('aria-describedby') || '<span class="muted">Not present</span>'}</div>`;
+    html += `<div><strong>role:</strong> ${vizElement.getAttribute('role') || '<span class="muted">Not present</span>'}</div>`;
+    html += `<div><strong>tabindex:</strong> ${vizElement.getAttribute('tabindex') !== null ? vizElement.getAttribute('tabindex') : '<span class="muted">Not present</span>'}</div>`;
 
         let titleText = null;
         let descText = null;
@@ -1770,15 +2036,15 @@
         titleText = titleEl ? titleEl.textContent : titleAttr;
         const descEl = vizElement.querySelector('desc');
         descText = descEl ? descEl.textContent : null;
-        html += `<div><strong>&lt;title&gt;:</strong> ${titleText || '<span style=\"color: #94a3b8;\">Not present</span>'}</div>`;
-        html += `<div><strong>&lt;desc&gt;:</strong> ${descText || '<span style=\"color: #94a3b8;\">Not present</span>'}</div>`;
-        html += `<div><strong>aria-hidden:</strong> ${vizElement.getAttribute('aria-hidden') || '<span style=\"color: #94a3b8;">Not present</span>'}</div>`;
-        html += `<div><strong>aria-live:</strong> ${vizElement.getAttribute('aria-live') || '<span style=\"color: #94a3b8;">Not present</span>'}</div>`;
+    html += `<div><strong>&lt;title&gt;:</strong> ${titleText || '<span class="muted">Not present</span>'}</div>`;
+    html += `<div><strong>&lt;desc&gt;:</strong> ${descText || '<span class="muted">Not present</span>'}</div>`;
+    html += `<div><strong>aria-hidden:</strong> ${vizElement.getAttribute('aria-hidden') || '<span class="muted">Not present</span>'}</div>`;
+    html += `<div><strong>aria-live:</strong> ${vizElement.getAttribute('aria-live') || '<span class="muted">Not present</span>'}</div>`;
 
         // Computed styles section
         if (window.getComputedStyle && vizElement) {
             const computed = window.getComputedStyle(vizElement);
-            html += '<h4 style="margin-top: 12px; padding-top: 12px; border-top: 1px solid #e2e8f0; font-size: 15px; color: #1e293b;">Computed Styles</h4>';
+            html += '<h4 class="spec-heading">Computed Styles</h4>';
             html += `<div><strong>fill:</strong> <span style="color: ${computed.fill};">●</span> ${computed.fill}</div>`;
             html += `<div><strong>stroke:</strong> <span style="color: ${computed.stroke};">●</span> ${computed.stroke}</div>`;
             html += `<div><strong>stroke-width:</strong> ${computed.strokeWidth}</div>`;
@@ -1792,7 +2058,7 @@
                 html += `<div><strong>font-weight:</strong> ${computed.fontWeight}</div>`;
                 const textContent = vizElement.textContent.trim();
                 if (textContent) {
-                    html += `<div style="margin-top: 8px;"><strong>Text Content:</strong> \"${textContent}\"</div>`;
+                    html += `<div class="inline-text"><strong>Text Content:</strong> \"${textContent}\"</div>`;
                 }
             }
         }
@@ -1878,60 +2144,60 @@
             }
 
             renderValidationResults(validation) {
-                if (!validation) return '<div style="color:#64748b; font-style:italic;">No validation data available</div>';
+                if (!validation) return '<div class="muted-italic">No validation data available</div>';
                 let html = '';
                 // Facet validation
                     if (validation.facetSummary) {
-                    if (validation.facetSummary.missing && validation.facetSummary.missing.length) {
-                        html += `<div style="color:#7c2d12; margin:4px 0;">⚠ ${validation.facetSummary.missing.length} record properties lack facet definitions: ${validation.facetSummary.missing.join(', ')}</div>`;
-                    } else if (validation.facetSummary.total > 0) {
-                        html += `<div style="color:#022f26; margin:4px 0; font-weight:600;">✓ All record properties have facet definitions</div>`;
+                        if (validation.facetSummary.missing && validation.facetSummary.missing.length) {
+                            html += `<div class="status-warning-line"><span class="sr-only">Warning: </span><span aria-hidden="true" class="status-icon">⚠</span> ${validation.facetSummary.missing.length} record properties lack facet definitions: ${validation.facetSummary.missing.join(', ')}</div>`;
+                        } else if (validation.facetSummary.total > 0) {
+                            html += `<div class="status-success-line"><span class="sr-only">Success: </span><span aria-hidden="true" class="status-icon">✓</span> All record properties have facet definitions</div>`;
+                        }
                     }
-                }
                 // Behavior validation
                 if (validation.behaviorSummary) {
                     if (validation.behaviorSummary.missing && validation.behaviorSummary.missing.length) {
-                        html += `<div style="color:#7c2d12; margin:4px 0;">⚠ ${validation.behaviorSummary.missing.length} selector(s) lack behavior definitions: ${validation.behaviorSummary.missing.join(', ')}</div>`;
+                        html += `<div class="status-warning-line"><span class="sr-only">Warning: </span><span aria-hidden="true" class="status-icon">⚠</span> ${validation.behaviorSummary.missing.length} selector(s) lack behavior definitions: ${validation.behaviorSummary.missing.join(', ')}</div>`;
                     } else if (validation.behaviorSummary.total > 0) {
-                        html += `<div style="color:#022f26; margin:4px 0; font-weight:600;">✓ All selectors have behavior definitions</div>`;
+                        html += `<div class="status-success-line"><span class="sr-only">Success: </span><span aria-hidden="true" class="status-icon">✓</span> All selectors have behavior definitions</div>`;
                     }
                 }
                 // Selector/DOM validation
                 if (validation.selectorSummary) {
-                    html += `<div style="color:#059669; margin:4px 0;">✓ ${validation.selectorSummary.domValid} DOM selector(s) valid</div>`;
-                    html += `<div style="color:#059669; margin:4px 0;">✓ ${validation.selectorSummary.jsonValid} JSON path(s) valid</div>`;
+                    html += `<div class="status-success-line"><span class="sr-only">Success: </span><span aria-hidden="true" class="status-icon">✓</span> ${validation.selectorSummary.domValid} DOM selector(s) valid</div>`;
+                    html += `<div class="status-success-line"><span class="sr-only">Success: </span><span aria-hidden="true" class="status-icon">✓</span> ${validation.selectorSummary.jsonValid} JSON path(s) valid</div>`;
                 }
                 // Behavior mapping
                 if (validation.behaviorSummary && typeof validation.behaviorSummary.mapped === 'number') {
-                    html += `<div style="color:#059669; margin:4px 0;">✓ ${validation.behaviorSummary.mapped} behavior(s) properly mapped</div>`;
+                    html += `<div class="status-success-line"><span class="sr-only">Success: </span><span aria-hidden="true" class="status-icon">✓</span> ${validation.behaviorSummary.mapped} behavior(s) properly mapped</div>`;
                 }
                 // Errors, warnings, passes
                 validation.errors?.forEach(err => {
-                    html += `<div style="color: #8b1f1f; margin: 4px 0;">✗ ${err}</div>`;
+                    html += `<div class="status-error-line"><span class="sr-only">Error: </span><span aria-hidden="true" class="status-icon">✗</span> ${err}</div>`;
                 });
                 validation.warnings?.forEach(w => {
-                    html += `<div style="color: #7c2d12; margin: 4px 0;">⚠ ${w}</div>`;
+                    html += `<div class="status-warning-line"><span class="sr-only">Warning: </span><span aria-hidden="true" class="status-icon">⚠</span> ${w}</div>`;
                 });
                 validation.passed?.forEach(p => {
-                    html += `<div style="color: #064e3b; margin: 4px 0;">✓ ${p}</div>`;
+                    html += `<div class="status-success-line"><span class="sr-only">Success: </span><span aria-hidden="true" class="status-icon">✓</span> ${p}</div>`;
                 });
                 // Orphaned selectors (accessible heading and list)
                 if (validation.orphanedSelectors?.length) {
-                    html += '<h4 id="orphaned-selectors-heading" style="margin-top:12px; padding-top:12px; border-top:1px solid #e2e8f0; font-size:15px; color:#1e293b;" role="heading" aria-level="2">Orphaned Selectors (not in DOM)</h4>';
+                    html += '<h4 id="orphaned-selectors-heading" class="spec-heading" role="heading" aria-level="2">Orphaned Selectors (not in DOM)</h4>';
                     html += '<div class="sr-only" id="orphaned-selectors-sr-help">This is a static list of selectors defined in JIM metadata that do not match any element in the SVG. This list is not interactive. Press \'i\' again to move to the SVG Element Inventory, where you can use Tab and Enter to explore items.</div>';
-                    html += '<ul aria-labelledby="orphaned-selectors-heading orphaned-selectors-sr-help" style="padding-left: 0; margin: 8px 0; list-style: none;">';
+                    html += '<ul aria-labelledby="orphaned-selectors-heading orphaned-selectors-sr-help" class="orphaned-list">';
                     validation.orphanedSelectors.forEach(orphan => {
                         html += `
-                            <li style="background:#eff6ff; border-left:3px solid #3b82f6; padding:8px; margin:8px 0; border-radius:4px; font-size:13px; list-style: none;">
+                            <li class="orphaned-item">
                                 <div><strong>${orphan.key}</strong></div>
-                                <div style="color:#64748b; font-size:12px;">Selector: <code>${orphan.selector}</code></div>
-                                <div style="color:#64748b; font-size:12px;">JSON Path: <code>${orphan.jsonPath}</code></div>
-                                ${orphan.data ? `<div style="margin-top:4px;"><strong>Data:</strong> <code>${JSON.stringify(orphan.data)}</code></div>` : ''}
+                                <div class="meta-text">Selector: <code>${orphan.selector}</code></div>
+                                <div class="meta-text">JSON Path: <code>${orphan.jsonPath}</code></div>
+                                ${orphan.data ? `<div class="muted-note"><strong>Data:</strong> <code>${JSON.stringify(orphan.data)}</code></div>` : ''}
                             </li>`;
                     });
                     html += '</ul>';
                 }
-                if (!html) html = '<div style="color:#64748b; font-style:italic;">No validation data available</div>';
+                if (!html) html = '<div class="muted-italic">No validation data available</div>';
                 return html;
             }
         }
