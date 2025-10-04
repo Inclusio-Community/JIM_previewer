@@ -5,6 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>JIM Metadata Viewer - Accessible SVG Analysis Tool</title>
     <style>
+        :root {
+            /* Color tokens */
+            --bg-page: #f5f7fa;
+            --text-normal: #1e293b;
+            --muted: #64748b;
+            --metadata-bg: #ffffff;
+            --metadata-border: #e6eef6;
+            --status-error: #9b1c1c;
+            --status-warning: #7c2d12;
+            --status-success: #022f26;
+            --badge-bg-jim: #047857;
+            --badge-bg-nojim: #334155;
+        }
         * { box-sizing: border-box; }
         
         body {
@@ -226,12 +239,12 @@
         }
 
         .metadata-summary {
-            background: #ffffff; /* lighten to improve contrast for status text */
-            border: 1px solid #e6eef6; /* subtle cool border for separation */
+            background: var(--metadata-bg); /* lighten to improve contrast for status text */
+            border: 1px solid var(--metadata-border); /* subtle cool border for separation */
             border-radius: 6px;
             padding: 16px;
             margin-bottom: 20px;
-            color: #1e293b;
+            color: var(--text-normal);
         }
 
         .metadata-summary h3 {
@@ -1262,10 +1275,10 @@
                                         const icon = this.specIssues.errors.length ? '✗' : '⚠';
                                         specBox = `<div style="background:${color};border:1px solid ${border};padding:12px 16px;border-radius:6px;margin-bottom:16px;">
                                             <strong style="color:${headingColor};font-size:15px;">Spec compliance</strong><ul style="margin:8px 0 0 18px;padding:0;">
-                                            ${this.specIssues.errors.map(e=>`<li style='color:#9b1c1c;'>✗ ${e}</li>`).join('')}
-                                            ${this.specIssues.warnings.map(w=>`<li style='color:#7c2d12;'>⚠ ${w}</li>`).join('')}
-                                            </ul>
-                                            ${this.specIssues.fixes.length ? `<div style='color:#022f26;font-size:12px;margin-top:8px;font-weight:600;'>Normalizations: ${this.specIssues.fixes.join(', ')}</div>` : ''}
+                                                                    ${this.specIssues.errors.map(e=>`<li style='color:var(--status-error);'>✗ ${e}</li>`).join('')}
+                                                                    ${this.specIssues.warnings.map(w=>`<li style='color:var(--status-warning);'>⚠ ${w}</li>`).join('')}
+                                                                    </ul>
+                                                                    ${this.specIssues.fixes.length ? `<div style='color:var(--status-success);font-size:12px;margin-top:8px;font-weight:600;'>Normalizations: ${this.specIssues.fixes.join(', ')}</div>` : ''}
                                         </div>`;
                                     } else {
                                         // No errors or warnings: show green success box
@@ -1419,8 +1432,8 @@
         renderValidationSummary(validation) {
             let html = '';
             validation.errors.forEach(err => { html += `<div style="color:#dc2626; margin:4px 0;">✗ ${err}</div>`; });
-            validation.warnings.forEach(w => { html += `<div style="color:#7c2d12; margin:4px 0;">⚠ ${w}</div>`; });
-            validation.passed.forEach(p => { html += `<div style="color:#022f26; margin:4px 0; font-weight:600;">✓ ${p}</div>`; });
+            validation.warnings.forEach(w => { html += `<div style="color:var(--status-warning); margin:4px 0;">⚠ ${w}</div>`; });
+            validation.passed.forEach(p => { html += `<div style="color:var(--status-success); margin:4px 0; font-weight:600;">✓ ${p}</div>`; });
 
             if (validation.orphanedSelectors?.length) {
                 html += '<div style="margin-top:12px; padding-top:12px; border-top:1px solid #e2e8f0;"><strong style="color:#1e293b;">Orphaned Selectors (not in DOM):</strong></div>';
@@ -1471,8 +1484,8 @@
 
                 items.forEach((item, idx) => {
                     const jimBadge = item.hasJIM
-                        ? '<span style="background:#047857;color:#fff;padding:2px 6px;border-radius:3px;font-size:11px;display:inline-block;vertical-align:middle;margin-left:4px;" aria-label="JIM mapped" role="status">JIM</span>'
-                        : '<span style="background:#334155;color:#fff;padding:2px 6px;border-radius:3px;font-size:11px;display:inline-block;vertical-align:middle;margin-left:4px;" aria-label="No JIM mapping" role="status">No JIM</span>';
+                        ? '<span style="background:var(--badge-bg-jim);color:#fff;padding:2px 6px;border-radius:3px;font-size:11px;display:inline-block;vertical-align:middle;margin-left:4px;" aria-label="JIM mapped" role="status">JIM</span>'
+                        : '<span style="background:var(--badge-bg-nojim);color:#fff;padding:2px 6px;border-radius:3px;font-size:11px;display:inline-block;vertical-align:middle;margin-left:4px;" aria-label="No JIM mapping" role="status">No JIM</span>';
                     // Render 'other' items as clickable buttons so users can inspect shapes
                     const clickHandler = `handleInventoryItemClick('${category}', ${idx})`;
                     html += `
@@ -1883,17 +1896,17 @@
                 // Facet validation
                     if (validation.facetSummary) {
                     if (validation.facetSummary.missing && validation.facetSummary.missing.length) {
-                        html += `<div style="color:#7c2d12; margin:4px 0;">⚠ ${validation.facetSummary.missing.length} record properties lack facet definitions: ${validation.facetSummary.missing.join(', ')}</div>`;
+                        html += `<div style="color:var(--status-warning); margin:4px 0;">⚠ ${validation.facetSummary.missing.length} record properties lack facet definitions: ${validation.facetSummary.missing.join(', ')}</div>`;
                     } else if (validation.facetSummary.total > 0) {
-                        html += `<div style="color:#022f26; margin:4px 0; font-weight:600;">✓ All record properties have facet definitions</div>`;
+                        html += `<div style="color:var(--status-success); margin:4px 0; font-weight:600;">✓ All record properties have facet definitions</div>`;
                     }
                 }
                 // Behavior validation
                 if (validation.behaviorSummary) {
                     if (validation.behaviorSummary.missing && validation.behaviorSummary.missing.length) {
-                        html += `<div style="color:#7c2d12; margin:4px 0;">⚠ ${validation.behaviorSummary.missing.length} selector(s) lack behavior definitions: ${validation.behaviorSummary.missing.join(', ')}</div>`;
+                        html += `<div style="color:var(--status-warning); margin:4px 0;">⚠ ${validation.behaviorSummary.missing.length} selector(s) lack behavior definitions: ${validation.behaviorSummary.missing.join(', ')}</div>`;
                     } else if (validation.behaviorSummary.total > 0) {
-                        html += `<div style="color:#022f26; margin:4px 0; font-weight:600;">✓ All selectors have behavior definitions</div>`;
+                        html += `<div style="color:var(--status-success); margin:4px 0; font-weight:600;">✓ All selectors have behavior definitions</div>`;
                     }
                 }
                 // Selector/DOM validation
@@ -1907,13 +1920,13 @@
                 }
                 // Errors, warnings, passes
                 validation.errors?.forEach(err => {
-                    html += `<div style="color: #8b1f1f; margin: 4px 0;">✗ ${err}</div>`;
+                    html += `<div style="color: var(--status-error); margin: 4px 0;">✗ ${err}</div>`;
                 });
                 validation.warnings?.forEach(w => {
-                    html += `<div style="color: #7c2d12; margin: 4px 0;">⚠ ${w}</div>`;
+                    html += `<div style="color: var(--status-warning); margin: 4px 0;">⚠ ${w}</div>`;
                 });
                 validation.passed?.forEach(p => {
-                    html += `<div style="color: #064e3b; margin: 4px 0;">✓ ${p}</div>`;
+                    html += `<div style="color: var(--status-success); margin: 4px 0; font-weight:600;">✓ ${p}</div>`;
                 });
                 // Orphaned selectors (accessible heading and list)
                 if (validation.orphanedSelectors?.length) {
