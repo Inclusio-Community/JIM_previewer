@@ -18,6 +18,12 @@
             --badge-bg-jim: #047857;
             --badge-bg-nojim: #334155;
         }
+        /* Utility classes extracted from repeated inline styles (Batch A) */
+        .muted { color: var(--muted); }
+        .muted-italic { color: var(--muted); font-style: italic; }
+        .spec-heading { margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--metadata-border); font-size: 15px; color: var(--text-normal); }
+        .inventory-button { background: #f8fafc; border: 1px solid #e2e8f0; padding: 8px; border-radius: 4px; font-size: 12px; cursor: pointer; box-sizing: border-box; display: inline-block; vertical-align: top; margin-bottom: 4px; color: var(--text-normal); }
+    .warning-text { color: var(--status-warning); }
         * { box-sizing: border-box; }
         
         body {
@@ -336,7 +342,6 @@
     </div>
 
     <script>
-        // Keyboard shortcut: Press 'i' in the visualization area to jump to the inventory list
         document.addEventListener('DOMContentLoaded', function () {
             const viz = document.getElementById('visualization');
             const inventorySection = document.getElementById('analysis-section');
@@ -1301,7 +1306,7 @@
                             </div>
                             <div class="metadata-item">
                                 <span class="key">JIM Metadata:</span>
-                                <span class="value" style="color: #d97706;">Not present</span>
+                                <span class="value warning-text">Not present</span>
                             </div>
                             <div class="metadata-item">
                                 <span class="key">Features:</span>
@@ -1344,7 +1349,7 @@
                         ` : `
                             <div class="metadata-item">
                                 <span class="key">Datasets:</span>
-                                <span class="value" style="color: #d97706;">Not present</span>
+                                <span class="value warning-text">Not present</span>
                             </div>
                         `}
                         <div class="metadata-item">
@@ -1369,12 +1374,12 @@
             html += `<div><strong>Event:</strong> <code>${eventType}</code></div>`;
 
             // Accessibility attributes section
-            html += '<h4 style="margin-top: 12px; padding-top: 12px; border-top: 1px solid #e2e8f0; font-size: 15px; color: #1e293b;">Accessibility Attributes</h4>';
-            html += `<div><strong>aria-label:</strong> ${element.getAttribute('aria-label') || '<span style="color: #94a3b8;">Not present</span>'}</div>`;
-            html += `<div><strong>aria-labelledby:</strong> ${element.getAttribute('aria-labelledby') || '<span style="color: #94a3b8;">Not present</span>'}</div>`;
-            html += `<div><strong>aria-describedby:</strong> ${element.getAttribute('aria-describedby') || '<span style="color: #94a3b8;">Not present</span>'}</div>`;
-            html += `<div><strong>role:</strong> ${element.getAttribute('role') || '<span style="color: #94a3b8;">Not present</span>'}</div>`;
-            html += `<div><strong>tabindex:</strong> ${element.getAttribute('tabindex') !== null ? element.getAttribute('tabindex') : '<span style="color: #94a3b8;">Not present</span>'}</div>`;
+            html += '<h4 class="spec-heading">Accessibility Attributes</h4>';
+            html += `<div><strong>aria-label:</strong> ${element.getAttribute('aria-label') || '<span class="muted">Not present</span>'}</div>`;
+            html += `<div><strong>aria-labelledby:</strong> ${element.getAttribute('aria-labelledby') || '<span class="muted">Not present</span>'}</div>`;
+            html += `<div><strong>aria-describedby:</strong> ${element.getAttribute('aria-describedby') || '<span class="muted">Not present</span>'}</div>`;
+            html += `<div><strong>role:</strong> ${element.getAttribute('role') || '<span class="muted">Not present</span>'}</div>`;
+            html += `<div><strong>tabindex:</strong> ${element.getAttribute('tabindex') !== null ? element.getAttribute('tabindex') : '<span class="muted">Not present</span>'}</div>`;
 
             let titleText = null;
             let descText = null;
@@ -1383,15 +1388,15 @@
             titleText = titleEl ? titleEl.textContent : titleAttr;
             const descEl = element.querySelector('desc');
             descText = descEl ? descEl.textContent : null;
-            html += `<div><strong>&lt;title&gt;:</strong> ${titleText || '<span style=\"color: #94a3b8;\">Not present</span>'}</div>`;
-            html += `<div><strong>&lt;desc&gt;:</strong> ${descText || '<span style=\"color: #94a3b8;\">Not present</span>'}</div>`;
-            html += `<div><strong>aria-hidden:</strong> ${element.getAttribute('aria-hidden') || '<span style=\"color: #94a3b8;">Not present</span>'}</div>`;
-            html += `<div><strong>aria-live:</strong> ${element.getAttribute('aria-live') || '<span style=\"color: #94a3b8;">Not present</span>'}</div>`;
+            html += `<div><strong>&lt;title&gt;:</strong> ${titleText || '<span class="muted">Not present</span>'}</div>`;
+            html += `<div><strong>&lt;desc&gt;:</strong> ${descText || '<span class="muted">Not present</span>'}</div>`;
+            html += `<div><strong>aria-hidden:</strong> ${element.getAttribute('aria-hidden') || '<span class="muted">Not present</span>'}</div>`;
+            html += `<div><strong>aria-live:</strong> ${element.getAttribute('aria-live') || '<span class="muted">Not present</span>'}</div>`;
 
             // Computed styles section
             if (window.getComputedStyle) {
                 const computed = window.getComputedStyle(element);
-                html += '<h4 style="margin-top: 12px; padding-top: 12px; border-top: 1px solid #e2e8f0; font-size: 15px; color: #1e293b;">Computed Styles</h4>';
+                html += '<h4 class="spec-heading">Computed Styles</h4>';
                 html += `<div><strong>fill:</strong> <span style="color: ${computed.fill};">●</span> ${computed.fill}</div>`;
                 html += `<div><strong>stroke:</strong> <span style="color: ${computed.stroke};">●</span> ${computed.stroke}</div>`;
                 html += `<div><strong>stroke-width:</strong> ${computed.strokeWidth}</div>`;
@@ -1489,13 +1494,13 @@
                     // Render 'other' items as clickable buttons so users can inspect shapes
                     const clickHandler = `handleInventoryItemClick('${category}', ${idx})`;
                     html += `
-                        <button style="background:#f8fafc;border:1px solid #e2e8f0;padding:8px;border-radius:4px;font-size:12px;cursor:pointer;box-sizing:border-box;display:inline-block;vertical-align:top;margin-bottom:4px;color:#1e293b;"
+                        <button class="inventory-button"
                                 onclick="${clickHandler}"
                                 onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();${clickHandler};}"
                                 aria-label="SVG element ${item.selector}${item.hasJIM ? ', JIM mapped' : ', No JIM mapping'}"
                                 role="button">
-                            <div style="display:inline-flex;align-items:center;"><code style="color:#1e293b;">${item.selector}</code>${jimBadge}</div>
-                            ${item.textContent ? `<div style="color:#1e293b;margin-top:4px;">Text: \"${item.textContent}\"</div>` : ''}
+                            <div style="display:inline-flex;align-items:center;"><code style="color:var(--text-normal);">${item.selector}</code>${jimBadge}</div>
+                            ${item.textContent ? `<div style="color:var(--text-normal);margin-top:4px;">Text: \"${item.textContent}\"</div>` : ''}
                             <!-- Accessibility attributes removed from visual output -->
                             ${item.suggestions?.length ? `<div style=\"color:#92400e; margin-top:4px; font-size:11px;\"><span aria-label=\"Suggestion\">💡</span> ${item.suggestions.join('; ')}</div>` : ''}
                         </button>`;
@@ -1769,12 +1774,12 @@
         }
 
         // Accessibility attributes section
-        html += '<h4 style="margin-top: 12px; padding-top: 12px; border-top: 1px solid #e2e8f0; font-size: 15px; color: #1e293b;">Accessibility Attributes</h4>';
-        html += `<div><strong>aria-label:</strong> ${vizElement.getAttribute('aria-label') || '<span style="color: #94a3b8;">Not present</span>'}</div>`;
-        html += `<div><strong>aria-labelledby:</strong> ${vizElement.getAttribute('aria-labelledby') || '<span style="color: #94a3b8;">Not present</span>'}</div>`;
-        html += `<div><strong>aria-describedby:</strong> ${vizElement.getAttribute('aria-describedby') || '<span style="color: #94a3b8;">Not present</span>'}</div>`;
-        html += `<div><strong>role:</strong> ${vizElement.getAttribute('role') || '<span style="color: #94a3b8;">Not present</span>'}</div>`;
-        html += `<div><strong>tabindex:</strong> ${vizElement.getAttribute('tabindex') !== null ? vizElement.getAttribute('tabindex') : '<span style="color: #94a3b8;">Not present</span>'}</div>`;
+    html += '<h4 class="spec-heading">Accessibility Attributes</h4>';
+    html += `<div><strong>aria-label:</strong> ${vizElement.getAttribute('aria-label') || '<span class="muted">Not present</span>'}</div>`;
+    html += `<div><strong>aria-labelledby:</strong> ${vizElement.getAttribute('aria-labelledby') || '<span class="muted">Not present</span>'}</div>`;
+    html += `<div><strong>aria-describedby:</strong> ${vizElement.getAttribute('aria-describedby') || '<span class="muted">Not present</span>'}</div>`;
+    html += `<div><strong>role:</strong> ${vizElement.getAttribute('role') || '<span class="muted">Not present</span>'}</div>`;
+    html += `<div><strong>tabindex:</strong> ${vizElement.getAttribute('tabindex') !== null ? vizElement.getAttribute('tabindex') : '<span class="muted">Not present</span>'}</div>`;
 
         let titleText = null;
         let descText = null;
@@ -1783,15 +1788,15 @@
         titleText = titleEl ? titleEl.textContent : titleAttr;
         const descEl = vizElement.querySelector('desc');
         descText = descEl ? descEl.textContent : null;
-        html += `<div><strong>&lt;title&gt;:</strong> ${titleText || '<span style=\"color: #94a3b8;\">Not present</span>'}</div>`;
-        html += `<div><strong>&lt;desc&gt;:</strong> ${descText || '<span style=\"color: #94a3b8;\">Not present</span>'}</div>`;
-        html += `<div><strong>aria-hidden:</strong> ${vizElement.getAttribute('aria-hidden') || '<span style=\"color: #94a3b8;">Not present</span>'}</div>`;
-        html += `<div><strong>aria-live:</strong> ${vizElement.getAttribute('aria-live') || '<span style=\"color: #94a3b8;">Not present</span>'}</div>`;
+    html += `<div><strong>&lt;title&gt;:</strong> ${titleText || '<span class="muted">Not present</span>'}</div>`;
+    html += `<div><strong>&lt;desc&gt;:</strong> ${descText || '<span class="muted">Not present</span>'}</div>`;
+    html += `<div><strong>aria-hidden:</strong> ${vizElement.getAttribute('aria-hidden') || '<span class="muted">Not present</span>'}</div>`;
+    html += `<div><strong>aria-live:</strong> ${vizElement.getAttribute('aria-live') || '<span class="muted">Not present</span>'}</div>`;
 
         // Computed styles section
         if (window.getComputedStyle && vizElement) {
             const computed = window.getComputedStyle(vizElement);
-            html += '<h4 style="margin-top: 12px; padding-top: 12px; border-top: 1px solid #e2e8f0; font-size: 15px; color: #1e293b;">Computed Styles</h4>';
+            html += '<h4 class="spec-heading">Computed Styles</h4>';
             html += `<div><strong>fill:</strong> <span style="color: ${computed.fill};">●</span> ${computed.fill}</div>`;
             html += `<div><strong>stroke:</strong> <span style="color: ${computed.stroke};">●</span> ${computed.stroke}</div>`;
             html += `<div><strong>stroke-width:</strong> ${computed.strokeWidth}</div>`;
