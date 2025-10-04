@@ -1,0 +1,27 @@
+{
+  "name": "jim_previewer",
+  "version": "1.0.0",
+  "description": "> **License:** MIT — See [LICENSE](LICENSE) for details.",
+  "main": "index.js",
+  "directories": {
+    "example": "examples"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint:html": "html-validate \"jim-viewer.html\" \"**/*.html\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Inclusio-Community/JIM_previewer.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Inclusio-Community/JIM_previewer/issues"
+  },
+  "homepage": "https://github.com/Inclusio-Community/JIM_previewer#readme",
+  "devDependencies": {
+    "html-validate": "^10.1.0"
+  }
+}
