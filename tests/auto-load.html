@@ -51,12 +51,27 @@
           try {
             const parser = new DOMParser();
             const doc = parser.parseFromString(text, 'text/html');
-            const links = Array.from(doc.querySelectorAll('a'))
+            let links = Array.from(doc.querySelectorAll('a'))
               .map(a => a.getAttribute('href'))
               .filter(Boolean)
               .filter(h => h.toLowerCase().endsWith('.svg'))
               .map(h => h.startsWith('/') ? h : ('/examples/' + h.replace(/^\.\//, '')));
             if (links.length) return links;
+            // Fallback: some directory listings render filenames without anchor hrefs or use JS templating.
+            // Use a regex to find .svg filenames in the raw HTML as a last resort.
+            const regex = /([\w\-\. \(\)]+?\.svg)/gi;
+            const matches = Array.from(text.matchAll(regex)).map(m => m[1]);
+            if (matches.length) {
+              links = matches.map(h => h.startsWith('/') ? h : ('/examples/' + h.replace(/^\.\//, '')));
+              // dedupe while preserving order
+              const seen = new Set();
+              const unique = [];
+              links.forEach(p => { if (!seen.has(p)) { seen.add(p); unique.push(p); } });
+              if (unique.length) {
+                console.warn('[auto-load] directory listing parse fallback matched files:', unique);
+                return unique;
+              }
+            }
           } catch (e) {
             // fall through to default
           }
