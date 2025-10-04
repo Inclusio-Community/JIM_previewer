@@ -40,18 +40,43 @@
       '/examples/Unemployment_rate_in_Greece_1999_2019.svg'
     ];
 
-    function parseExamplesFromQuery() {
+    async function parseExamplesFromQueryOrDirectory() {
+      // If examples query param is present, use it (comma-separated)
       try {
         const params = new URLSearchParams(window.location.search);
         const ex = params.get('examples');
-        if (!ex) return defaultExamples.slice();
-        return ex.split(',').map(s => s.trim()).filter(Boolean).map(p => p.startsWith('/') ? p : '/' + p);
+        if (ex) return ex.split(',').map(s => s.trim()).filter(Boolean).map(p => p.startsWith('/') ? p : '/' + p);
       } catch (e) {
-        return defaultExamples.slice();
+        // ignore
       }
+
+      // Try to fetch a directory listing from /examples/ and parse anchor links (http-server provides this)
+      try {
+        const res = await fetch('/examples/');
+        if (res && res.ok) {
+          const text = await res.text();
+          // Attempt to parse HTML and extract hrefs that end with .svg
+          try {
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(text, 'text/html');
+            const links = Array.from(doc.querySelectorAll('a'))
+              .map(a => a.getAttribute('href'))
+              .filter(Boolean)
+              .filter(h => h.toLowerCase().endsWith('.svg'))
+              .map(h => h.startsWith('/') ? h : ('/examples/' + h.replace(/^\.\//, '')));
+            if (links.length) return links;
+          } catch (e) {
+            // fall through to default
+          }
+        }
+      } catch (e) {
+        // network or permission error; fall back to defaults
+      }
+
+      return defaultExamples.slice();
     }
 
-    const examples = parseExamplesFromQuery();
+    let examples = await parseExamplesFromQueryOrDirectory();
     let idx = 0;
     const iframe = document.getElementById('viewer');
     const currentLabel = document.getElementById('current');
