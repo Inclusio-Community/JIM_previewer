@@ -94,7 +94,10 @@ jobs:
             const issue_number = pr.number;
 
             const marker = '<!-- pa11y-bot-comment -->';
-            const header = `${marker}\n### pa11y accessibility scan\n\nExit code: ${exitCode}\n\n`;
+            const runId = process.env.GITHUB_RUN_ID || '';
+            const runUrl = runId ? `https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${runId}` : '';
+            const runLink = runUrl ? `\n[View full artifacts and logs for this run](${runUrl})\n\n` : '\n';
+            const header = `${marker}\n### pa11y accessibility scan\n\nExit code: ${exitCode}${runLink}\n`;
             const bodyContent = (output.length > 60000 ? output.slice(0,60000) + '\n\n...truncated...' : output);
             const fullBody = header + `<details><summary>pa11y output</summary>\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\` + '```text\n' + bodyContent + '\n```\n</details>';
 
