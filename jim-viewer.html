@@ -1434,7 +1434,7 @@
         updateDetailedAnalysis() {
             const section = document.getElementById('analysis-section');
             const content = document.getElementById('analysis-content');
-            content.innerHTML = this.detailedAnalysis || '<div style="color:#64748b; font-style:italic;">No inventory available.</div>';
+            content.innerHTML = this.detailedAnalysis || '<div class="muted-italic">No inventory available.</div>';
             section.style.display = 'block';
         }
         renderValidationSummary(validation) {
@@ -1525,7 +1525,7 @@
             }
 
             renderAccessibilityAudit() {
-                if (!this.currentDoc) return '<div style="color: #64748b; font-style: italic;">No document to audit</div>';
+                if (!this.currentDoc) return '<div class="muted-italic">No document to audit</div>';
 
                 let svg = this.currentDoc.querySelector('svg');
                 if (!svg && this.currentDoc.documentElement && this.currentDoc.documentElement.tagName.toLowerCase() === 'svg') {
@@ -1904,17 +1904,17 @@
                 // Facet validation
                     if (validation.facetSummary) {
                     if (validation.facetSummary.missing && validation.facetSummary.missing.length) {
-                        html += `<div style="color:var(--status-warning); margin:4px 0;">⚠ ${validation.facetSummary.missing.length} record properties lack facet definitions: ${validation.facetSummary.missing.join(', ')}</div>`;
+                        html += `<div class="status-warning-line">⚠ ${validation.facetSummary.missing.length} record properties lack facet definitions: ${validation.facetSummary.missing.join(', ')}</div>`;
                     } else if (validation.facetSummary.total > 0) {
-                        html += `<div style="color:var(--status-success); margin:4px 0; font-weight:600;">✓ All record properties have facet definitions</div>`;
+                        html += `<div class="status-success-line">✓ All record properties have facet definitions</div>`;
                     }
                 }
                 // Behavior validation
                 if (validation.behaviorSummary) {
                     if (validation.behaviorSummary.missing && validation.behaviorSummary.missing.length) {
-                        html += `<div style="color:var(--status-warning); margin:4px 0;">⚠ ${validation.behaviorSummary.missing.length} selector(s) lack behavior definitions: ${validation.behaviorSummary.missing.join(', ')}</div>`;
+                        html += `<div class="status-warning-line">⚠ ${validation.behaviorSummary.missing.length} selector(s) lack behavior definitions: ${validation.behaviorSummary.missing.join(', ')}</div>`;
                     } else if (validation.behaviorSummary.total > 0) {
-                        html += `<div style="color:var(--status-success); margin:4px 0; font-weight:600;">✓ All selectors have behavior definitions</div>`;
+                        html += `<div class="status-success-line">✓ All selectors have behavior definitions</div>`;
                     }
                 }
                 // Selector/DOM validation
@@ -1928,17 +1928,17 @@
                 }
                 // Errors, warnings, passes
                 validation.errors?.forEach(err => {
-                    html += `<div style="color: var(--status-error); margin: 4px 0;">✗ ${err}</div>`;
+                    html += `<div class="status-error-line">✗ ${err}</div>`;
                 });
                 validation.warnings?.forEach(w => {
-                    html += `<div style="color: var(--status-warning); margin: 4px 0;">⚠ ${w}</div>`;
+                    html += `<div class="status-warning-line">⚠ ${w}</div>`;
                 });
                 validation.passed?.forEach(p => {
-                    html += `<div style="color: var(--status-success); margin: 4px 0; font-weight:600;">✓ ${p}</div>`;
+                    html += `<div class="status-success-line">✓ ${p}</div>`;
                 });
                 // Orphaned selectors (accessible heading and list)
                 if (validation.orphanedSelectors?.length) {
-                    html += '<h4 id="orphaned-selectors-heading" style="margin-top:12px; padding-top:12px; border-top:1px solid #e2e8f0; font-size:15px; color:#1e293b;" role="heading" aria-level="2">Orphaned Selectors (not in DOM)</h4>';
+                    html += '<h4 id="orphaned-selectors-heading" class="spec-heading" role="heading" aria-level="2">Orphaned Selectors (not in DOM)</h4>';
                     html += '<div class="sr-only" id="orphaned-selectors-sr-help">This is a static list of selectors defined in JIM metadata that do not match any element in the SVG. This list is not interactive. Press \'i\' again to move to the SVG Element Inventory, where you can use Tab and Enter to explore items.</div>';
                     html += '<ul aria-labelledby="orphaned-selectors-heading orphaned-selectors-sr-help" style="padding-left: 0; margin: 8px 0; list-style: none;">';
                     validation.orphanedSelectors.forEach(orphan => {
