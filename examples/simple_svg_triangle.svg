@@ -1,0 +1,13 @@
+<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <!-- Define the triangle using a polygon element -->
+  <polygon points="100,20 20,180 180,180" fill="lightblue" stroke="black" stroke-width="2"/>
+
+  <!-- Label for vertex A -->
+  <text x="95" y="15" font-family="Arial" font-size="16" fill="black">A</text>
+
+  <!-- Label for vertex B -->
+  <text x="10" y="195" font-family="Arial" font-size="16" fill="black">B</text>
+
+  <!-- Label for vertex C -->
+  <text x="175" y="195" font-family="Arial" font-size="16" fill="black">C</text>
+</svg>

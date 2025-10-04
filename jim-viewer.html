@@ -25,7 +25,7 @@
         }
 
         .subtitle {
-            color: #64748b;
+            color: #1e293b;
             margin-bottom: 30px;
         }
 
@@ -226,17 +226,18 @@
         }
 
         .metadata-summary {
-            background: #f8fafc;
-            border: 1px solid #e2e8f0;
+            background: #ffffff; /* lighten to improve contrast for status text */
+            border: 1px solid #e6eef6; /* subtle cool border for separation */
             border-radius: 6px;
             padding: 16px;
             margin-bottom: 20px;
+            color: #1e293b;
         }
 
         .metadata-summary h3 {
             margin: 0 0 12px 0;
             font-size: 14px;
-            color: #64748b;
+            color: #1e293b;
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
@@ -257,9 +258,9 @@
         }
 
         .status-message {
-            background: #fef3c7;
+            background: #fff7ed;
             border: 1px solid #f59e0b;
-            color: #92400e;
+            color: #7c2d12; /* darker text for better contrast */
             padding: 12px 16px;
             border-radius: 6px;
             margin: 16px 0;
@@ -921,6 +922,18 @@
                     const hasJIM = jimSelectors.some(sel => { try { return el.matches(sel); } catch { return false; } });
                     results.svgInventory.push(this.createInventoryItem(el, hasJIM, 'group'));
                 });
+
+                // Other elements: basic shapes not already categorized (catch-all)
+                const categorizedSet = new Set(results.svgInventory.map(i => i.domElement));
+                const shapeTags = ['polygon', 'rect', 'circle', 'ellipse', 'line', 'polyline', 'path'];
+                shapeTags.forEach(tag => {
+                    svg.querySelectorAll(tag).forEach(el => {
+                        if (categorizedSet.has(el)) return;
+                        const hasJIM = jimSelectors.some(sel => { try { return el.matches(sel); } catch { return false; } });
+                        results.svgInventory.push(this.createInventoryItem(el, hasJIM, 'other'));
+                        categorizedSet.add(el);
+                    });
+                });
             }
         }
         return results;
@@ -1187,6 +1200,8 @@
                         var isGroupMapped = false;
                         var A = [];
                         try { A = Array.from(svg.querySelectorAll(dom)); } catch (e) {}
+                        // Only show selectors that match at least one SVG element
+                        if (!A.length) continue;
                         for (var j = 0; j < behaviors.length; j++) {
                             var tgtSelector = behaviors[j].target && behaviors[j].target.selector;
                             if (tgtSelector) {
@@ -1201,7 +1216,7 @@
                             }
                         }
                         var style = hasBehavior
-                            ? "background:#d1fae5;border:1px solid #10b981;color:#065f46;"
+                            ? "background:#d1fae5;border:1px solid #10b981;color:#022f26;"
                             : isGroupMapped
                                 ? "background:#fef9c3;border:1px solid #f59e0b;color:#92400e;"
                                 : "background:#e0e7ef;border:none;color:#1e293b;";
@@ -1243,13 +1258,14 @@
                                     if (this.specIssues.errors.length || this.specIssues.warnings.length) {
                                         const color = this.specIssues.errors.length ? '#fee2e2' : '#fef9c3';
                                         const border = this.specIssues.errors.length ? '#dc2626' : '#f59e0b';
+                                        const headingColor = this.specIssues.errors.length ? '#dc2626' : '#92400e';
                                         const icon = this.specIssues.errors.length ? '✗' : '⚠';
                                         specBox = `<div style="background:${color};border:1px solid ${border};padding:12px 16px;border-radius:6px;margin-bottom:16px;">
-                                            <strong style="color:${border};font-size:15px;">Spec compliance</strong><ul style="margin:8px 0 0 18px;padding:0;">
-                                            ${this.specIssues.errors.map(e=>`<li style='color:#dc2626;'>✗ ${e}</li>`).join('')}
-                                            ${this.specIssues.warnings.map(w=>`<li style='color:#d97706;'>⚠ ${w}</li>`).join('')}
+                                            <strong style="color:${headingColor};font-size:15px;">Spec compliance</strong><ul style="margin:8px 0 0 18px;padding:0;">
+                                            ${this.specIssues.errors.map(e=>`<li style='color:#9b1c1c;'>✗ ${e}</li>`).join('')}
+                                            ${this.specIssues.warnings.map(w=>`<li style='color:#7c2d12;'>⚠ ${w}</li>`).join('')}
                                             </ul>
-                                            ${this.specIssues.fixes.length ? `<div style='color:#64748b;font-size:12px;margin-top:8px;'>Normalizations: ${this.specIssues.fixes.join(', ')}</div>` : ''}
+                                            ${this.specIssues.fixes.length ? `<div style='color:#022f26;font-size:12px;margin-top:8px;font-weight:600;'>Normalizations: ${this.specIssues.fixes.join(', ')}</div>` : ''}
                                         </div>`;
                                     } else {
                                         // No errors or warnings: show green success box
@@ -1260,10 +1276,8 @@
                                 }
 
                 if (!this.jimData) {
-                    // SVG-only mode
-                    const validation = this.validateJIMStructure();
-                    this.inventoryData = validation.svgInventory || [];
-                    console.log('SVG-only mode validation completed, inventory items:', this.inventoryData?.length);
+                    // SVG-only mode: build an inventory that includes basic shapes (other)
+                    console.log('SVG-only mode: building inventory via renderSVGInventoryOnly');
                     const html = `
                         ${specBox}
                         <div class="metadata-summary">
@@ -1285,7 +1299,8 @@
                         </div>
                     `;
                     summary.innerHTML = html;
-                    this.detailedAnalysis = this.renderInventoryList(validation);
+                    // renderSVGInventoryOnly builds inventoryData and returns HTML that includes 'other' shapes
+                    this.detailedAnalysis = this.renderSVGInventoryOnly();
                     this.updateDetailedAnalysis();
                     return;
                 }
@@ -1404,23 +1419,23 @@
         renderValidationSummary(validation) {
             let html = '';
             validation.errors.forEach(err => { html += `<div style="color:#dc2626; margin:4px 0;">✗ ${err}</div>`; });
-            validation.warnings.forEach(w => { html += `<div style="color:#d97706; margin:4px 0;">⚠ ${w}</div>`; });
-            validation.passed.forEach(p => { html += `<div style="color:#059669; margin:4px 0;">✓ ${p}</div>`; });
+            validation.warnings.forEach(w => { html += `<div style="color:#7c2d12; margin:4px 0;">⚠ ${w}</div>`; });
+            validation.passed.forEach(p => { html += `<div style="color:#022f26; margin:4px 0; font-weight:600;">✓ ${p}</div>`; });
 
             if (validation.orphanedSelectors?.length) {
-                html += '<div style="margin-top:12px; padding-top:12px; border-top:1px solid #e2e8f0;"><strong>Orphaned Selectors (not in DOM):</strong></div>';
+                html += '<div style="margin-top:12px; padding-top:12px; border-top:1px solid #e2e8f0;"><strong style="color:#1e293b;">Orphaned Selectors (not in DOM):</strong></div>';
                 validation.orphanedSelectors.forEach(orphan => {
                     html += `
-                        <div style="background:#eff6ff; border-left:3px solid #3b82f6; padding:8px; margin:8px 0; border-radius:4px; font-size:13px;">
+                        <div style="background:#eff6ff; border-left:3px solid #3b82f6; padding:8px; margin:8px 0; border-radius:4px; font-size:13px; color:#1e293b;">
                             <div><strong>${orphan.key}</strong></div>
-                            <div style="color:#64748b; font-size:12px;">Selector: <code>${orphan.selector}</code></div>
-                            <div style="color:#64748b; font-size:12px;">JSON Path: <code>${orphan.jsonPath}</code></div>
+                            <div style="color:#334155; font-size:12px;">Selector: <code>${orphan.selector}</code></div>
+                            <div style="color:#334155; font-size:12px;">JSON Path: <code>${orphan.jsonPath}</code></div>
                             ${orphan.data ? `<div style="margin-top:4px;"><strong>Data:</strong> <code>${JSON.stringify(orphan.data)}</code></div>` : ''}
                         </div>`;
                 });
             }
 
-            if (!html) html = '<div style="color:#64748b; font-style:italic;">No validation data available</div>';
+            if (!html) html = '<div style="color:#1e293b; font-style:italic;">No validation data available</div>';
             return html;
         }
 
@@ -1428,49 +1443,49 @@
             const inv = validation.svgInventory || [];
             if (!inv.length) return '';
 
+            const interactive = inv.filter(i => i.category === 'interactive');
+            const text = inv.filter(i => i.category === 'text');
+            const group = inv.filter(i => i.category === 'group');
+            // Other: not in interactive, text, or group
+            const other = inv.filter(i => i.category !== 'interactive' && i.category !== 'text' && i.category !== 'group');
             const byCategory = {
-                interactive: inv.filter(i => i.category === 'interactive'),
-                text:        inv.filter(i => i.category === 'text'),
-                group:       inv.filter(i => i.category === 'group'),
+                interactive,
+                text,
+                group,
+                other
             };
 
             let html = `
-                <h4 style="margin-top:0; margin-bottom:8px; font-size:14px; color:#1e293b;">
+                <h3 style="margin-top:0; margin-bottom:8px; font-size:18px; color:#1e293b;">
                     SVG Element Inventory
-                    <div class="sr-only">This list is interactive. Use Tab to move between items and Enter to open details. Press 'i' to jump here from the visualization area.</div>
-                </h4>
+                    <div class="sr-only" aria-live="polite">This list is interactive. Use Tab to move between items and Enter to open details. Press 'i' to jump here from the visualization area. JIM and No JIM badges are announced for screen readers.</div>
+                </h3>
             `;
 
             Object.entries(byCategory).forEach(([category, items]) => {
                 if (!items.length) return;
-                const label = category[0].toUpperCase() + category.slice(1) + ' Elements';
-                html += `<h5 style="margin:8px 0 6px; font-size:13px; color:#374151; font-weight:600;">${label} (${items.length})</h5>`;
+                let label = category[0].toUpperCase() + category.slice(1) + ' Elements';
+                if (category === 'other') label = 'Other Elements';
+                html += `<h4 style="margin:8px 0 6px; font-size:15px; color:#374151; font-weight:600;">${label} (${items.length})</h4>`;
                 html += '<div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:8px;">';
 
                 items.forEach((item, idx) => {
                     const jimBadge = item.hasJIM
-                        ? '<span style="background:#10b981;color:#fff;padding:2px 6px;border-radius:3px;font-size:11px;display:inline-block;vertical-align:middle;margin-left:4px;">JIM</span>'
-                        : '<span style="background:#94a3b8;color:#fff;padding:2px 6px;border-radius:3px;font-size:11px;display:inline-block;vertical-align:middle;margin-left:4px;">No JIM</span>';
-
+                        ? '<span style="background:#047857;color:#fff;padding:2px 6px;border-radius:3px;font-size:11px;display:inline-block;vertical-align:middle;margin-left:4px;" aria-label="JIM mapped" role="status">JIM</span>'
+                        : '<span style="background:#334155;color:#fff;padding:2px 6px;border-radius:3px;font-size:11px;display:inline-block;vertical-align:middle;margin-left:4px;" aria-label="No JIM mapping" role="status">No JIM</span>';
+                    // Render 'other' items as clickable buttons so users can inspect shapes
                     const clickHandler = `handleInventoryItemClick('${category}', ${idx})`;
                     html += `
-                        <div tabindex="0" style="background:#f8fafc;border:1px solid #e2e8f0;padding:8px;border-radius:4px;font-size:12px;cursor:pointer;box-sizing:border-box;display:inline-block;vertical-align:top;margin-bottom:4px;"
+                        <button style="background:#f8fafc;border:1px solid #e2e8f0;padding:8px;border-radius:4px;font-size:12px;cursor:pointer;box-sizing:border-box;display:inline-block;vertical-align:top;margin-bottom:4px;color:#1e293b;"
                                 onclick="${clickHandler}"
-                                onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();${clickHandler};}">
-                            <div style="display:inline-flex;align-items:center;"><code>${item.selector}</code>${jimBadge}</div>
-                            ${item.textContent ? `<div style="color:#64748b;margin-top:4px;">Text: \"${item.textContent}\"</div>` : ''}
-                            <div style="margin-top:4px; color:#64748b;">
-                                ${item.accessibility.tabindex !== null ? `tabindex=\"${item.accessibility.tabindex}\" ` : ''}
-                                ${item.accessibility.role ? `role=\"${item.accessibility.role}\" ` : ''}
-                                ${item.accessibility.ariaLabel ? `aria-label ` : ''}
-                                ${item.accessibility.ariaLabelledby ? `aria-labelledby ` : ''}
-                                ${item.accessibility.ariaDescribedby ? `aria-describedby ` : ''}
-                                ${item.accessibility.ariaHidden ? `aria-hidden=\"${item.accessibility.ariaHidden}\" ` : ''}
-                                ${item.accessibility.hasTitle ? '&lt;title&gt; ' : ''}
-                                ${item.accessibility.hasDesc ? '&lt;desc&gt; ' : ''}
-                            </div>
-                            ${item.suggestions?.length ? `<div style=\"color:#d97706; margin-top:4px; font-size:11px;\">💡 ${item.suggestions.join('; ')}</div>` : ''}
-                        </div>`;
+                                onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();${clickHandler};}"
+                                aria-label="SVG element ${item.selector}${item.hasJIM ? ', JIM mapped' : ', No JIM mapping'}"
+                                role="button">
+                            <div style="display:inline-flex;align-items:center;"><code style="color:#1e293b;">${item.selector}</code>${jimBadge}</div>
+                            ${item.textContent ? `<div style="color:#1e293b;margin-top:4px;">Text: \"${item.textContent}\"</div>` : ''}
+                            <!-- Accessibility attributes removed from visual output -->
+                            ${item.suggestions?.length ? `<div style=\"color:#92400e; margin-top:4px; font-size:11px;\"><span aria-label=\"Suggestion\">💡</span> ${item.suggestions.join('; ')}</div>` : ''}
+                        </button>`;
                 });
 
                 html += '</div>';
@@ -1556,30 +1571,53 @@
                     svg = this.currentDoc.documentElement;
                 }
 
-                if (!svg) return '';
-
                 const inventory = [];
                 const allElements = svg.querySelectorAll('*');
-                
+
+                // Track which elements have already been categorized
+                const categorized = new Set();
+
+                // Text elements
                 allElements.forEach(el => {
                     if (el.tagName.toLowerCase() === 'text') {
                         const item = this.createInventoryItem(el, false, 'text');
                         inventory.push(item);
+                        categorized.add(el);
                     }
                 });
-                
+
+                // Interactive elements
                 allElements.forEach(el => {
                     if (el.tagName.toLowerCase() === 'text') return;
-                    
-                    const hasAccessibility = el.hasAttribute('tabindex') || 
-                                           el.hasAttribute('role') || 
-                                           el.hasAttribute('aria-label') || 
-                                           el.hasAttribute('aria-labelledby') || 
+                    const hasAccessibility = el.hasAttribute('tabindex') ||
+                                           el.hasAttribute('role') ||
+                                           el.hasAttribute('aria-label') ||
+                                           el.hasAttribute('aria-labelledby') ||
                                            el.hasAttribute('aria-describedby');
-                    
                     if (hasAccessibility) {
                         const item = this.createInventoryItem(el, false, 'interactive');
                         inventory.push(item);
+                        categorized.add(el);
+                    }
+                });
+
+                // Group elements
+                allElements.forEach(el => {
+                    if (el.tagName.toLowerCase() === 'g' && (el.id || (el.className && el.className.baseVal))) {
+                        const item = this.createInventoryItem(el, false, 'group');
+                        inventory.push(item);
+                        categorized.add(el);
+                    }
+                });
+
+                // Other elements: basic shapes not already categorized
+                const shapeTags = ['polygon', 'rect', 'circle', 'ellipse', 'line', 'polyline', 'path'];
+                allElements.forEach(el => {
+                    const tag = el.tagName.toLowerCase();
+                    if (shapeTags.includes(tag) && !categorized.has(el)) {
+                        const item = this.createInventoryItem(el, false, 'other');
+                        inventory.push(item);
+                        categorized.add(el);
                     }
                 });
 
@@ -1587,41 +1625,9 @@
                 this.inventoryData = inventory;
                 console.log('Stored non-JIM inventory data:', this.inventoryData.length, 'items');
 
-                const byCategory = {
-                    interactive: inventory.filter(i => i.category === 'interactive'),
-                    text: inventory.filter(i => i.category === 'text')
-                };
-
-                let html = '';
-                Object.entries(byCategory).forEach(([category, items]) => {
-                    if (items.length === 0) return;
-                    
-                    const categoryLabel = category.charAt(0).toUpperCase() + category.slice(1) + ' Elements';
-                    html += `<h5 style="margin-top: 8px; margin-bottom: 6px; font-size: 13px; color: #374151; font-weight: 600;">${categoryLabel} (${items.length})</h5>`;
-                    
-                    html += '<ul style="list-style: none; padding: 0; margin: 0;">';
-                    items.slice(0, 3).forEach((item, index) => {
-                        const clickHandler = `handleInventoryItemClick('${category}', ${index})`;
-                        
-                        html += `
-                            <li tabindex="0" style="background: #f8fafc; border: 1px solid #e2e8f0; padding: 6px; margin: 4px 0; border-radius: 4px; font-size: 11px; cursor: pointer;"
-                                onclick="${clickHandler}"
-                                onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();${clickHandler};}"
-                                onfocus="this.style.outline='2px solid #3b82f6'; this.style.outlineOffset='2px';" 
-                                onblur="this.style.outline=''; this.style.outlineOffset='';">
-                                <code>${item.selector}</code>
-                                ${item.textContent ? `<span style="color: #64748b;"> - "${item.textContent.substring(0, 30)}${item.textContent.length > 30 ? '...' : ''}"</span>` : ''}
-                            </li>
-                        `;
-                    });
-                    html += '</ul>';
-                    
-                    if (items.length > 3) {
-                        html += `<div style="color: #64748b; font-size: 11px; margin: 4px 0;">... and ${items.length - 3} more</div>`;
-                    }
-                });
-
-                return html;
+                // Use the same rendering logic as JIM mode
+                return this.renderInventoryList({ svgInventory: inventory });
+                // ...existing code...
             }
 
             renderVisualization() {
@@ -1875,19 +1881,19 @@
                 if (!validation) return '<div style="color:#64748b; font-style:italic;">No validation data available</div>';
                 let html = '';
                 // Facet validation
-                if (validation.facetSummary) {
+                    if (validation.facetSummary) {
                     if (validation.facetSummary.missing && validation.facetSummary.missing.length) {
-                        html += `<div style="color:#d97706; margin:4px 0;">⚠ ${validation.facetSummary.missing.length} record properties lack facet definitions: ${validation.facetSummary.missing.join(', ')}</div>`;
+                        html += `<div style="color:#7c2d12; margin:4px 0;">⚠ ${validation.facetSummary.missing.length} record properties lack facet definitions: ${validation.facetSummary.missing.join(', ')}</div>`;
                     } else if (validation.facetSummary.total > 0) {
-                        html += `<div style="color:#059669; margin:4px 0;">✓ All record properties have facet definitions</div>`;
+                        html += `<div style="color:#022f26; margin:4px 0; font-weight:600;">✓ All record properties have facet definitions</div>`;
                     }
                 }
                 // Behavior validation
                 if (validation.behaviorSummary) {
                     if (validation.behaviorSummary.missing && validation.behaviorSummary.missing.length) {
-                        html += `<div style="color:#d97706; margin:4px 0;">⚠ ${validation.behaviorSummary.missing.length} selector(s) lack behavior definitions: ${validation.behaviorSummary.missing.join(', ')}</div>`;
+                        html += `<div style="color:#7c2d12; margin:4px 0;">⚠ ${validation.behaviorSummary.missing.length} selector(s) lack behavior definitions: ${validation.behaviorSummary.missing.join(', ')}</div>`;
                     } else if (validation.behaviorSummary.total > 0) {
-                        html += `<div style="color:#059669; margin:4px 0;">✓ All selectors have behavior definitions</div>`;
+                        html += `<div style="color:#022f26; margin:4px 0; font-weight:600;">✓ All selectors have behavior definitions</div>`;
                     }
                 }
                 // Selector/DOM validation
@@ -1901,13 +1907,13 @@
                 }
                 // Errors, warnings, passes
                 validation.errors?.forEach(err => {
-                    html += `<div style="color: #dc2626; margin: 4px 0;">✗ ${err}</div>`;
+                    html += `<div style="color: #8b1f1f; margin: 4px 0;">✗ ${err}</div>`;
                 });
                 validation.warnings?.forEach(w => {
-                    html += `<div style="color: #d97706; margin: 4px 0;">⚠ ${w}</div>`;
+                    html += `<div style="color: #7c2d12; margin: 4px 0;">⚠ ${w}</div>`;
                 });
                 validation.passed?.forEach(p => {
-                    html += `<div style="color: #059669; margin: 4px 0;">✓ ${p}</div>`;
+                    html += `<div style="color: #064e3b; margin: 4px 0;">✓ ${p}</div>`;
                 });
                 // Orphaned selectors (accessible heading and list)
                 if (validation.orphanedSelectors?.length) {
