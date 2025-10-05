@@ -20,6 +20,24 @@ npx http-server -p 5501
 npx pa11y http://127.0.0.1:5501/tests/auto-load.html
 ```
 
+### Axe smoke tests (optional)
+
+If you'd like to run a lightweight axe smoke test across the example SVGs, install Playwright and run the helper script:
+
+```powershell
+# install dev deps and playwright browsers
+npm ci
+npx playwright install --with-deps
+
+# start a local server (port 8080 recommended)
+npx http-server -p 8080
+
+# run the axe smoke tests (writes outputs to axe-output/)
+node scripts/ci-run-axe.js --base-url=http://127.0.0.1:8080 --out-dir=axe-output --fail-on-violations=true
+```
+
+The `axe-output/` directory is ignored by `.gitignore` and contains one JSON artifact per example.
+
 - See `CI.md` for additional guidance on running checks locally and avoiding common CI issues.
 
 ## PR checklist

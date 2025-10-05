@@ -55,3 +55,39 @@ Notes
 - The project includes `.pa11yci` and `.htmlvalidate.json` with conservative defaults to reduce noisy CI failures; change them if you need stricter or looser rules.
 
 If you'd like, I can add a GitHub Action step that uploads pa11y output when the job fails to make debugging PR failures easier.
+
+## Running axe-core locally (examples smoke tests)
+
+We added a small helper script that runs axe-core against each example via Playwright. This is useful as an early smoke test to ensure example SVGs don't introduce accessibility violations.
+
+Prerequisites:
+
+- Install project devDependencies and Playwright browsers:
+
+```powershell
+npm ci
+npx playwright install --with-deps
+```
+
+Run the smoke test (assumes a static server is serving the repo on port 8080):
+
+Terminal A — start a simple server:
+
+```powershell
+npx http-server -p 8080
+```
+
+Terminal B — run the axe smoke runner (writes per-example JSON into `axe-output/`):
+
+```powershell
+node scripts/ci-run-axe.js --base-url=http://127.0.0.1:8080 --out-dir=axe-output --fail-on-violations=true
+```
+
+Notes:
+
+- The script will create an `axe-output/` directory with one JSON file per example (e.g. `axe-testimage_0.svg.json`). Those artifacts are ignored by `.gitignore`.
+- If you prefer the npm shortcut (after installing Playwright):
+
+```powershell
+npm run ci:axe
+```

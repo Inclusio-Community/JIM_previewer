@@ -14,9 +14,9 @@
             --muted-contrast: #334155;
             --metadata-bg: #ffffff;
             --metadata-border: #e6eef6;
-            --status-error: #9b1c1c;
-            --status-warning: #7c2d12;
-            --status-success: #022f26;
+            --status-error: #dc2626; /* brighter red (Tailwind red-600) */
+            --status-warning: #b45309; /* brighter orange (Tailwind amber-600) */
+            --status-success: #065f46; /* darker emerald green for WCAG contrast */
             --badge-bg-jim: #047857;
             --badge-bg-nojim: #334155;
             /* High-contrast link color for small inline controls */
@@ -31,6 +31,19 @@
         .status-success-line { color: var(--status-success); margin:4px 0; font-weight:600; }
         .status-warning-line { color: var(--status-warning); margin:4px 0; }
         .status-error-line { color: var(--status-error); margin:4px 0; }
+        /* Status icons (use symbol fonts to avoid color-emoji rendering so axe can compute contrast) */
+        .status-icon {
+            font-family: "Segoe UI Symbol", "Segoe UI", "Arial", sans-serif;
+            font-weight: 700;
+            line-height: 1;
+            display: inline-block;
+            vertical-align: middle;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            /* ensure color is inherited from the status line (do not set a separate color) */
+            color: inherit;
+            margin-right: 6px;
+        }
             /* Spec compliance box variants (used in metadata summary) */
             .spec-box { padding: 12px 16px; border-radius: 6px; margin-bottom: 16px; }
             .spec-box--error { background: #fee2e2; border: 1px solid #dc2626; }
@@ -58,20 +71,28 @@
                 .btn--selector--mapped { background: #d1fae5; border-color: #10b981; color: #022f26; }
                 .btn--selector--group { background: #fef9c3; border-color: #f59e0b; color: #92400e; }
                 .selector-panel { background: #f8fafc; border:1px solid #e2e8f0; border-radius:6px; padding:12px 16px; margin-bottom:8px; }
-                .selector-row { display:flex; flex-wrap:wrap; gap:8px; margin-top:8px; }
+                .selector-row { display:flex; flex-wrap:wrap; gap:8px; margin-top:8px; margin-bottom:12px; }
+                /* Main selector panel title (larger) vs subgroup headings (smaller) */
+                .selector-panel > h2.panel__heading { font-size: 18px; margin-top: 0; margin-bottom: 10px; }
+                /* Ensure subgroup headings inside selector panels have breathing room */
+                .selector-panel .panel__heading { margin-top:12px; margin-bottom:8px; font-size:14px; }
                 .badge { padding:2px 6px; border-radius:3px; font-size:11px; display:inline-block; vertical-align:middle; margin-left:4px; color: #fff; }
                 .badge--jim { background: var(--badge-bg-jim); }
                 .badge--nojim { background: var(--badge-bg-nojim); }
                 .snippet { background:#f8fafc; padding:8px; border-radius:4px; margin-top:6px; max-height:120px; overflow:auto; }
                 .snippet--error { background:#fff0f0; color:var(--status-error); }
                 .muted-note { color: var(--muted-contrast); font-size:13px; margin-top:8px; }
-                .computed-dot { display:inline-block; width:12px; height:12px; border-radius:50%; margin-right:6px; vertical-align:middle; }
+                .computed-dot { display:inline-block; width:10px; height:10px; border-radius:50%; margin-right:6px; vertical-align:middle; }
+            .computed-dot-wrap { display:inline-flex; align-items:center; justify-content:center; width:16px; height:16px; border-radius:8px; margin-right:8px; vertical-align:middle; overflow:visible; }
+            .computed-dot-swatch { width:10px; height:10px; border-radius:50%; display:block; box-shadow: inset 0 0 0 1px rgba(0,0,0,0.06); }
+            .nojim-note { margin-top:8px; color:#334155; font-size:13px; }
         /* Orphaned selector card and meta text */
         .orphaned-item { background:#eff6ff; border-left:3px solid #3b82f6; padding:8px; margin:8px 0; border-radius:4px; font-size:13px; color:#1e293b; }
         .meta-text { color:#334155; font-size:12px; }
     /* Additional utility classes for consolidated inline styles */
     .hidden { display: none !important; }
-    .section-heading { margin-top: 16px; margin-bottom: 8px; font-size:16px; color: #1f2937; }
+    /* Section headings inside metadata panels: add a little more breathing room and subtle padding */
+    .section-heading { margin-top: 22px; margin-bottom: 10px; padding-top: 6px; font-size:16px; color: #1f2937; }
     .wrap-chips { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:8px; }
     .inline-row { display:inline-flex; align-items:center; }
     .inline-code { color:var(--text-normal); }
@@ -137,6 +158,7 @@
 
         .file-input-wrapper {
             margin-bottom: 15px;
+            display: block;
         }
 
         .file-input-wrapper label {
@@ -152,7 +174,21 @@
             border: 2px dashed #cbd5e1;
             border-radius: 6px;
             cursor: pointer;
+            background: white;
         }
+
+        /* Layout row next to file input to show the current file (hides browser's default filename text) */
+    .file-input-row { display: flex; align-items: center; gap: 12px; }
+        /* Some browsers insert a pseudo-element showing the chosen file; hide that where possible */
+        input[type='file']::-webkit-file-upload-text { display: none; }
+        input[type='file']::-webkit-file-upload-button { display: inline-block; }
+        input[type='file']::file-selector-button { display: inline-block; }
+    #current-file { font-size: 13px; color: #475569; }
+
+    /* Use the browser's native file input so freeform typing and native behaviors are preserved */
+    input[type="file"] { display: inline-block; }
+    .file-input-row { display: flex; align-items: center; gap: 12px; }
+    #current-file { font-size: 13px; color: #475569; user-select: text; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
         input[type="file"]:hover {
             border-color: #3b82f6;
@@ -168,6 +204,19 @@
             color: #64748b;
             margin-top: 5px;
         }
+
+        /* Default current-file styling (used outside chooser if present) */
+        #current-file {
+            font-size: 13px;
+            color: #475569;
+            max-width: 100%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        /* Make the chooser full width and render filename inline next to the button */
+        .file-chooser { width: 100%; box-sizing: border-box; }
+    .file-chooser #current-file { display: inline-flex; align-items: center; margin-top: 0; max-width: calc(100% - 140px); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; padding-left:6px; }
 
         .viewer-section {
             background: white;
@@ -217,7 +266,7 @@
             border: none;
             font-size: 20px;
             cursor: pointer;
-            color: #94a3b8;
+            color: #1e293b; /* darker for measurable contrast */
             padding: 0;
             width: 24px;
             height: 24px;
@@ -313,12 +362,34 @@
         }
 
         .metadata-summary {
-            background: var(--metadata-bg); /* lighten to improve contrast for status text */
-            border: 1px solid var(--metadata-border); /* subtle cool border for separation */
+            /* Faint panel background to match the selectors box */
+            background: #f8fafc; /* same as .selector-panel */
+            border: 1px solid #e2e8f0; /* subtle cool border for separation */
             border-radius: 6px;
             padding: 16px;
             margin-bottom: 20px;
             color: var(--text-normal);
+        }
+
+        /* Tighter visual separation and improved readability for the validation block */
+        .metadata-summary .section-heading {
+            border-top: 1px solid var(--metadata-border);
+            padding-top: 8px;
+            margin-top: 14px;
+            margin-bottom: 8px;
+            color: #0f172a; /* slightly darker for emphasis */
+            font-weight: 700;
+        }
+
+        /* Make long validation lines easier to scan and wrap long comma-separated lists */
+        .metadata-summary .status-warning-line,
+        .metadata-summary .status-success-line,
+        .metadata-summary .status-error-line,
+        .metadata-summary .muted-note {
+            line-height: 1.6;
+            margin-top: 6px;
+            white-space: normal;
+            word-break: break-word;
         }
 
         .metadata-summary h3 {
@@ -353,6 +424,16 @@
             margin: 16px 0;
         }
     </style>
+    <script>
+        // Small inline SVG icons (fill uses currentColor so they inherit text color)
+        const ICONS = {
+            check: `<svg class="status-icon" width="14" height="14" viewBox="0 0 24 24" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg"><path fill="currentColor" d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>`,
+            cross: `<svg class="status-icon" width="14" height="14" viewBox="0 0 24 24" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg"><path fill="currentColor" d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>`,
+            warn: `<svg class="status-icon" width="14" height="14" viewBox="0 0 24 24" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg"><path fill="currentColor" d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg>`,
+            idea: `<svg class="status-icon" width="14" height="14" viewBox="0 0 24 24" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg"><path fill="currentColor" d="M9 21h6v-1H9v1zm3-19C8.48 2 5 5.48 5 9c0 2.5 1.5 4.66 3.79 5.5.21.09.36.29.36.52V17h6V15.02c0-.23.15-.43.36-.52C17.5 13.66 19 11.5 19 9c0-3.52-3.48-7-7-7z"/></svg>`,
+            group: `<svg class="status-icon" width="14" height="14" viewBox="0 0 24 24" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg"><path fill="currentColor" d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5s-3 1.34-3 3 1.34 3 3 3zM8 11c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5C15 14.17 10.33 13 8 13zm8 0c-.29 0-.62.02-.97.05C16.22 13.78 18 14.84 18 16v3h6v-2.5C24 14.17 19.33 13 16 13z"/></svg>`
+        };
+    </script>
 </head>
 <body>
     <a href="#main-content" class="skip-link">Skip to main content</a>
@@ -371,7 +452,10 @@
                 <h2 id="upload-heading" class="sr-only">File Upload</h2>
                 <div class="file-input-wrapper">
                     <label for="jim-file">Upload SVG or HTML file:</label>
-                    <input type="file" id="jim-file" accept=".svg,.html,.htm" aria-describedby="file-help">
+                    <div class="file-input-row">
+                        <input type="file" id="jim-file" accept=".svg,.html,.htm" aria-describedby="file-help">
+                        <span id="current-file" class="sr-only" aria-live="polite">No file loaded</span>
+                    </div>
                     <div id="file-help" class="file-help">Supported: SVG files (with or without JIM metadata) and HTML files containing SVG elements.</div>
                 </div>
                 <div id="metadata-summary" aria-live="polite"></div>
@@ -381,7 +465,7 @@
             <section id="selector-list-panel" class="selector-panel hidden"></section>
             <section class="viewer-section" aria-labelledby="visualization-heading">
                 <h2 id="visualization-heading">Interactive Visualization</h2>
-                <div id="visualization" aria-live="polite" aria-labelledby="visualization-heading">
+                <div id="visualization" aria-live="polite" tabindex="0">
                     <div class="empty-state">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
                             <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
@@ -1129,6 +1213,25 @@
                 if (fileInput) {
                     fileInput.addEventListener('change', async (e) => {
                         const file = e.target.files && e.target.files[0];
+                        const row = e.target.closest && e.target.closest('.file-input-row');
+                        try {
+                            // Use the shared helper so local file selection and autoload behave the same
+                            if (file) {
+                                if (typeof setCurrentFileLabel === 'function') setCurrentFileLabel(file.name || 'Local file');
+                                else {
+                                    const label = document.getElementById('current-file');
+                                    if (label) label.textContent = file.name || 'Local file';
+                                }
+                                // Hide the duplicate visible filename when the native input already shows one.
+                                if (row) row.classList.add('has-file');
+                                const cur = document.getElementById('current-file');
+                                if (cur) cur.classList.add('sr-only');
+                            } else {
+                                // No file selected: remove the 'has-file' state. Keep the accessible-only label hidden by default.
+                                if (row) row.classList.remove('has-file');
+                            }
+                        } catch (e) { /* ignore */ }
+
                         if (!file) return;
                         const ext = file.name.split('.').pop().toLowerCase();
                         const reader = new FileReader();
@@ -1260,7 +1363,7 @@
                             snippet = jimText.slice(Math.max(0, pos-40), pos+40);
                         }
                         let errorHtml = `<div class="error-box">` +
-                            `<strong class="error-text"><span class="sr-only">Error: </span><span aria-hidden="true" class="status-icon">✗</span> Invalid JIM JSON in file${lineInfo}</strong><br>` +
+                            `<strong class="error-text"><span class="sr-only">Error: </span>${ICONS.cross} Invalid JIM JSON in file${lineInfo}</strong><br>` +
                             `<div class='muted-note' style='color:var(--status-error);'>${e.message}</div>` +
                             (snippet ? `<pre class='snippet snippet--error'>${snippet.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</pre>` : '') +
                             `<div class='muted-note'>Tip: Check for missing commas, brackets, or invalid array/object usage. You can copy and validate this JSON at <a href='https://jsonlint.com/' target='_blank' style='color:#2563eb;'>jsonlint.com</a>.</div>` +
@@ -1273,7 +1376,7 @@
                 } else {
                     console.warn('[JIMViewer] No JIM metadata found in file.');
                     const errorHtml = `<div class="error-box">` +
-                        `<strong class="error-text"><span class="sr-only">Error: </span><span aria-hidden="true" class="status-icon">✗</span> No JIM metadata found in file</strong><br>` +
+                        `<strong class="error-text"><span class="sr-only">Error: </span>${ICONS.cross} No JIM metadata found in file</strong><br>` +
                         `<div class='muted-note' style='color:var(--status-error);'>JIM metadata must be in a &lt;script type="application/json+jim"&gt; or &lt;metadata data-type="text/jim+json"&gt; block.</div>` +
                         `<div class='muted-note'>Tip: Check your SVG for a valid JIM metadata block.</div>` +
                         `</div>`;
@@ -1315,7 +1418,7 @@
                     var behaviors = this.jimData.behaviors || [];
                     var selectorPanelHtml = "<div class='selector-panel'>";
                     selectorPanelHtml += "<h2 class='panel__heading'>Selectors</h2>";
-                    selectorPanelHtml += "<div class='selector-row'>";
+                    
                     var svg = this.currentDoc.querySelector('svg');
                     // Track group behaviors
                     var groupBehaviors = [];
@@ -1329,6 +1432,10 @@
                             }
                         }
                     }
+                    // Build a list of visible selectors (those that match at least one SVG element),
+                    // annotate them with mapping state, then sort: mapped first, group-mapped second,
+                    // unmapped last. Within each bucket sort alphabetically by selector key.
+                    var visibleSelectors = [];
                     for (var k = 0; k < selectorKeys.length; k++) {
                         var key = selectorKeys[k];
                         var dom = this.jimData.selectors[key].dom;
@@ -1336,7 +1443,7 @@
                         var isGroupMapped = false;
                         var A = [];
                         try { A = Array.from(svg.querySelectorAll(dom)); } catch (e) {}
-                        // Only show selectors that match at least one SVG element
+                        // Only include selectors that match at least one SVG element
                         if (!A.length) continue;
                         for (var j = 0; j < behaviors.length; j++) {
                             var tgtSelector = behaviors[j].target && behaviors[j].target.selector;
@@ -1346,21 +1453,54 @@
                                 // Direct mapping: selector's dom exactly matches behavior's selector
                                 if (dom === tgtSelector) { hasBehavior = true; break; }
                                 // If not direct, but covered by a group behavior
-                                if (!hasBehavior && B.length > 1 && B.some(b => A.includes(b))) {
+                                if (!hasBehavior && B.length > 1 && B.some(function(b){ return A.includes(b); })) {
                                     isGroupMapped = true;
                                 }
                             }
                         }
-                        var cls = 'btn selector-button';
-                        if (hasBehavior) cls += ' btn--selector--mapped';
-                        else if (isGroupMapped) cls += ' btn--selector--group';
-                        else cls += ' btn--selector';
-                        var icon = hasBehavior ? "<span class='sr-only'>Mapped: </span><span style='margin-right:4px;' aria-hidden='true' class='status-icon'>✓</span>" : (isGroupMapped ? "<span class='sr-only'>Group: </span><span style='margin-right:4px;' aria-hidden='true' class='status-icon'>👥</span>" : "");
-                        var ariaState = hasBehavior ? ', mapped' : (isGroupMapped ? ', group mapped' : ', not mapped');
-                        var ariaLabel = `Selector ${key}${ariaState}`;
-                        selectorPanelHtml += `<button class='${cls} selector-button' data-key='${key}' aria-label='${ariaLabel}'>${icon}${key}</button>`;
+                        visibleSelectors.push({ key: key, dom: dom, hasBehavior: hasBehavior, isGroupMapped: isGroupMapped });
                     }
-                    selectorPanelHtml += "</div>";
+
+                    // Sorting helper: rank mapped=0, group=1, unmapped=2
+                    function selRank(s) { return s.hasBehavior ? 0 : (s.isGroupMapped ? 1 : 2); }
+                    visibleSelectors.sort(function(a, b) {
+                        var ra = selRank(a), rb = selRank(b);
+                        if (ra !== rb) return ra - rb;
+                        // Natural (numeric-aware) alphabetical fallback so 'datapoint2' sorts before 'datapoint10'
+                        return a.key.localeCompare(b.key, undefined, { numeric: true, sensitivity: 'base' });
+                    });
+
+                    // Partition into buckets for clearer traversal
+                    var mapped = visibleSelectors.filter(function(s){ return s.hasBehavior; });
+                    var groupMapped = visibleSelectors.filter(function(s){ return !s.hasBehavior && s.isGroupMapped; });
+                    var unmapped = visibleSelectors.filter(function(s){ return !s.hasBehavior && !s.isGroupMapped; });
+
+                    // Helper to render a bucket with a heading
+                    function renderBucket(title, items, extraClass) {
+                        if (!items || !items.length) return '';
+                        var out = `<h3 class='panel__heading'>${title} (${items.length})</h3>`;
+                        out += "<div class='selector-row'>";
+                        for (var ii = 0; ii < items.length; ii++) {
+                            var sel = items[ii];
+                            var key = sel.key;
+                            var hasBehavior = sel.hasBehavior;
+                            var isGroupMapped = sel.isGroupMapped;
+                            var cls = 'btn selector-button';
+                            if (hasBehavior) cls += ' btn--selector--mapped';
+                            else if (isGroupMapped) cls += ' btn--selector--group';
+                            else cls += ' btn--selector';
+                            var icon = hasBehavior ? "<span class='sr-only'>Mapped: </span>" + ICONS.check : (isGroupMapped ? "<span class='sr-only'>Group: </span>" + ICONS.group : "");
+                            var ariaState = hasBehavior ? ', mapped' : (isGroupMapped ? ', group mapped' : ', not mapped');
+                            var ariaLabel = `Selector ${key}${ariaState}`;
+                            out += `<button class='${cls} selector-button' data-key='${key}' aria-label='${ariaLabel}'>${icon}${key}</button>`;
+                        }
+                        out += "</div>";
+                        return out;
+                    }
+
+                    selectorPanelHtml += renderBucket('Mapped Selectors', mapped);
+                    selectorPanelHtml += renderBucket('Group-mapped Selectors', groupMapped);
+                    selectorPanelHtml += renderBucket('Unmapped Selectors', unmapped);
                     // Add group behaviors section
                     if (groupBehaviors.length) {
                         // Build interactive group behavior controls: header button + member preview buttons
@@ -1405,15 +1545,15 @@
                                                                         specBox = `<div class="spec-box spec-box--${variant}">
                                                                             <strong class="spec-box-heading">Spec compliance</strong>
                                                                             <ul class="spec-box-list">
-                                                                                ${this.specIssues.errors.map(e=>`<li class="status-error-line"><span class="sr-only">Error: </span><span aria-hidden="true" class="status-icon">✗</span> ${e}</li>`).join('')}
-                                                                                ${this.specIssues.warnings.map(w=>`<li class="status-warning-line"><span class="sr-only">Warning: </span><span aria-hidden="true" class="status-icon">⚠</span> ${w}</li>`).join('')}
+                                                ${this.specIssues.errors.map(e=>`<li class="status-error-line"><span class="sr-only">Error: </span>${ICONS.cross} ${e}</li>`).join('')}
+                                                ${this.specIssues.warnings.map(w=>`<li class="status-warning-line"><span class="sr-only">Warning: </span>${ICONS.warn} ${w}</li>`).join('')}
                                                                             </ul>
                                                                             ${this.specIssues.fixes.length ? `<div class="spec-box-fixes">Normalizations: ${this.specIssues.fixes.join(', ')}</div>` : ''}
                                                                         </div>`;
                                                                     } else {
                                                                         // No errors or warnings: show green success box
                                                                         specBox = `<div class="spec-box spec-box--success">
-                                                                            <strong class="spec-box-heading"><span class="sr-only">Success: </span><span aria-hidden="true" class="status-icon">✓</span> No JIM issues found</strong>
+                                                                            <strong class="spec-box-heading"><span class="sr-only">Success: </span>${ICONS.check} No JIM issues found</strong>
                                                                         </div>`;
                                                                     }
                                                                 }
@@ -1522,8 +1662,47 @@
             if (window.getComputedStyle) {
                 const computed = window.getComputedStyle(element);
                 html += '<h4 class="spec-heading">Computed Styles</h4>';
-                html += `<div><strong>fill:</strong> <span style="color: ${computed.fill};">●</span> ${computed.fill}</div>`;
-                html += `<div><strong>stroke:</strong> <span style="color: ${computed.stroke};">●</span> ${computed.stroke}</div>`;
+
+                // Small helper: parse rgb/#hex into [r,g,b]
+                function parseRgbLocal(str) {
+                    if (!str) return null;
+                    str = String(str).trim();
+                    let m;
+                    if (str.startsWith('rgb')) {
+                        m = str.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/i);
+                        if (m) return [parseInt(m[1],10), parseInt(m[2],10), parseInt(m[3],10)];
+                    }
+                    if (str[0] === '#') {
+                        const hex = str.slice(1);
+                        if (hex.length === 3) return [parseInt(hex[0]+hex[0],16), parseInt(hex[1]+hex[1],16), parseInt(hex[2]+hex[2],16)];
+                        if (hex.length === 6) return [parseInt(hex.slice(0,2),16), parseInt(hex.slice(2,4),16), parseInt(hex.slice(4,6),16)];
+                    }
+                    return null;
+                }
+
+                function relLumLocal([r,g,b]){
+                    const srgb = [r,g,b].map(v => v/255).map(c => c <= 0.03928 ? c/12.92 : Math.pow((c+0.055)/1.055, 2.4));
+                    return 0.2126*srgb[0] + 0.7152*srgb[1] + 0.0722*srgb[2];
+                }
+
+                function contrastLocal(a,b){ const L1 = relLumLocal(a); const L2 = relLumLocal(b); const light = Math.max(L1,L2); const dark = Math.min(L1,L2); return (light + 0.05) / (dark + 0.05); }
+
+                function chooseBlackOrWhiteFor(colorStr) {
+                    const rgb = parseRgbLocal(colorStr);
+                    if (!rgb) return '#ffffff'; // default to white when unknown
+                    const whiteContrast = contrastLocal(rgb, [255,255,255]);
+                    const blackContrast = contrastLocal(rgb, [0,0,0]);
+                    return (whiteContrast >= blackContrast) ? '#ffffff' : '#000000';
+                }
+
+                // Render fill + stroke with deterministic background (white or black)
+                const fillStr = computed.fill || 'none';
+                const strokeStr = computed.stroke || 'none';
+                const fillBg = chooseBlackOrWhiteFor(fillStr);
+                const strokeBg = chooseBlackOrWhiteFor(strokeStr);
+
+                html += `<div><strong>fill:</strong> <span class="computed-dot-wrap" style="background:${fillBg};"><span aria-hidden="true" class="computed-dot-swatch" style="background:${fillStr};"></span></span> ${fillStr}</div>`;
+                html += `<div><strong>stroke:</strong> <span class="computed-dot-wrap" style="background:${strokeBg};"><span aria-hidden="true" class="computed-dot-swatch" style="background:${strokeStr};"></span></span> ${strokeStr}</div>`;
                 html += `<div><strong>stroke-width:</strong> ${computed.strokeWidth}</div>`;
                 html += `<div><strong>opacity:</strong> ${computed.opacity}</div>`;
                 html += `<div><strong>display:</strong> ${computed.display}</div>`;
@@ -1535,13 +1714,14 @@
                     html += `<div><strong>font-weight:</strong> ${computed.fontWeight}</div>`;
                     const textContent = element.textContent.trim();
                     if (textContent) {
-                        html += `<div class="inline-text"><strong>Text Content:</strong> "${textContent}"</div>`;
+                        html += `<div class="inline-text"><strong>Text Content:</strong> \"${textContent}\"</div>`;
                     }
                 }
             }
 
-            html += `<div style=\"margin-top:8px;color:#888;font-size:13px;\">No JIM selector defined for this element.</div>`;
+            html += `<div class="nojim-note">No JIM selector defined for this element.</div>`;
             this.infoContent.innerHTML = html;
+            try { if (window.enhanceComputedDots) window.enhanceComputedDots(this.infoContent); } catch (e) { /* ignore */ }
             this.infoPanel.classList.add('visible');
             // Update the live region for SR users after the panel is visible (one-frame delay)
             const liveRegion = document.getElementById('info-panel-live');
@@ -1628,6 +1808,7 @@
             }
 
             this.infoContent.innerHTML = html;
+            try { if (window.enhanceComputedDots) window.enhanceComputedDots(this.infoContent); } catch (e) { /* ignore */ }
             this.infoPanel.classList.add('visible');
 
             // Update live region
@@ -1692,9 +1873,9 @@
         }
         renderValidationSummary(validation) {
             let html = '';
-            validation.errors.forEach(err => { html += `<div class="status-error-line"><span class="sr-only">Error: </span><span aria-hidden="true" class="status-icon">✗</span> ${err}</div>`; });
-            validation.warnings.forEach(w => { html += `<div class="status-warning-line"><span class="sr-only">Warning: </span><span aria-hidden="true" class="status-icon">⚠</span> ${w}</div>`; });
-            validation.passed.forEach(p => { html += `<div class="status-success-line"><span class="sr-only">Success: </span><span aria-hidden="true" class="status-icon">✓</span> ${p}</div>`; });
+            validation.errors.forEach(err => { html += `<div class="status-error-line"><span class="sr-only">Error: </span>${ICONS.cross} ${err}</div>`; });
+            validation.warnings.forEach(w => { html += `<div class="status-warning-line"><span class="sr-only">Warning: </span>${ICONS.warn} ${w}</div>`; });
+            validation.passed.forEach(p => { html += `<div class="status-success-line"><span class="sr-only">Success: </span>${ICONS.check} ${p}</div>`; });
 
             if (validation.orphanedSelectors?.length) {
                 html += `<div class='spec-heading' style='margin-top:12px; padding-top:12px; border-top:1px solid var(--metadata-border);'><strong>Orphaned Selectors (not in DOM):</strong></div>`;
@@ -1753,7 +1934,7 @@
                             <div class="inline-row"><code class="inline-code">${item.selector}</code>${jimBadge}</div>
                             ${item.textContent ? `<div class="inline-text">Text: \"${item.textContent}\"</div>` : ''}
                             <!-- Accessibility attributes removed from visual output -->
-                                            ${item.suggestions?.length ? `<div class="muted-note"><span class="sr-only">Suggestion: </span><span aria-hidden="true" class="status-icon">💡</span> ${item.suggestions.join('; ')}</div>` : ''}
+                                            ${item.suggestions?.length ? `<div class="muted-note"><span class="sr-only">Suggestion: </span>${ICONS.idea} ${item.suggestions.join('; ')}</div>` : ''}
                         </button>`;
                 });
 
@@ -1814,13 +1995,13 @@
                 });
 
                 let html = '';
-                html += `<div class="status-success-line"><span class="sr-only">Success: </span><span aria-hidden="true" class="status-icon">✓</span> Found ${interactiveCount} interactive elements</div>`;
-                html += `<div class="status-success-line"><span class="sr-only">Success: </span><span aria-hidden="true" class="status-icon">✓</span> Found ${textCount} text elements</div>`;
-                html += `<div class="status-success-line"><span class="sr-only">Success: </span><span aria-hidden="true" class="status-icon">✓</span> ${accessibleCount} elements have accessibility labels</div>`;
+                html += `<div class="status-success-line"><span class="sr-only">Success: </span>${ICONS.check} Found ${interactiveCount} interactive elements</div>`;
+                html += `<div class="status-success-line"><span class="sr-only">Success: </span>${ICONS.check} Found ${textCount} text elements</div>`;
+                html += `<div class="status-success-line"><span class="sr-only">Success: </span>${ICONS.check} ${accessibleCount} elements have accessibility labels</div>`;
 
                 if (issues.length > 0) {
                     issues.slice(0, 3).forEach(issue => {
-                        html += `<div class="status-warning-line"><span class="sr-only">Warning: </span><span aria-hidden="true" class="status-icon">⚠</span> ${issue}</div>`;
+                        html += `<div class="status-warning-line"><span class="sr-only">Warning: </span>${ICONS.warn} ${issue}</div>`;
                     });
                     if (issues.length > 3) {
                         html += `<div class="muted-note italic">... and ${issues.length - 3} more issues</div>`;
@@ -2048,8 +2229,46 @@
         if (window.getComputedStyle && vizElement) {
             const computed = window.getComputedStyle(vizElement);
             html += '<h4 class="spec-heading">Computed Styles</h4>';
-            html += `<div><strong>fill:</strong> <span style="color: ${computed.fill};">●</span> ${computed.fill}</div>`;
-            html += `<div><strong>stroke:</strong> <span style="color: ${computed.stroke};">●</span> ${computed.stroke}</div>`;
+
+            // Local helpers to pick white or black neutral background for a color string
+            function parseRgbLocal(str) {
+                if (!str) return null;
+                str = String(str).trim();
+                let m;
+                if (str.startsWith('rgb')) {
+                    m = str.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/i);
+                    if (m) return [parseInt(m[1],10), parseInt(m[2],10), parseInt(m[3],10)];
+                }
+                if (str[0] === '#') {
+                    const hex = str.slice(1);
+                    if (hex.length === 3) return [parseInt(hex[0]+hex[0],16), parseInt(hex[1]+hex[1],16), parseInt(hex[2]+hex[2],16)];
+                    if (hex.length === 6) return [parseInt(hex.slice(0,2),16), parseInt(hex.slice(2,4),16), parseInt(hex.slice(4,6),16)];
+                }
+                return null;
+            }
+
+            function relLumLocal([r,g,b]){
+                const srgb = [r,g,b].map(v => v/255).map(c => c <= 0.03928 ? c/12.92 : Math.pow((c+0.055)/1.055, 2.4));
+                return 0.2126*srgb[0] + 0.7152*srgb[1] + 0.0722*srgb[2];
+            }
+
+            function contrastLocal(a,b){ const L1 = relLumLocal(a); const L2 = relLumLocal(b); const light = Math.max(L1,L2); const dark = Math.min(L1,L2); return (light + 0.05) / (dark + 0.05); }
+
+            function chooseBlackOrWhiteFor(colorStr) {
+                const rgb = parseRgbLocal(colorStr);
+                if (!rgb) return '#ffffff';
+                const whiteContrast = contrastLocal(rgb, [255,255,255]);
+                const blackContrast = contrastLocal(rgb, [0,0,0]);
+                return (whiteContrast >= blackContrast) ? '#ffffff' : '#000000';
+            }
+
+            const fillStr = computed.fill || 'none';
+            const strokeStr = computed.stroke || 'none';
+            const fillBg = chooseBlackOrWhiteFor(fillStr);
+            const strokeBg = chooseBlackOrWhiteFor(strokeStr);
+
+                html += `<div><strong>fill:</strong> <span class="computed-dot-wrap" style="background:${fillBg};"><span aria-hidden="true" class="computed-dot-swatch" style="background:${fillStr};"></span></span> ${fillStr}</div>`;
+                html += `<div><strong>stroke:</strong> <span class="computed-dot-wrap" style="background:${strokeBg};"><span aria-hidden="true" class="computed-dot-swatch" style="background:${strokeStr};"></span></span> ${strokeStr}</div>`;
             html += `<div><strong>stroke-width:</strong> ${computed.strokeWidth}</div>`;
             html += `<div><strong>opacity:</strong> ${computed.opacity}</div>`;
             html += `<div><strong>display:</strong> ${computed.display}</div>`;
@@ -2066,7 +2285,8 @@
             }
         }
 
-        this.infoContent.innerHTML = html;
+    this.infoContent.innerHTML = html;
+    try { if (window.enhanceComputedDots) window.enhanceComputedDots(this.infoContent); } catch (e) { /* ignore */ }
         this.infoPanel.classList.add('visible');
         // Update the live region for SR users after the panel is visible (one-frame delay)
         const liveRegion = document.getElementById('info-panel-live');
@@ -2152,37 +2372,37 @@
                 // Facet validation
                     if (validation.facetSummary) {
                         if (validation.facetSummary.missing && validation.facetSummary.missing.length) {
-                            html += `<div class="status-warning-line"><span class="sr-only">Warning: </span><span aria-hidden="true" class="status-icon">⚠</span> ${validation.facetSummary.missing.length} record properties lack facet definitions: ${validation.facetSummary.missing.join(', ')}</div>`;
+                            html += `<div class="status-warning-line"><span class="sr-only">Warning: </span>${ICONS.warn} ${validation.facetSummary.missing.length} record properties lack facet definitions: ${validation.facetSummary.missing.join(', ')}</div>`;
                         } else if (validation.facetSummary.total > 0) {
-                            html += `<div class="status-success-line"><span class="sr-only">Success: </span><span aria-hidden="true" class="status-icon">✓</span> All record properties have facet definitions</div>`;
+                            html += `<div class="status-success-line"><span class="sr-only">Success: </span>${ICONS.check} All record properties have facet definitions</div>`;
                         }
                     }
                 // Behavior validation
                 if (validation.behaviorSummary) {
                     if (validation.behaviorSummary.missing && validation.behaviorSummary.missing.length) {
-                        html += `<div class="status-warning-line"><span class="sr-only">Warning: </span><span aria-hidden="true" class="status-icon">⚠</span> ${validation.behaviorSummary.missing.length} selector(s) lack behavior definitions: ${validation.behaviorSummary.missing.join(', ')}</div>`;
+                        html += `<div class="status-warning-line"><span class="sr-only">Warning: </span>${ICONS.warn} ${validation.behaviorSummary.missing.length} selector(s) lack behavior definitions: ${validation.behaviorSummary.missing.join(', ')}</div>`;
                     } else if (validation.behaviorSummary.total > 0) {
-                        html += `<div class="status-success-line"><span class="sr-only">Success: </span><span aria-hidden="true" class="status-icon">✓</span> All selectors have behavior definitions</div>`;
+                        html += `<div class="status-success-line"><span class="sr-only">Success: </span>${ICONS.check} All selectors have behavior definitions</div>`;
                     }
                 }
                 // Selector/DOM validation
                 if (validation.selectorSummary) {
-                    html += `<div class="status-success-line"><span class="sr-only">Success: </span><span aria-hidden="true" class="status-icon">✓</span> ${validation.selectorSummary.domValid} DOM selector(s) valid</div>`;
-                    html += `<div class="status-success-line"><span class="sr-only">Success: </span><span aria-hidden="true" class="status-icon">✓</span> ${validation.selectorSummary.jsonValid} JSON path(s) valid</div>`;
+                    html += `<div class="status-success-line"><span class="sr-only">Success: </span>${ICONS.check} ${validation.selectorSummary.domValid} DOM selector(s) valid</div>`;
+                    html += `<div class="status-success-line"><span class="sr-only">Success: </span>${ICONS.check} ${validation.selectorSummary.jsonValid} JSON path(s) valid</div>`;
                 }
                 // Behavior mapping
                 if (validation.behaviorSummary && typeof validation.behaviorSummary.mapped === 'number') {
-                    html += `<div class="status-success-line"><span class="sr-only">Success: </span><span aria-hidden="true" class="status-icon">✓</span> ${validation.behaviorSummary.mapped} behavior(s) properly mapped</div>`;
+                    html += `<div class="status-success-line"><span class="sr-only">Success: </span>${ICONS.check} ${validation.behaviorSummary.mapped} behavior(s) properly mapped</div>`;
                 }
                 // Errors, warnings, passes
                 validation.errors?.forEach(err => {
-                    html += `<div class="status-error-line"><span class="sr-only">Error: </span><span aria-hidden="true" class="status-icon">✗</span> ${err}</div>`;
+                    html += `<div class="status-error-line"><span class="sr-only">Error: </span>${ICONS.cross} ${err}</div>`;
                 });
                 validation.warnings?.forEach(w => {
-                    html += `<div class="status-warning-line"><span class="sr-only">Warning: </span><span aria-hidden="true" class="status-icon">⚠</span> ${w}</div>`;
+                    html += `<div class="status-warning-line"><span class="sr-only">Warning: </span>${ICONS.warn} ${w}</div>`;
                 });
                 validation.passed?.forEach(p => {
-                    html += `<div class="status-success-line"><span class="sr-only">Success: </span><span aria-hidden="true" class="status-icon">✓</span> ${p}</div>`;
+                    html += `<div class="status-success-line"><span class="sr-only">Success: </span>${ICONS.check} ${p}</div>`;
                 });
                 // Orphaned selectors (accessible heading and list)
                 if (validation.orphanedSelectors?.length) {
@@ -2208,23 +2428,134 @@
         document.addEventListener('DOMContentLoaded', () => {
             window.jimViewer = new JIMViewer();
 
+            // Helper to update visible current file label
+            function setCurrentFileLabel(text) {
+                try {
+                    const el = document.getElementById('current-file');
+                    if (!el) return;
+                    const full = String(text || 'No file loaded');
+                    // Extract basename for display (strip path and query)
+                    let path = full;
+                    try {
+                        // If it's an absolute URL, use URL to get pathname
+                        const u = new URL(full, window.location.href);
+                        path = u.pathname || full;
+                    } catch (e) {
+                        // not a full URL, keep as-is
+                        path = full.split('?')[0];
+                    }
+                    path = path.replace(/\\/g, '/');
+                    const parts = path.split('/').filter(Boolean);
+                    let name = parts.length ? parts[parts.length - 1] : path;
+                    if (!name) name = full;
+                    // Display the full basename (CSS will visually ellipsize if needed)
+                    el.textContent = name;
+                    // Preserve full value in title for tooltip
+                    el.setAttribute('title', full);
+                } catch (e) { /* ignore */ }
+            }
+
+            // Helper: try fetching a path using several sensible URL variants (relative, absolute, origin-prefixed)
+            async function tryFetchExampleWithVariants(path) {
+                const variants = [];
+                if (!path) return null;
+                // Keep the original value first
+                variants.push(path);
+                // Ensure leading slash variant
+                if (!path.startsWith('/')) variants.push('/' + path);
+                // Origin-prefixed absolute URL
+                try { variants.push(window.location.origin + (path.startsWith('/') ? path : '/' + path)); } catch (e) {}
+                // Relative to current document
+                variants.push('./' + path.replace(/^\/+/, ''));
+                // Deduplicate while preserving order
+                const seen = new Set();
+                const uniq = variants.filter(v => { if (!v) return false; if (seen.has(v)) return false; seen.add(v); return true; });
+
+                for (const candidate of uniq) {
+                    try {
+                        console.debug('[JIMViewer] attempting fetch for example candidate:', candidate);
+                        const res = await fetch(candidate);
+                        if (res && res.ok) {
+                            const text = await res.text();
+                            const ext = candidate.split('.').pop().toLowerCase();
+                            return { text, ext, url: candidate };
+                        } else {
+                            console.debug('[JIMViewer] fetch returned non-ok for', candidate, res && res.status);
+                        }
+                    } catch (e) {
+                        console.debug('[JIMViewer] fetch failed for', candidate, e && e.message ? e.message : e);
+                    }
+                }
+                return null;
+            }
+
+            // Helper: populate the native file input from fetched text so the standard file dialog state
+            // reflects the autoloaded example. This creates a Blob/File and assigns it to the input via
+            // a DataTransfer object, then dispatches a change event so existing handlers run.
+            async function populateNativeFileInputFromFetch(displayPath, text, ext) {
+                try {
+                    const input = document.getElementById('jim-file');
+                    if (!input) return;
+
+                    // Determine MIME type by extension
+                    const mime = (ext === 'svg') ? 'image/svg+xml' : (ext === 'html' || ext === 'htm') ? 'text/html' : 'text/plain';
+
+                    // Create a blob from the text and a File with a sensible filename
+                    const filename = (function () {
+                        try {
+                            const u = new URL(displayPath, window.location.href);
+                            return (u.pathname || '').split('/').pop() || ('example.' + ext);
+                        } catch (e) {
+                            const parts = String(displayPath || '').split('/').filter(Boolean);
+                            return parts.length ? parts[parts.length - 1] : ('example.' + ext);
+                        }
+                    })();
+
+                    const blob = new Blob([text], { type: mime });
+                    let file;
+                    try {
+                        file = new File([blob], filename, { type: mime });
+                    } catch (e) {
+                        // Some older browsers may not support File constructor; fall back to Blob with name prop
+                        file = blob;
+                        file.name = filename;
+                    }
+
+                    // Use DataTransfer to set input.files
+                    const dt = new DataTransfer();
+                    dt.items.add(file);
+                    input.files = dt.files;
+
+                    // Update visible label
+                    setCurrentFileLabel(filename || displayPath || 'Autoloaded file');
+
+                    // Dispatch change so existing listeners react (FileReader path)
+                    const ev = new Event('change', { bubbles: true });
+                    input.dispatchEvent(ev);
+                } catch (e) {
+                    console.warn('[JIMViewer] populateNativeFileInputFromFetch failed:', e);
+                    throw e;
+                }
+            }
+
             // Auto-load example via query parameter, e.g. ?example=examples/testimage_0.svg
             (async function tryAutoLoadFromQuery() {
                 try {
                     const params = new URLSearchParams(window.location.search);
                     const examplePath = params.get('example');
                     if (examplePath) {
-                        try {
-                            const res = await fetch(examplePath);
-                            if (res && res.ok) {
-                                const text = await res.text();
-                                const ext = examplePath.split('.').pop().toLowerCase();
-                                window.jimViewer.handleFileLoad(text, ext);
+                        const fetched = await tryFetchExampleWithVariants(examplePath);
+                        if (fetched) {
+                            // Try to populate the native file input so the standard file dialog state reflects the autoloaded file.
+                            if (typeof populateNativeFileInputFromFetch === 'function') {
+                                await populateNativeFileInputFromFetch(fetched.url || examplePath, fetched.text, fetched.ext);
                             } else {
-                                console.warn('[JIMViewer] Failed to fetch example from query param:', examplePath, res && res.status);
+                                // Fallback: directly handle the load and update label
+                                window.jimViewer.handleFileLoad(fetched.text, fetched.ext);
+                                setCurrentFileLabel(fetched.url || examplePath);
                             }
-                        } catch (e) {
-                            console.warn('[JIMViewer] Error fetching example from query param:', e);
+                        } else {
+                            console.warn('[JIMViewer] Failed to fetch example from query param (all candidates failed):', examplePath);
                         }
                     }
                 } catch (e) {
@@ -2233,32 +2564,226 @@
             })();
 
             // Listen for postMessage from an embedding harness (tests/auto-load.html)
-            // Expected message shape: { type: 'autoLoadExample', path: '/examples/testimage_0.svg' }
+            // Supports messages:
+            //  - { type: 'autoLoadExample', path: '/examples/testimage_0.svg' }
+            //  - { type: 'inspect', selector: 'svg #elemId' }
             window.addEventListener('message', async (ev) => {
                 try {
                     // Only accept same-origin messages for safety in CI/local runs
                     if (!ev || ev.origin !== window.location.origin) return;
                     const data = ev.data || {};
-                    if (data.type !== 'autoLoadExample' || !data.path) return;
-                    try {
-                        const res = await fetch(data.path);
-                        if (!res || !res.ok) {
-                            console.warn('[JIMViewer] Failed to fetch auto-load path:', data.path, res && res.status);
-                            return;
+
+                    // Auto-load example into the viewer (harness can postMessage { type: 'autoLoadExample', path })
+                    if (data.type === 'autoLoadExample' && data.path) {
+                        try {
+                            const fetched = await tryFetchExampleWithVariants(data.path);
+                            if (!fetched) {
+                                console.warn('[JIMViewer] Failed to fetch auto-load path (all candidates failed):', data.path);
+                                return;
+                            }
+                            if (window.jimViewer) {
+                                if (typeof populateNativeFileInputFromFetch === 'function') {
+                                    try {
+                                        await populateNativeFileInputFromFetch(fetched.url || data.path, fetched.text, fetched.ext);
+                                    } catch (e) {
+                                        // fallback to direct load
+                                        if (typeof window.jimViewer.handleFileLoad === 'function') window.jimViewer.handleFileLoad(fetched.text, fetched.ext);
+                                        setCurrentFileLabel(fetched.url || data.path);
+                                    }
+                                } else if (typeof window.jimViewer.handleFileLoad === 'function') {
+                                    window.jimViewer.handleFileLoad(fetched.text, fetched.ext);
+                                    setCurrentFileLabel(fetched.url || data.path);
+                                }
+                            }
+                        } catch (e) {
+                            console.warn('[JIMViewer] Error fetching auto-load path:', e);
                         }
-                        const text = await res.text();
-                        const ext = data.path.split('.').pop().toLowerCase();
-                        if (window.jimViewer && typeof window.jimViewer.handleFileLoad === 'function') {
-                            window.jimViewer.handleFileLoad(text, ext);
+                        return;
+                    }
+
+                    // Inspect a CSS selector or JIM selector key inside the viewer's current visualization
+                    if (data.type === 'inspect' && data.selector) {
+                        try {
+                            const viewer = window.jimViewer;
+                            const originalSelector = String(data.selector);
+                            const selectors = viewer?.jimData?.selectors || {};
+                            let selectorKey = null;
+                            let usedSelector = originalSelector;
+
+                            // If the caller passed a JIM selector key (e.g. 'chartTitle'), map it to its dom value
+                            if (selectors && Object.prototype.hasOwnProperty.call(selectors, originalSelector)) {
+                                selectorKey = originalSelector;
+                                usedSelector = selectors[originalSelector].dom || originalSelector;
+                            }
+
+                            // Try to find the element inside the live visualization using the chosen selector
+                            let el = null;
+                            try {
+                                const viz = document.getElementById('visualization');
+                                if (viz) el = viz.querySelector(usedSelector);
+                            } catch (e) { el = null; }
+
+                            // If nothing matched and the caller sent a plain token like 'chartTitle', try treating it as an id
+                            if (!el && /^[A-Za-z0-9_\-]+$/.test(originalSelector)) {
+                                try {
+                                    const viz = document.getElementById('visualization');
+                                    if (viz) {
+                                        const idSel = '#' + originalSelector;
+                                        el = viz.querySelector(idSel);
+                                        if (el) usedSelector = idSel;
+                                    }
+                                } catch (e) { /* ignore */ }
+                            }
+
+                            if (el) {
+                                // If we still don't have a selectorKey, try to find one by matching existing JIM selectors
+                                if (!selectorKey && selectors) {
+                                    for (const [key, sel] of Object.entries(selectors || {})) {
+                                        try { if (el.matches(sel.dom)) { selectorKey = key; break; } } catch {}
+                                    }
+                                }
+
+                                // Show the appropriate info panel using the viewer instance
+                                if (viewer && typeof viewer.showElementInfo === 'function' && selectorKey) viewer.showElementInfo(selectorKey, 'external', el);
+                                else if (viewer && typeof viewer.showNonJIMElementInfo === 'function' && !selectorKey) viewer.showNonJIMElementInfo(el, 'external');
+                                else {
+                                    // Fallback: log that viewer methods are unavailable
+                                    console.warn('[JIMViewer] inspect: viewer instance not available to show info panel.');
+                                }
+
+                                // Send a response back to the sender so harness/CI can observe success
+                                try {
+                                    if (ev.source && ev.origin) {
+                                        ev.source.postMessage({ type: 'inspect-result', matched: true, mapped: !!selectorKey, selector: originalSelector, usedSelector, selectorKey: selectorKey || null }, ev.origin);
+                                    }
+                                } catch (e) { /* ignore postMessage failures */ }
+                            } else {
+                                console.warn('[JIMViewer] inspect: selector did not match any element in visualization:', originalSelector);
+                                try {
+                                    if (ev.source && ev.origin) {
+                                        ev.source.postMessage({ type: 'inspect-result', matched: false, selector: originalSelector }, ev.origin);
+                                    }
+                                } catch (e) { /* ignore postMessage failures */ }
+                            }
+                        } catch (e) {
+                            console.warn('[JIMViewer] Error handling inspect message:', e);
                         }
-                    } catch (e) {
-                        console.warn('[JIMViewer] Error fetching auto-load path:', e);
+                        return;
                     }
                 } catch (e) {
                     // swallow any message handler errors
                 }
             });
         });
+
+        // Accessibility helper: replace small glyph dots used to show computed colors
+        // with deterministic color swatches that have explicit background so axe can compute contrast.
+        (function() {
+            function parseRgb(str) {
+                if (!str) return null;
+                str = String(str).trim();
+                let m;
+                if (str.startsWith('rgb')) {
+                    m = str.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/i);
+                    if (m) return [parseInt(m[1],10), parseInt(m[2],10), parseInt(m[3],10)];
+                }
+                if (str[0] === '#') {
+                    const hex = str.slice(1);
+                    if (hex.length === 3) return [parseInt(hex[0]+hex[0],16), parseInt(hex[1]+hex[1],16), parseInt(hex[2]+hex[2],16)];
+                    if (hex.length === 6) return [parseInt(hex.slice(0,2),16), parseInt(hex.slice(2,4),16), parseInt(hex.slice(4,6),16)];
+                }
+                return null;
+            }
+
+            function relLum([r,g,b]){
+                const srgb = [r,g,b].map(v => v/255).map(c => c <= 0.03928 ? c/12.92 : Math.pow((c+0.055)/1.055, 2.4));
+                return 0.2126*srgb[0] + 0.7152*srgb[1] + 0.0722*srgb[2];
+            }
+
+            function contrast(a,b){ const L1 = relLum(a); const L2 = relLum(b); const light = Math.max(L1,L2); const dark = Math.min(L1,L2); return (light + 0.05) / (dark + 0.05); }
+
+            function enhanceComputedDots(root=document) {
+                try {
+                    const dots = Array.from(root.querySelectorAll('.computed-dot'));
+                    dots.forEach(dot => {
+                        try {
+                            const cs = window.getComputedStyle(dot);
+                            let colorStr = cs.color || cs.fill || cs.backgroundColor || dot.getAttribute('data-color');
+                            let rgb = parseRgb(colorStr);
+                            // If color isn't parseable (e.g. 'none'), try to read adjacent text node that contains the textual color value
+                            if (!rgb) {
+                                const next = dot.nextSibling;
+                                if (next && next.nodeType === Node.TEXT_NODE) {
+                                    // e.g. ' rgb(96, 114, 169)'
+                                    const txt = next.textContent && next.textContent.trim();
+                                    // attempt to extract rgb(...) or #hex
+                                    const m = txt && txt.match(/(rgba?\([^)]+\)|#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{6}))/);
+                                    if (m) rgb = parseRgb(m[1]);
+                                }
+                            }
+                            if (!rgb) return;
+
+                            // Build swatch element (match inline swatch sizing: 10px inner, 16px outer)
+                            const swatch = document.createElement('span');
+                            swatch.className = 'computed-dot-swatch';
+                            swatch.setAttribute('aria-hidden', 'true');
+                            swatch.style.display = 'block';
+                            swatch.style.width = '10px';
+                            swatch.style.height = '10px';
+                            swatch.style.borderRadius = '50%';
+                            swatch.style.backgroundColor = `rgb(${rgb.join(',')})`;
+
+                            // Determine effective background at insertion point by walking up to the nearest
+                            // ancestor with a non-transparent computed background. If none found, fall back to white.
+                            function findEffectiveBackgroundColor(node) {
+                                let cur = node && node.parentElement;
+                                while (cur) {
+                                    try {
+                                        const bg = window.getComputedStyle(cur).backgroundColor;
+                                        if (bg && bg !== 'transparent' && !bg.startsWith('rgba(0, 0, 0, 0)')) return bg;
+                                    } catch (e) { /* ignore */ }
+                                    cur = cur.parentElement;
+                                }
+                                return '#ffffff';
+                            }
+                            const effectiveBgStr = findEffectiveBackgroundColor(dot);
+                            const effectiveBgRgb = parseRgb(effectiveBgStr) || [255,255,255];
+                            const effContrast = contrast(rgb, effectiveBgRgb);
+                            // Choose neutral background: prefer effective background if it gives >= 3:1 contrast,
+                            // otherwise fall back to white/black that gives the best contrast.
+                            const whiteContrast = contrast(rgb, [255,255,255]);
+                            const blackContrast = contrast(rgb, [0,0,0]);
+                            const wrap = document.createElement('span');
+                            wrap.className = 'computed-dot-wrap';
+                            if (effContrast >= 3) {
+                                wrap.style.background = `rgb(${effectiveBgRgb.join(',')})`;
+                            } else {
+                                wrap.style.background = (whiteContrast >= blackContrast) ? '#ffffff' : '#000000';
+                            }
+                            // Match inline wrap sizing and spacing
+                            wrap.style.width = '16px';
+                            wrap.style.height = '16px';
+                            wrap.style.borderRadius = '8px';
+                            wrap.style.boxShadow = 'inset 0 0 0 1px rgba(0,0,0,0.06)';
+                            wrap.style.display = 'inline-flex';
+                            wrap.style.alignItems = 'center';
+                            wrap.style.justifyContent = 'center';
+                            wrap.style.marginRight = '8px';
+                            wrap.style.verticalAlign = 'middle';
+                            wrap.style.overflow = 'visible';
+
+                            // Replace original dot with wrap containing swatch
+                            dot.parentNode && dot.parentNode.replaceChild(wrap, dot);
+                            wrap.appendChild(swatch);
+                        } catch (e) { /* per-dot failures ignored */ }
+                    });
+                } catch (e) { /* ignore overall failures */ }
+            }
+
+            // Run after DOM ready and also expose on window for dynamic updates
+            try { enhanceComputedDots(document); } catch (e) {}
+            window.enhanceComputedDots = enhanceComputedDots;
+        })();
 
         // Global function to handle inventory item clicks
         window.handleInventoryItemClick = function (category, idx) {
