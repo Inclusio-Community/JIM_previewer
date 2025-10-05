@@ -29,7 +29,8 @@ jobs:
         run: |
           echo "Running html-validate from project devDependencies..."
           npx html-validate --version
-          npx html-validate "jim-viewer.html" "**/*.html" || (echo "html-validate reported errors" && exit 1)
+          # Limit lint targets to project HTML files to avoid scanning node_modules
+          npx html-validate "jim-viewer.html" "tests/*.html" || (echo "html-validate reported errors" && exit 1)
 
   a11y-smoke:
     name: Accessibility smoke (pa11y)
