@@ -7,7 +7,11 @@ Thanks for your interest in contributing to the JIM Metadata Viewer! A few quick
 - Run the HTML linter locally:
 
 ```powershell
+# If package-lock.json exists:
 npm ci
+npm run lint:html
+# Otherwise, on first-time setup:
+npm install
 npm run lint:html
 ```
 
@@ -26,7 +30,8 @@ If you'd like to run a lightweight axe smoke test across the example SVGs, insta
 
 ```powershell
 # install dev deps and playwright browsers
-npm ci
+# If a lockfile is present, prefer `npm ci` for reproducible installs; otherwise use `npm install`.
+npm ci || npm install
 npx playwright install --with-deps
 
 # start a local server (port 8080 recommended)
@@ -35,6 +40,8 @@ npx http-server -p 8080
 # run the axe smoke tests (writes outputs to axe-output/)
 node scripts/ci-run-axe.js --base-url=http://127.0.0.1:8080 --out-dir=axe-output --fail-on-violations=true
 ```
+
+Tip: Commit a generated `package-lock.json` to the repository to make CI installs deterministic and allow using `npm ci` in workflows.
 
 The `axe-output/` directory is ignored by `.gitignore` and contains one JSON artifact per example.
 

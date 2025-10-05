@@ -13,8 +13,13 @@ The CI workflow file is at `.github/workflows/html-validate.yml`.
 
 1. Install dev dependencies:
 
+If this repository does not have a lockfile (package-lock.json), use `npm install` instead of `npm ci`.
+
 ```powershell
+# If package-lock.json exists:
 npm ci
+# Otherwise (or on first-time setup):
+npm install
 ```
 
 2. Run the HTML linter:
@@ -62,10 +67,13 @@ We added a small helper script that runs axe-core against each example via Playw
 
 Prerequisites:
 
-- Install project devDependencies and Playwright browsers:
+- Install project devDependencies and Playwright browsers. If you don't have a lockfile, use `npm install`.
 
 ```powershell
+# If package-lock.json exists:
 npm ci
+# Otherwise:
+npm install
 npx playwright install --with-deps
 ```
 
