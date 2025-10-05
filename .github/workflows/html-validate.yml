@@ -23,7 +23,7 @@ jobs:
       - name: Install dependencies
         run: |
           echo "Installing project devDependencies (html-validate)"
-          npm ci
+          npm install
 
       - name: Run html-validate
         run: |
