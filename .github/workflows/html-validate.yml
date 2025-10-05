@@ -3,9 +3,8 @@ name: HTML Validate (PR)
 on:
   pull_request:
     paths:
-      - '**/*.html'
       - 'jim-viewer.html'
-      - 'examples/**'
+      - 'tests/**'
       - '.github/workflows/**'
 
 jobs:
@@ -32,97 +31,9 @@ jobs:
           # Limit lint targets to project HTML files to avoid scanning node_modules
           npx html-validate "jim-viewer.html" "tests/*.html" || (echo "html-validate reported errors" && exit 1)
 
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const fs = require('fs');
-            const outPath = 'pa11y-output.txt';
-            let output = '';
-            try {
-              output = fs.existsSync(outPath) ? fs.readFileSync(outPath, 'utf8') : 'No pa11y output file found.';
-            } catch (err) {
-              output = 'Error reading pa11y output: ' + (err && err.message ? err.message : String(err));
-            }
-
-            const exitPath = 'pa11y-exit';
-            let exitCode = 'unknown';
-            try { if (fs.existsSync(exitPath)) exitCode = fs.readFileSync(exitPath, 'utf8').trim(); } catch (e) {}
-
-            const pr = context.payload.pull_request;
-            if (!pr) return;
-            const issue_number = pr.number;
-
-            const marker = '<!-- pa11y-bot-comment -->';
-            const runId = process.env.GITHUB_RUN_ID || '';
-            const runUrl = runId ? 'https://github.com/' + context.repo.owner + '/' + context.repo.repo + '/actions/runs/' + runId : '';
-            const runLink = runUrl ? '\n[View full artifacts and logs for this run](' + runUrl + ')\n\n' : '\n';
-            const header = marker + '\n### pa11y accessibility scan\n\nExit code: ' + exitCode + runLink + '\n';
-            const bodyContent = (output.length > 60000 ? output.slice(0,60000) + '\n\n...truncated...' : output);
-            const fullBody = header + '<details><summary>pa11y output</summary>\n\n```text\n' + bodyContent + '\n```\n</details>';
-
-            // List existing comments on the PR and update the bot comment if present
-            const { data: comments } = await github.rest.issues.listComments({ owner: context.repo.owner, repo: context.repo.repo, issue_number });
-            const existing = comments.find(c => c.body && c.body.startsWith(marker));
-            if (existing) {
-              await github.rest.issues.updateComment({ owner: context.repo.owner, repo: context.repo.repo, comment_id: existing.id, body: fullBody });
-            } else {
-              await github.rest.issues.createComment({ owner: context.repo.owner, repo: context.repo.repo, issue_number, body: fullBody });
-            }
-          echo "$PA11Y_EXIT" > pa11y-exit
-          set -e
-
-          # Stop the server we started
-          kill $SERVER_PID || true
-
-      - name: Upload pa11y output
+      - name: Upload html-validate output
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: pa11y-output
-          path: pa11y-output.txt
-
-      - name: Comment on PR with pa11y output (update existing bot comment)
-        if: always() && github.event_name == 'pull_request'
-        uses: actions/github-script@v6
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const fs = require('fs');
-            const outPath = 'pa11y-output.txt';
-            let output = '';
-            try { output = fs.existsSync(outPath) ? fs.readFileSync(outPath, 'utf8') : 'No pa11y output file found.'; } catch (err) { output = `Error reading pa11y output: ${err.message}`; }
-            const exitPath = 'pa11y-exit';
-            let exitCode = 'unknown';
-            try { if (fs.existsSync(exitPath)) exitCode = fs.readFileSync(exitPath, 'utf8').trim(); } catch (e) {}
-
-            const pr = context.payload.pull_request;
-            if (!pr) return;
-            const issue_number = pr.number;
-
-            const marker = '<!-- pa11y-bot-comment -->';
-            const runId = process.env.GITHUB_RUN_ID || '';
-            const runUrl = runId ? `https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${runId}` : '';
-            const runLink = runUrl ? `\n[View full artifacts and logs for this run](${runUrl})\n\n` : '\n';
-            const header = `${marker}\n### pa11y accessibility scan\n\nExit code: ${exitCode}${runLink}\n`;
-            const bodyContent = (output.length > 60000 ? output.slice(0,60000) + '\n\n...truncated...' : output);
-            const fullBody = header + `<details><summary>pa11y output</summary>\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\` + '```text\n' + bodyContent + '\n```\n</details>';
-
-            // List existing comments on the PR and update the bot comment if present
-            const { data: comments } = await github.rest.issues.listComments({ owner: context.repo.owner, repo: context.repo.repo, issue_number });
-            const existing = comments.find(c => c.body && c.body.startsWith(marker));
-            if (existing) {
-              await github.rest.issues.updateComment({ owner: context.repo.owner, repo: context.repo.repo, comment_id: existing.id, body: fullBody });
-            } else {
-              await github.rest.issues.createComment({ owner: context.repo.owner, repo: context.repo.repo, issue_number, body: fullBody });
-            }
-
-      - name: Fail job when pa11y failed
-        if: always()
-        run: |
-          if [ -f pa11y-exit ]; then
-            code=$(cat pa11y-exit)
-            if [ "$code" -ne 0 ]; then
-              echo "pa11y failed with exit code $code";
-              exit $code;
-            fi
-          fi
+          name: html-validate-report
+          path: .
