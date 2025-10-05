@@ -1,0 +1,39 @@
+name: HTML Validate (PR)
+
+on:
+  pull_request:
+    paths:
+      - 'jim-viewer.html'
+      - 'tests/**'
+      - '.github/workflows/**'
+
+jobs:
+  html-validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Install dependencies
+        run: |
+          echo "Installing project devDependencies (html-validate)"
+          npm install
+
+      - name: Run html-validate
+        run: |
+          echo "Running html-validate from project devDependencies..."
+          npx html-validate --version
+          # Limit lint targets to project HTML files to avoid scanning node_modules
+          npx html-validate "jim-viewer.html" "tests/*.html" || (echo "html-validate reported errors" && exit 1)
+
+      - name: Upload html-validate output
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: html-validate-report
+          path: .

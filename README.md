@@ -43,6 +43,13 @@ An interactive tool for analyzing and validating JSON for Interactive Media (JIM
 	- `Number_of_Xbox_Live_MAU_Q1_2016___Q4_2019.svg`
 	- `Unemployment_rate_in_Greece_1999_2019.svg`
 
+## Running accessibility checks
+
+See `CI.md` for details on the small CI/test helpers. In short:
+
+- The repository runs `html-validate` and a pa11y smoke test in CI.
+- You can run an axe-core smoke test locally across the example SVGs with Playwright using the `scripts/ci-run-axe.js` helper. See `CI.md` for commands and notes.
+
 ## Use Cases
 
 - Validate JIM metadata during development

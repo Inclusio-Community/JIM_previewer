@@ -1,0 +1,31 @@
+{
+  "name": "jim_previewer",
+  "version": "1.0.0",
+  "description": "> **License:** MIT — See [LICENSE](LICENSE) for details.",
+  "main": "index.js",
+  "directories": {
+    "example": "examples"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+  "lint:html": "html-validate \"jim-viewer.html\" \"tests/*.html\"",
+    "axe-report": "node scripts/axe-report.js",
+    "ci:axe": "node scripts/ci-run-axe.js --base-url=http://127.0.0.1:8080 --out-dir=axe-output --fail-on-violations=false"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Inclusio-Community/JIM_previewer.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Inclusio-Community/JIM_previewer/issues"
+  },
+  "homepage": "https://github.com/Inclusio-Community/JIM_previewer#readme",
+  "devDependencies": {
+    "html-validate": "^10.1.0",
+    "playwright": "^1.55.1",
+    "yargs": "^18.0.0"
+  }
+}

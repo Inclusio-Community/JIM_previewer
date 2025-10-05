@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>JIM Previewer - Auto Load Test</title>
+  <!-- Inline tiny SVG favicon to avoid 404 noise from dev servers -->
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' fill='%23ffffff'/%3E%3C/svg%3E">
+  <style>
+    :root { --control-height: 56px; --control-collapsed-height: 36px; }
+    body { margin: 0; font-family: system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial; padding-top: var(--control-height); }
+    /* iframe occupies remaining viewport below the top control bar; its height is adjusted via JS so the top bar can auto-size */
+    iframe { width: 100vw; border: none; display: block; }
+  </style>
+  <style>
+  /* Top-fixed control bar that pushes content down (avoids covering viewer) */
+  #controls { position: fixed; left: 0; right: 0; top: 0; z-index: 9999; background: #fff; padding: 8px 12px; border-bottom:1px solid #e6eef7; box-shadow: 0 2px 6px rgba(0,0,0,0.06); display:flex; align-items:center; gap:12px; box-sizing: border-box; flex-wrap: wrap; min-height: var(--control-height); }
+    #current { margin:0 8px; font-size:13px; }
+    #controls button { padding:6px 8px; }
+    /* Collapsible control bar */
+  /* Header contains the nav buttons; allow it to take available space so right-side controls don't hug the extreme edge */
+  #controls .controls-header { display:flex; align-items:center; gap:8px; margin:0; flex: 1 1 auto; min-width: 0; }
+  #controls .controls-toggle { background:transparent; border:1px solid #e2e8f0; padding:6px 10px; border-radius:4px; cursor:pointer; }
+  /* When collapsed, shrink the control bar height and hide secondary controls (keeps the handle + index visible) */
+  #controls.collapsed { height: var(--control-collapsed-height); }
+  #controls.collapsed .inspect-row, #controls.collapsed .controls-bottom { display:none; }
+  #controls.collapsed button[id="prev"], #controls.collapsed button[id="next"] { display:none; }
+  #controls.collapsed #current { margin-left:6px; }
+
+  /* When controls wrap, make the inspect row and bottom controls span full width for readability */
+  /* Right-side controls should be pushed to the right without the header stretching */
+  #controls .inspect-row { display: flex; align-items: center; gap:8px; margin-left: 8px; flex: 0 0 auto; max-width: 60%; }
+  /* Lower row spans full width when wrapped */
+  #controls .controls-bottom { display:flex; align-items: center; gap:8px; flex: 1 1 100%; justify-content: flex-start; }
+
+  /* Small screens: allow more vertical space so the iframe isn't overlapped when controls wrap to multiple rows */
+  @media (max-width: 800px) {
+  body { padding-top: 110px; }
+  iframe { /* height will be updated by JS; keep a safe fallback */ height: calc(100vh - 110px); }
+    /* Make controls more compact on narrow viewports */
+    #controls { padding: 6px 8px; gap:8px; }
+    #controls .controls-header { gap:6px; }
+    #controls button { padding:4px 6px; font-size:13px; }
+    /* On narrow viewports the inspect-row should wrap below the header and span full width */
+    #controls .inspect-row { margin-left: 0; flex-basis: 100%; padding-top:6px; }
+    }
+    /* Results panel styles injected by script; defined here to avoid inline styles */
+    .axe-results { position: fixed; right: 8px; bottom: 8px; width: 420px; max-height: 50vh; overflow: auto; background: #fff; border: 1px solid #e2e8f0; padding: 8px; border-radius: 6px; font-size: 12px; }
+    /* Header inside results */
+    .axe-results .results-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:6px; }
+    .axe-results .results-title { font-weight:600; }
+    .axe-results .close-btn { font-size:16px; line-height:1; }
+    .axe-results pre { white-space: pre-wrap; }
+    .axe-results a { display:block; margin-top:8px; }
+    /* Controls lower row */
+    .controls-bottom { margin-top:8px; font-size:13px; }
+    .controls-bottom .muted { margin-left:8px; color: #6b7280; }
+  </style>
+</head>
+<body>
+  <!-- This page embeds the single-file viewer and instructs it to load an example SVG so automated a11y tools can scan a populated DOM. -->
+  <div id="controls">
+    <div class="controls-header">
+  <button id="controls-toggle" type="button" class="controls-toggle" aria-label="Toggle test controls">☰</button>
+      <button id="prev" type="button">&lt; Prev</button>
+      <span id="current"></span>
+      <button id="next" type="button">Next &gt;</button>
+    </div>
+    <div class="inspect-row">
+      <input id="inspect-input" type="text" placeholder="selector (e.g. svg #bar)">
+      <button id="inspect-btn" type="button">Inspect</button>
+      <button id="run-axe" type="button">Run axe in iframe</button>
+    </div>
+    <div class="controls-bottom">
+      <label><input id="include-svg" type="checkbox"> Include SVG in scan</label>
+      <span class="muted">(uncheck to skip visual geometry and scan the rest of the page)</span>
+    </div>
+  </div>
+  <iframe id="viewer" src="/jim-viewer.html?example=examples/testimage_0.svg" title="JIM Viewer test harness"></iframe>
+  <script>
+  // Keep the page layout in sync with the fixed top controls. When the controls wrap
+  // their height changes; this script updates body padding and iframe height so the
+  // viewer is never overlapped and the control "frame" grows with its contents.
+  (function(){
+    const controls = document.getElementById('controls');
+    const iframe = document.getElementById('viewer');
+    function updateLayout(){
+      if (!controls) return;
+      const h = controls.offsetHeight;
+      document.body.style.paddingTop = h + 'px';
+      if (iframe) iframe.style.height = `calc(100vh - ${h}px)`;
+    }
+    // Initial sync
+    updateLayout();
+    // Watch for size changes using ResizeObserver and window resize as a fallback
+    if (window.ResizeObserver) {
+      const ro = new ResizeObserver(updateLayout);
+      ro.observe(controls);
+      window.addEventListener('resize', updateLayout);
+    } else {
+      window.addEventListener('resize', updateLayout);
+      let last = controls.offsetHeight;
+      setInterval(()=>{ if (controls.offsetHeight !== last) { last = controls.offsetHeight; updateLayout(); } }, 250);
+    }
+    // Ensure toggling collapsed state triggers a layout update
+    const toggle = document.getElementById('controls-toggle');
+    if (toggle) toggle.addEventListener('click', ()=> setTimeout(updateLayout, 60));
+  })();
+  </script>
+  <script type="module" src="/tests/auto-load.js"></script>
+</body>
+</html>

@@ -1,0 +1,9 @@
+{
+  "extends": ["html-validate:recommended"],
+  "rules": {
+    "doctype-style": "error",
+    "void-style": "error",
+    "prefer-native-element": "warn",
+    "no-inline-style": "warn"
+  }
+}
