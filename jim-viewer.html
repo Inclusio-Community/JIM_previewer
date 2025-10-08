@@ -94,6 +94,16 @@
     /* Section headings inside metadata panels: add a little more breathing room and subtle padding */
     .section-heading { margin-top: 22px; margin-bottom: 10px; padding-top: 6px; font-size:16px; color: #1f2937; }
     .wrap-chips { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:8px; }
+    /* Group behavior layout helpers: wrap long selector text and allow chip scrolling */
+    .group-behaviors-list { margin-top: 12px; display:flex; gap:12px; flex-wrap:wrap; }
+    .group-behavior { margin-bottom: 8px; padding: 8px 12px; display: inline-block; vertical-align: top; box-sizing: border-box; width: auto; max-width: calc(100% - 24px); }
+    .group-behavior-row { display:flex; align-items:flex-start; gap:8px; flex-wrap:wrap; }
+    .group-behavior-row .btn { flex: 0 0 auto; }
+    .group-selector-text { white-space: normal; word-break: break-word; max-width: calc(100% - 140px); display:block; flex: 1 1 auto; text-align:left; }
+    .group-preview-row { display:flex; align-items:flex-start; gap:8px; }
+    /* Wrap chips to multiple rows instead of horizontal scrolling */
+    .group-preview-chips { display:flex; gap:6px; padding-top:8px; padding-bottom:4px; align-items:center; flex-wrap:wrap; }
+    .group-preview-chips .inventory-button { flex: 0 0 auto; margin-right:6px; margin-bottom:6px; }
     .inline-row { display:inline-flex; align-items:center; }
     .inline-code { color:var(--text-normal); }
     .inline-text { color:var(--text-normal); margin-top:4px; }
@@ -1578,23 +1588,40 @@
                     // Add group behaviors section
                     if (groupBehaviors.length) {
                         // Build interactive group behavior controls: header button + member preview buttons
-                        selectorPanelHtml += `<div style='margin-top:16px;'><h3 class='panel__heading'>Group Behaviors</h3><div class='wrap-chips' aria-hidden='false'>`;
+                        selectorPanelHtml += `<div style='margin-top:16px;'><h3 class='panel__heading'>Group Behaviors</h3><div class='group-behaviors-list' aria-hidden='false'>`;
                         // We'll collect referenced elements so the delegated handler can inspect them
                         var _groupPreviewEls = [];
                         var _gpIndex = 0;
                         groupBehaviors.forEach(gb => {
-                            selectorPanelHtml += `<div class='panel panel--warning' style='display:inline-flex;align-items:center;margin-bottom:8px;padding:8px 12px;'>`;
-                            // Make the group selector a focusable button so it can be keyboard-activated
-                            selectorPanelHtml += `<button class='btn selector-button btn--selector--group' data-selector='${gb.selector}' aria-label='Group ${gb.selector}, matches ${gb.elements.length} elements' style='font-weight:600;margin-right:8px;'>${gb.selector}</button>`;
-                            selectorPanelHtml += `<span style='font-size:12px;margin-right:8px;' aria-hidden='true'>(matches ${gb.elements.length} elements)</span>`;
-                            gb.elements.slice(0,6).forEach(el => {
-                                var label = el.id ? `#${el.id}` : (el.classList && el.classList.length) ? '.' + Array.from(el.classList).join('.') : el.tagName;
-                                // Render member previews as small inventory buttons so they are tabbable
-                                selectorPanelHtml += `<button class='inventory-button badge badge--muted' data-category='group-preview' data-idx='${_gpIndex}' aria-label='SVG element ${label}' style='margin-right:6px;'>${label}</button>`;
-                                _groupPreviewEls.push(el);
+                            // Outer wrapper uses panel styling for emphasis
+                            selectorPanelHtml += `<div class='panel panel--warning group-behavior'>`;
+                            // Layout row: selector button + match count
+                            selectorPanelHtml += `<div class='group-behavior-row'>`;
+                            // Compact primary button; put long selector text in a wrapping element so it can wrap
+                            selectorPanelHtml += `<button class='btn selector-button btn--selector--group' data-selector='${gb.selector}' aria-label='Activate group: ${gb.selector}' style='font-weight:600;'>Open group</button>`;
+                            selectorPanelHtml += `<div class='group-selector-text' aria-hidden='false'>${gb.selector}</div>`;
+                            selectorPanelHtml += `<span style='font-size:12px;margin-left:6px;' aria-hidden='true'>(matches ${gb.elements.length} elements)</span>`;
+                            selectorPanelHtml += `</div>`;
+
+                            // Register all group members into the preview array first
+                            const startIndex = _gpIndex; // first index for this group's members
+                            for (let ei = 0; ei < gb.elements.length; ei++) {
+                                _groupPreviewEls.push(gb.elements[ei]);
                                 _gpIndex++;
-                            });
-                            if (gb.elements.length > 6) selectorPanelHtml += `<span class='muted-note'>...and ${gb.elements.length-6} more</span>`;
+                            }
+
+                            // Render member previews in a single chips container (wraps across lines)
+                            selectorPanelHtml += `<div class='group-preview-row'>`;
+                            selectorPanelHtml += `<div class='group-preview-chips' role='list' aria-label='Group members preview'>`;
+                            for (let vi = 0; vi < gb.elements.length; vi++) {
+                                const el = gb.elements[vi];
+                                const label = el.id ? `#${el.id}` : (el.classList && el.classList.length) ? '.' + Array.from(el.classList).join('.') : el.tagName;
+                                const dataIdx = startIndex + vi; // actual index into _groupPreviewEls
+                                selectorPanelHtml += `<button class='inventory-button badge badge--muted' data-category='group-preview' data-idx='${dataIdx}' aria-label='SVG element ${label}' role='listitem'>${label}</button>`;
+                            }
+                            selectorPanelHtml += `</div>`;
+                            selectorPanelHtml += `</div>`;
+
                             selectorPanelHtml += `</div>`;
                         });
                         selectorPanelHtml += `</div></div>`;
