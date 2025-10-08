@@ -616,7 +616,7 @@
                         if (Array.isArray(jim.behaviors)) {
                             // JIM spec event keys
                             const allowedBehaviorKeys = new Set(["target", "enter", "details", "activate", "exit", "note", "description", "id", "name"]);
-                            const allowedEventKeys = new Set(["haptic", "haptic_pattern", "announcement", "notes", "description", "id", "name"]);
+                            const allowedEventKeys = new Set(["haptic", "haptic_pattern", "announcement", "notes", "note", "description", "id", "name", "audio"]);
                             const eventKeysSpec = ["enter", "details", "activate", "exit"];
                             jim.behaviors.forEach((b, i) => {
                                 if (typeof b !== "object" || b === null) {
@@ -698,6 +698,26 @@
                                                     if (unknownHapticKeys.length) {
                                                         warnings.push(`Behavior[${i}] ${eventName}.haptic has unknown/non-standard key(s): ${unknownHapticKeys.join(", ")}`);
                                                     }
+                                                        // Audio block validation (object form)
+                                                        if ('audio' in block) {
+                                                            const audio = block.audio;
+                                                            if (!audio || typeof audio !== 'object') {
+                                                                warnings.push(`Behavior[${i}] ${eventName}.audio should be an object with an 'href' property.`);
+                                                            } else {
+                                                                const audioKeys = Object.keys(audio);
+                                                                const allowedAudioKeys = new Set(['href', 'repeat', 'loop']);
+                                                                const unknownAudioKeys = audioKeys.filter(k => !allowedAudioKeys.has(k));
+                                                                if (unknownAudioKeys.length) {
+                                                                    warnings.push(`Behavior[${i}] ${eventName}.audio has unknown/non-standard key(s): ${unknownAudioKeys.join(', ')}`);
+                                                                }
+                                                                if (!('href' in audio) || typeof audio.href !== 'string' || !audio.href.trim()) {
+                                                                    warnings.push(`Behavior[${i}] ${eventName}.audio.href should be a non-empty string (filename or URL).`);
+                                                                }
+                                                                if ('repeat' in audio && typeof audio.repeat !== 'string') {
+                                                                    warnings.push(`Behavior[${i}] ${eventName}.audio.repeat should be a string (e.g. 'none' or 'loop').`);
+                                                                }
+                                                            }
+                                                        }
                                                     if (!('durations' in haptic)) {
                                                         errors.push(`Behavior[${i}] ${eventName}.haptic missing required 'durations' key.`);
                                                     } else if (!Array.isArray(haptic.durations)) {
@@ -1442,6 +1462,32 @@
                             }
                         }
                     }
+                    // Console-check: warn if a group behavior selector does not have a corresponding
+                    // `selectors` entry. Be tolerant: if the group selector is a comma-joined
+                    // list (e.g. many #datapoint-... ids) but individual selectors[].dom entries
+                    // cover those member elements, consider the group covered and do not warn.
+                    try {
+                        if (groupBehaviors.length && this.jimData && this.jimData.selectors) {
+                            var declaredSelectors = Object.values(this.jimData.selectors).map(function(s){ return s && s.dom; }).filter(Boolean);
+                            groupBehaviors.forEach(function(gb){
+                                var covered = false;
+                                for (var di = 0; di < declaredSelectors.length; di++) {
+                                    var ds = declaredSelectors[di];
+                                    if (!ds) continue;
+                                    // Exact match (covers simple cases)
+                                    if (ds === gb.selector) { covered = true; break; }
+                                    // If any member element matches an existing declared selector,
+                                    // treat the group as covered (handles comma-joined group selectors)
+                                    try {
+                                        if (gb.elements.some(function(el){ try { return el.matches(ds); } catch(e){ return false; } })) { covered = true; break; }
+                                    } catch (e) { /* ignore per-element match failures */ }
+                                }
+                                if (!covered) {
+                                    console.warn("[JIMViewer] Group behavior selector '" + gb.selector + "' has no matching JIM selector entry in selectors[].dom. Consider adding a selector for the group so it appears in the selector report.");
+                                }
+                            });
+                        }
+                    } catch (e) { /* non-fatal console check */ }
                     // Build a list of visible selectors (those that match at least one SVG element),
                     // annotate them with mapping state, then sort: mapped first, group-mapped second,
                     // unmapped last. Within each bucket sort alphabetically by selector key.
