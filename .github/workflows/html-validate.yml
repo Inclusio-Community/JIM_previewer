@@ -29,11 +29,12 @@ jobs:
           echo "Running html-validate from project devDependencies..."
           npx html-validate --version
           # Limit lint targets to project HTML files to avoid scanning node_modules
-          npx html-validate "jim-viewer.html" "tests/*.html" || (echo "html-validate reported errors" && exit 1)
+          # Save output to a report file and return non-zero on error. If errors occur, print the report for logs.
+          npx html-validate "jim-viewer.html" "tests/*.html" > html-validate-report.txt 2>&1 || (echo "html-validate reported errors" && cat html-validate-report.txt && exit 1)
 
       - name: Upload html-validate output
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: html-validate-report
-          path: .
+          path: html-validate-report.txt
