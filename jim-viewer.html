@@ -1123,7 +1123,9 @@
                 // Treating JIM-mapped elements as interactive helps authors find mapped datapoints
                 // even when the SVG doesn't include explicit accessibility attributes.
                 svg.querySelectorAll('*').forEach(el => {
-                    if (el.tagName.toLowerCase() === 'text') return;
+                    const tag = el.tagName.toLowerCase();
+                    // Skip text (handled above) and groups (handled in group pass) to avoid duplicate entries
+                    if (tag === 'text' || tag === 'g') return;
                     const hasA11y = el.hasAttribute('tabindex') || el.hasAttribute('role') ||
                                     el.hasAttribute('aria-label') || el.hasAttribute('aria-labelledby') || el.hasAttribute('aria-describedby');
                     const hasJIM = jimSelectors.some(sel => { try { return el.matches(sel); } catch { return false; } });
@@ -1982,6 +1984,16 @@
                 other
             };
 
+            // Sort helper: JIM-mapped items first, then alphanumeric selector (numeric-aware)
+            function sortByJIMThenSelector(a, b) {
+                if (a.hasJIM !== b.hasJIM) return a.hasJIM ? -1 : 1;
+                const sa = (a.selector || '').toString();
+                const sb = (b.selector || '').toString();
+                return sa.localeCompare(sb, undefined, { numeric: true, sensitivity: 'base' });
+            }
+            // Apply sort to each category to improve scanning in long SVGs
+            Object.values(byCategory).forEach(arr => arr.sort(sortByJIMThenSelector));
+
             let html = `
                 <h3 class="section-heading">
                     SVG Element Inventory
@@ -1994,23 +2006,39 @@
                 let label = category[0].toUpperCase() + category.slice(1) + ' Elements';
                 if (category === 'other') label = 'Other Elements';
                 html += `<h4 class="spec-heading">${label} (${items.length})</h4>`;
-                html += '<div class="wrap-chips">';
 
-                items.forEach((item, idx) => {
-                    const jimBadge = item.hasJIM
-                        ? '<span class="badge badge--jim" aria-label="JIM mapped" role="status">JIM</span>'
-                        : '<span class="badge badge--nojim" aria-label="No JIM mapping" role="status">No JIM</span>';
-                    // Render 'other' items as clickable buttons so users can inspect shapes
-                    html += `
-                        <button class="inventory-button" data-category="${category}" data-idx="${idx}" aria-label="SVG element ${item.selector}${item.hasJIM ? ', JIM mapped' : ', No JIM mapping'}" role="button">
-                            <div class="inline-row"><code class="inline-code">${item.selector}</code>${jimBadge}</div>
-                            ${item.textContent ? `<div class="inline-text">Text: \"${item.textContent}\"</div>` : ''}
-                            <!-- Accessibility attributes removed from visual output -->
-                                            ${item.suggestions?.length ? `<div class="muted-note"><span class="sr-only">Suggestion: </span>${ICONS.idea} ${item.suggestions.join('; ')}</div>` : ''}
-                        </button>`;
-                });
+                // For click handlers we need the index within the underlying inventoryData's
+                // same-category ordering. Compute that array so data-idx values match.
+                const actualItems = inv.filter(i => i.category === category);
 
-                html += '</div>';
+                // Split into JIM-mapped and not-mapped lists for clearer SR scanning
+                const jimItems = items.filter(i => i.hasJIM);
+                const noJimItems = items.filter(i => !i.hasJIM);
+
+                function renderList(listItems, labelText) {
+                    if (!listItems.length) return '';
+                    let out = '';
+                    out += `<h5 class="muted-note" role="heading" aria-level="5">${labelText} (${listItems.length})</h5>`;
+                    out += '<div class="wrap-chips">';
+                    listItems.forEach(item => {
+                        const jimBadge = item.hasJIM
+                            ? '<span class="badge badge--jim" aria-label="JIM mapped" role="status">JIM</span>'
+                            : '<span class="badge badge--nojim" aria-label="No JIM mapping" role="status">No JIM</span>';
+                        // Find the actual index within the underlying inventory ordering for this category
+                        const actualIdx = actualItems.indexOf(item);
+                        out += `
+                            <button class="inventory-button" data-category="${category}" data-idx="${actualIdx}" aria-label="SVG element ${item.selector}${item.hasJIM ? ', JIM mapped' : ', No JIM mapping'}" role="button">
+                                <div class="inline-row"><code class="inline-code">${item.selector}</code>${jimBadge}</div>
+                                ${item.textContent ? `<div class="inline-text">Text: \"${item.textContent}\"</div>` : ''}
+                                ${item.suggestions?.length ? `<div class="muted-note"><span class="sr-only">Suggestion: </span>${ICONS.idea} ${item.suggestions.join('; ')}</div>` : ''}
+                            </button>`;
+                    });
+                    out += '</div>';
+                    return out;
+                }
+
+                html += renderList(jimItems, 'JIM-mapped elements');
+                html += renderList(noJimItems, 'No JIM mapping');
             });
 
             return html;
@@ -2110,7 +2138,9 @@
 
                 // Interactive elements
                 allElements.forEach(el => {
-                    if (el.tagName.toLowerCase() === 'text') return;
+                    const tag = el.tagName.toLowerCase();
+                    // Skip text (handled above) and groups (handled in group pass)
+                    if (tag === 'text' || tag === 'g') return;
                     const hasAccessibility = el.hasAttribute('tabindex') ||
                                            el.hasAttribute('role') ||
                                            el.hasAttribute('aria-label') ||
