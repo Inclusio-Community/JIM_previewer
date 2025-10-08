@@ -515,7 +515,7 @@
             }
         });
                 // --- Preflight JIM helper: robust, non-destructive normalization and validation ---
-                function preflightJIM(rawJim) {
+                function preflightJIM(rawJim, docContext) {
                     const errors = [];
                     const warnings = [];
                     const fixesApplied = [];
@@ -732,36 +732,50 @@
 
                     // — Conditional cross-refs (only if behaviors present)
                         // — Conditional cross-refs (only if behaviors present)
-                        // Accept currentDoc as an optional argument for DOM context
+                        // Use provided docContext, fallback to a global currentDoc if present, else document
                         if (Array.isArray(jim.behaviors) && jim.behaviors.length > 0 && jim.selectors && typeof window !== 'undefined') {
-                            // Use currentDoc if available, else fallback to document
-                            const doc = (typeof currentDoc !== 'undefined' && currentDoc) ? currentDoc : document;
+                            const doc = (typeof docContext !== 'undefined' && docContext) ? docContext : ((typeof currentDoc !== 'undefined' && currentDoc) ? currentDoc : document);
                             let svg = null;
                             try {
                                 svg = doc.querySelector('svg');
                             } catch {}
                             if (svg) {
                                 jim.behaviors.forEach((b, i) => {
-                                    const tgt = b?.target?.selector;
-                                    if (typeof tgt === 'string' && tgt.trim()) {
-                                        let found = false;
-                                        try {
-                                            if (tgt.startsWith('#')) {
-                                                const id = tgt.slice(1);
-                                                if (svg.getElementById && svg.getElementById(id)) {
-                                                    found = true;
+                                            const rawTgt = b?.target?.selector;
+                                            if (typeof rawTgt === 'string' && rawTgt.trim()) {
+                                                // Normalize selector: trim and strip surrounding quotes if present
+                                                let tgt = rawTgt.trim();
+                                                if ((tgt.startsWith('"') && tgt.endsWith('"')) || (tgt.startsWith("'") && tgt.endsWith("'"))) {
+                                                    tgt = tgt.slice(1, -1).trim();
                                                 }
-                                            } else {
-                                                if (svg.querySelector(tgt)) {
-                                                    found = true;
+                                                // Now test the selector using querySelectorAll to get an accurate match count
+                                                try {
+                                                    let count = 0;
+                                                    // If the selector looks like a comma-separated list of ID selectors
+                                                    // (e.g. '#a, #b, #c'), test each id individually with getElementById
+                                                    // because some engines or contexts may treat the combined selector
+                                                    // differently during preflight.
+                                                    if (tgt.includes(',') && tgt.split(',').every(s => /^\s*#[A-Za-z0-9_:-]+\s*$/.test(s))) {
+                                                        const parts = tgt.split(',').map(s => s.trim());
+                                                        parts.forEach(p => {
+                                                            try {
+                                                                const id = p.slice(1);
+                                                                if (svg.getElementById && svg.getElementById(id)) count++;
+                                                            } catch (_) { }
+                                                        });
+                                                    } else {
+                                                        const nodes = Array.from(svg.querySelectorAll(tgt));
+                                                        count = nodes.length;
+                                                    }
+                                                    if (count === 0) {
+                                                        warnings.push(`Behavior[${i}] target.selector '${rawTgt}' did not match any SVG DOM elements (tested '${tgt}': ${count} matches).`);
+                                                    }
+                                                } catch (e) {
+                                                    // Invalid selector syntax — surface a clearer message
+                                                    warnings.push(`Behavior[${i}] target.selector '${rawTgt}' appears to be invalid CSS selector syntax: ${e.message}`);
                                                 }
                                             }
-                                        } catch {}
-                                        if (!found) {
-                                            warnings.push(`Behavior[${i}] target.selector '${tgt}' did not match any SVG DOM elements.`);
-                                        }
-                                    }
-                                });
+                                        });
                             }
                         }
 
@@ -1105,13 +1119,15 @@
                     const hasJIM = jimSelectors.some(sel => { try { return el.matches(sel); } catch { return false; } });
                     results.svgInventory.push(this.createInventoryItem(el, hasJIM, 'text'));
                 });
-                // interactive (non-text with a11y attrs)
+                // interactive (non-text with a11y attrs OR elements that have JIM mappings)
+                // Treating JIM-mapped elements as interactive helps authors find mapped datapoints
+                // even when the SVG doesn't include explicit accessibility attributes.
                 svg.querySelectorAll('*').forEach(el => {
                     if (el.tagName.toLowerCase() === 'text') return;
                     const hasA11y = el.hasAttribute('tabindex') || el.hasAttribute('role') ||
                                     el.hasAttribute('aria-label') || el.hasAttribute('aria-labelledby') || el.hasAttribute('aria-describedby');
-                    if (hasA11y) {
-                        const hasJIM = jimSelectors.some(sel => { try { return el.matches(sel); } catch { return false; } });
+                    const hasJIM = jimSelectors.some(sel => { try { return el.matches(sel); } catch { return false; } });
+                    if (hasA11y || hasJIM) {
                         results.svgInventory.push(this.createInventoryItem(el, hasJIM, 'interactive'));
                     }
                 });
@@ -1417,7 +1433,7 @@
 
                 // Preflight and normalize JIM if present
                 if (jim && Object.keys(jim).length > 0) {
-                    const preflight = preflightJIM(jim);
+                    const preflight = preflightJIM(jim, doc);
                     this.specIssues = {
                         errors: preflight.errors,
                         warnings: preflight.warnings,
