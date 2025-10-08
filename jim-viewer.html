@@ -557,14 +557,24 @@
                             }
                             if (typeof sel.dom !== 'string' || !sel.dom.trim()) {
                                 errors.push(`Selector '${key}' missing 'dom' (string).`);
-                            } else if (sel.dom.startsWith('#') && sel.dom.includes(' ')) {
-                                warnings.push(`Selector '${key}' references an SVG ID with spaces ('${sel.dom}'), which is invalid in HTML/SVG and cannot be matched by querySelector. Update the SVG to use IDs without spaces.`);
                             } else {
-                                // Check for invalid CSS selector syntax (e.g., forbidden characters)
+                                // Prefer to validate the selector using querySelector. If it throws,
+                                // only then emit a helpful warning. This avoids false positives
+                                // for valid descendant selectors such as '#y-axis g:nth-child(1) text'.
                                 try {
                                     document.createElement('div').querySelector(sel.dom);
                                 } catch (e) {
-                                    warnings.push(`Selector '${key}' uses invalid CSS selector syntax ('${sel.dom}'): ${e.message}`);
+                                    // If the selector starts with '#' and contains a space, it's
+                                    // commonly a user mistake (attempting to match an ID that
+                                    // contains spaces). But it's also valid to have a selector
+                                    // that begins with an ID and then uses descendant combinators.
+                                    // Only warn about ID-with-spaces when querySelector actually
+                                    // failed to parse the selector.
+                                    if (sel.dom.startsWith('#') && sel.dom.includes(' ')) {
+                                        warnings.push(`Selector '${key}' references an ID-like pattern with spaces ('${sel.dom}'). IDs cannot contain literal spaces — if you intended a descendant selector (e.g. '#y-axis g text') this is valid; otherwise consider renaming the SVG ID. Also: ${e.message}`);
+                                    } else {
+                                        warnings.push(`Selector '${key}' uses invalid CSS selector syntax ('${sel.dom}'): ${e.message}`);
+                                    }
                                 }
                             }
                             if (!('json' in sel)) {
