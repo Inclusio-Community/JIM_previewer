@@ -94,6 +94,16 @@
     /* Section headings inside metadata panels: add a little more breathing room and subtle padding */
     .section-heading { margin-top: 22px; margin-bottom: 10px; padding-top: 6px; font-size:16px; color: #1f2937; }
     .wrap-chips { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:8px; }
+    /* Group behavior layout helpers: wrap long selector text and allow chip scrolling */
+    .group-behaviors-list { margin-top: 12px; display:flex; gap:12px; flex-wrap:wrap; }
+    .group-behavior { margin-bottom: 8px; padding: 8px 12px; display: inline-block; vertical-align: top; box-sizing: border-box; width: auto; max-width: calc(100% - 24px); }
+    .group-behavior-row { display:flex; align-items:flex-start; gap:8px; flex-wrap:wrap; }
+    .group-behavior-row .btn { flex: 0 0 auto; }
+    .group-selector-text { white-space: normal; word-break: break-word; max-width: calc(100% - 140px); display:block; flex: 1 1 auto; text-align:left; }
+    .group-preview-row { display:flex; align-items:flex-start; gap:8px; }
+    /* Wrap chips to multiple rows instead of horizontal scrolling */
+    .group-preview-chips { display:flex; gap:6px; padding-top:8px; padding-bottom:4px; align-items:center; flex-wrap:wrap; }
+    .group-preview-chips .inventory-button { flex: 0 0 auto; margin-right:6px; margin-bottom:6px; }
     .inline-row { display:inline-flex; align-items:center; }
     .inline-code { color:var(--text-normal); }
     .inline-text { color:var(--text-normal); margin-top:4px; }
@@ -515,7 +525,7 @@
             }
         });
                 // --- Preflight JIM helper: robust, non-destructive normalization and validation ---
-                function preflightJIM(rawJim) {
+                function preflightJIM(rawJim, docContext) {
                     const errors = [];
                     const warnings = [];
                     const fixesApplied = [];
@@ -557,14 +567,24 @@
                             }
                             if (typeof sel.dom !== 'string' || !sel.dom.trim()) {
                                 errors.push(`Selector '${key}' missing 'dom' (string).`);
-                            } else if (sel.dom.startsWith('#') && sel.dom.includes(' ')) {
-                                warnings.push(`Selector '${key}' references an SVG ID with spaces ('${sel.dom}'), which is invalid in HTML/SVG and cannot be matched by querySelector. Update the SVG to use IDs without spaces.`);
                             } else {
-                                // Check for invalid CSS selector syntax (e.g., forbidden characters)
+                                // Prefer to validate the selector using querySelector. If it throws,
+                                // only then emit a helpful warning. This avoids false positives
+                                // for valid descendant selectors such as '#y-axis g:nth-child(1) text'.
                                 try {
                                     document.createElement('div').querySelector(sel.dom);
                                 } catch (e) {
-                                    warnings.push(`Selector '${key}' uses invalid CSS selector syntax ('${sel.dom}'): ${e.message}`);
+                                    // If the selector starts with '#' and contains a space, it's
+                                    // commonly a user mistake (attempting to match an ID that
+                                    // contains spaces). But it's also valid to have a selector
+                                    // that begins with an ID and then uses descendant combinators.
+                                    // Only warn about ID-with-spaces when querySelector actually
+                                    // failed to parse the selector.
+                                    if (sel.dom.startsWith('#') && sel.dom.includes(' ')) {
+                                        warnings.push(`Selector '${key}' references an ID-like pattern with spaces ('${sel.dom}'). IDs cannot contain literal spaces — if you intended a descendant selector (e.g. '#y-axis g text') this is valid; otherwise consider renaming the SVG ID. Also: ${e.message}`);
+                                    } else {
+                                        warnings.push(`Selector '${key}' uses invalid CSS selector syntax ('${sel.dom}'): ${e.message}`);
+                                    }
                                 }
                             }
                             if (!('json' in sel)) {
@@ -606,7 +626,7 @@
                         if (Array.isArray(jim.behaviors)) {
                             // JIM spec event keys
                             const allowedBehaviorKeys = new Set(["target", "enter", "details", "activate", "exit", "note", "description", "id", "name"]);
-                            const allowedEventKeys = new Set(["haptic", "haptic_pattern", "announcement", "notes", "description", "id", "name"]);
+                            const allowedEventKeys = new Set(["haptic", "haptic_pattern", "announcement", "notes", "note", "description", "id", "name", "audio"]);
                             const eventKeysSpec = ["enter", "details", "activate", "exit"];
                             jim.behaviors.forEach((b, i) => {
                                 if (typeof b !== "object" || b === null) {
@@ -688,6 +708,26 @@
                                                     if (unknownHapticKeys.length) {
                                                         warnings.push(`Behavior[${i}] ${eventName}.haptic has unknown/non-standard key(s): ${unknownHapticKeys.join(", ")}`);
                                                     }
+                                                        // Audio block validation (object form)
+                                                        if ('audio' in block) {
+                                                            const audio = block.audio;
+                                                            if (!audio || typeof audio !== 'object') {
+                                                                warnings.push(`Behavior[${i}] ${eventName}.audio should be an object with an 'href' property.`);
+                                                            } else {
+                                                                const audioKeys = Object.keys(audio);
+                                                                const allowedAudioKeys = new Set(['href', 'repeat', 'loop']);
+                                                                const unknownAudioKeys = audioKeys.filter(k => !allowedAudioKeys.has(k));
+                                                                if (unknownAudioKeys.length) {
+                                                                    warnings.push(`Behavior[${i}] ${eventName}.audio has unknown/non-standard key(s): ${unknownAudioKeys.join(', ')}`);
+                                                                }
+                                                                if (!('href' in audio) || typeof audio.href !== 'string' || !audio.href.trim()) {
+                                                                    warnings.push(`Behavior[${i}] ${eventName}.audio.href should be a non-empty string (filename or URL).`);
+                                                                }
+                                                                if ('repeat' in audio && typeof audio.repeat !== 'string') {
+                                                                    warnings.push(`Behavior[${i}] ${eventName}.audio.repeat should be a string (e.g. 'none' or 'loop').`);
+                                                                }
+                                                            }
+                                                        }
                                                     if (!('durations' in haptic)) {
                                                         errors.push(`Behavior[${i}] ${eventName}.haptic missing required 'durations' key.`);
                                                     } else if (!Array.isArray(haptic.durations)) {
@@ -702,36 +742,50 @@
 
                     // — Conditional cross-refs (only if behaviors present)
                         // — Conditional cross-refs (only if behaviors present)
-                        // Accept currentDoc as an optional argument for DOM context
+                        // Use provided docContext, fallback to a global currentDoc if present, else document
                         if (Array.isArray(jim.behaviors) && jim.behaviors.length > 0 && jim.selectors && typeof window !== 'undefined') {
-                            // Use currentDoc if available, else fallback to document
-                            const doc = (typeof currentDoc !== 'undefined' && currentDoc) ? currentDoc : document;
+                            const doc = (typeof docContext !== 'undefined' && docContext) ? docContext : ((typeof currentDoc !== 'undefined' && currentDoc) ? currentDoc : document);
                             let svg = null;
                             try {
                                 svg = doc.querySelector('svg');
                             } catch {}
                             if (svg) {
                                 jim.behaviors.forEach((b, i) => {
-                                    const tgt = b?.target?.selector;
-                                    if (typeof tgt === 'string' && tgt.trim()) {
-                                        let found = false;
-                                        try {
-                                            if (tgt.startsWith('#')) {
-                                                const id = tgt.slice(1);
-                                                if (svg.getElementById && svg.getElementById(id)) {
-                                                    found = true;
+                                            const rawTgt = b?.target?.selector;
+                                            if (typeof rawTgt === 'string' && rawTgt.trim()) {
+                                                // Normalize selector: trim and strip surrounding quotes if present
+                                                let tgt = rawTgt.trim();
+                                                if ((tgt.startsWith('"') && tgt.endsWith('"')) || (tgt.startsWith("'") && tgt.endsWith("'"))) {
+                                                    tgt = tgt.slice(1, -1).trim();
                                                 }
-                                            } else {
-                                                if (svg.querySelector(tgt)) {
-                                                    found = true;
+                                                // Now test the selector using querySelectorAll to get an accurate match count
+                                                try {
+                                                    let count = 0;
+                                                    // If the selector looks like a comma-separated list of ID selectors
+                                                    // (e.g. '#a, #b, #c'), test each id individually with getElementById
+                                                    // because some engines or contexts may treat the combined selector
+                                                    // differently during preflight.
+                                                    if (tgt.includes(',') && tgt.split(',').every(s => /^\s*#[A-Za-z0-9_:-]+\s*$/.test(s))) {
+                                                        const parts = tgt.split(',').map(s => s.trim());
+                                                        parts.forEach(p => {
+                                                            try {
+                                                                const id = p.slice(1);
+                                                                if (svg.getElementById && svg.getElementById(id)) count++;
+                                                            } catch (_) { }
+                                                        });
+                                                    } else {
+                                                        const nodes = Array.from(svg.querySelectorAll(tgt));
+                                                        count = nodes.length;
+                                                    }
+                                                    if (count === 0) {
+                                                        warnings.push(`Behavior[${i}] target.selector '${rawTgt}' did not match any SVG DOM elements (tested '${tgt}': ${count} matches).`);
+                                                    }
+                                                } catch (e) {
+                                                    // Invalid selector syntax — surface a clearer message
+                                                    warnings.push(`Behavior[${i}] target.selector '${rawTgt}' appears to be invalid CSS selector syntax: ${e.message}`);
                                                 }
                                             }
-                                        } catch {}
-                                        if (!found) {
-                                            warnings.push(`Behavior[${i}] target.selector '${tgt}' did not match any SVG DOM elements.`);
-                                        }
-                                    }
-                                });
+                                        });
                             }
                         }
 
@@ -1075,13 +1129,17 @@
                     const hasJIM = jimSelectors.some(sel => { try { return el.matches(sel); } catch { return false; } });
                     results.svgInventory.push(this.createInventoryItem(el, hasJIM, 'text'));
                 });
-                // interactive (non-text with a11y attrs)
+                // interactive (non-text with a11y attrs OR elements that have JIM mappings)
+                // Treating JIM-mapped elements as interactive helps authors find mapped datapoints
+                // even when the SVG doesn't include explicit accessibility attributes.
                 svg.querySelectorAll('*').forEach(el => {
-                    if (el.tagName.toLowerCase() === 'text') return;
+                    const tag = el.tagName.toLowerCase();
+                    // Skip text (handled above) and groups (handled in group pass) to avoid duplicate entries
+                    if (tag === 'text' || tag === 'g') return;
                     const hasA11y = el.hasAttribute('tabindex') || el.hasAttribute('role') ||
                                     el.hasAttribute('aria-label') || el.hasAttribute('aria-labelledby') || el.hasAttribute('aria-describedby');
-                    if (hasA11y) {
-                        const hasJIM = jimSelectors.some(sel => { try { return el.matches(sel); } catch { return false; } });
+                    const hasJIM = jimSelectors.some(sel => { try { return el.matches(sel); } catch { return false; } });
+                    if (hasA11y || hasJIM) {
                         results.svgInventory.push(this.createInventoryItem(el, hasJIM, 'interactive'));
                     }
                 });
@@ -1387,7 +1445,7 @@
 
                 // Preflight and normalize JIM if present
                 if (jim && Object.keys(jim).length > 0) {
-                    const preflight = preflightJIM(jim);
+                    const preflight = preflightJIM(jim, doc);
                     this.specIssues = {
                         errors: preflight.errors,
                         warnings: preflight.warnings,
@@ -1432,6 +1490,32 @@
                             }
                         }
                     }
+                    // Console-check: warn if a group behavior selector does not have a corresponding
+                    // `selectors` entry. Be tolerant: if the group selector is a comma-joined
+                    // list (e.g. many #datapoint-... ids) but individual selectors[].dom entries
+                    // cover those member elements, consider the group covered and do not warn.
+                    try {
+                        if (groupBehaviors.length && this.jimData && this.jimData.selectors) {
+                            var declaredSelectors = Object.values(this.jimData.selectors).map(function(s){ return s && s.dom; }).filter(Boolean);
+                            groupBehaviors.forEach(function(gb){
+                                var covered = false;
+                                for (var di = 0; di < declaredSelectors.length; di++) {
+                                    var ds = declaredSelectors[di];
+                                    if (!ds) continue;
+                                    // Exact match (covers simple cases)
+                                    if (ds === gb.selector) { covered = true; break; }
+                                    // If any member element matches an existing declared selector,
+                                    // treat the group as covered (handles comma-joined group selectors)
+                                    try {
+                                        if (gb.elements.some(function(el){ try { return el.matches(ds); } catch(e){ return false; } })) { covered = true; break; }
+                                    } catch (e) { /* ignore per-element match failures */ }
+                                }
+                                if (!covered) {
+                                    console.warn("[JIMViewer] Group behavior selector '" + gb.selector + "' has no matching JIM selector entry in selectors[].dom. Consider adding a selector for the group so it appears in the selector report.");
+                                }
+                            });
+                        }
+                    } catch (e) { /* non-fatal console check */ }
                     // Build a list of visible selectors (those that match at least one SVG element),
                     // annotate them with mapping state, then sort: mapped first, group-mapped second,
                     // unmapped last. Within each bucket sort alphabetically by selector key.
@@ -1504,23 +1588,40 @@
                     // Add group behaviors section
                     if (groupBehaviors.length) {
                         // Build interactive group behavior controls: header button + member preview buttons
-                        selectorPanelHtml += `<div style='margin-top:16px;'><h3 class='panel__heading'>Group Behaviors</h3><div class='wrap-chips' aria-hidden='false'>`;
+                        selectorPanelHtml += `<div style='margin-top:16px;'><h3 class='panel__heading'>Group Behaviors</h3><div class='group-behaviors-list' aria-hidden='false'>`;
                         // We'll collect referenced elements so the delegated handler can inspect them
                         var _groupPreviewEls = [];
                         var _gpIndex = 0;
                         groupBehaviors.forEach(gb => {
-                            selectorPanelHtml += `<div class='panel panel--warning' style='display:inline-flex;align-items:center;margin-bottom:8px;padding:8px 12px;'>`;
-                            // Make the group selector a focusable button so it can be keyboard-activated
-                            selectorPanelHtml += `<button class='btn selector-button btn--selector--group' data-selector='${gb.selector}' aria-label='Group ${gb.selector}, matches ${gb.elements.length} elements' style='font-weight:600;margin-right:8px;'>${gb.selector}</button>`;
-                            selectorPanelHtml += `<span style='font-size:12px;margin-right:8px;' aria-hidden='true'>(matches ${gb.elements.length} elements)</span>`;
-                            gb.elements.slice(0,6).forEach(el => {
-                                var label = el.id ? `#${el.id}` : (el.classList && el.classList.length) ? '.' + Array.from(el.classList).join('.') : el.tagName;
-                                // Render member previews as small inventory buttons so they are tabbable
-                                selectorPanelHtml += `<button class='inventory-button badge badge--muted' data-category='group-preview' data-idx='${_gpIndex}' aria-label='SVG element ${label}' style='margin-right:6px;'>${label}</button>`;
-                                _groupPreviewEls.push(el);
+                            // Outer wrapper uses panel styling for emphasis
+                            selectorPanelHtml += `<div class='panel panel--warning group-behavior'>`;
+                            // Layout row: selector button + match count
+                            selectorPanelHtml += `<div class='group-behavior-row'>`;
+                            // Compact primary button; put long selector text in a wrapping element so it can wrap
+                            selectorPanelHtml += `<button class='btn selector-button btn--selector--group' data-selector='${gb.selector}' aria-label='Activate group: ${gb.selector}' style='font-weight:600;'>Open group</button>`;
+                            selectorPanelHtml += `<div class='group-selector-text' aria-hidden='false'>${gb.selector}</div>`;
+                            selectorPanelHtml += `<span style='font-size:12px;margin-left:6px;' aria-hidden='true'>(matches ${gb.elements.length} elements)</span>`;
+                            selectorPanelHtml += `</div>`;
+
+                            // Register all group members into the preview array first
+                            const startIndex = _gpIndex; // first index for this group's members
+                            for (let ei = 0; ei < gb.elements.length; ei++) {
+                                _groupPreviewEls.push(gb.elements[ei]);
                                 _gpIndex++;
-                            });
-                            if (gb.elements.length > 6) selectorPanelHtml += `<span class='muted-note'>...and ${gb.elements.length-6} more</span>`;
+                            }
+
+                            // Render member previews in a single chips container (wraps across lines)
+                            selectorPanelHtml += `<div class='group-preview-row'>`;
+                            selectorPanelHtml += `<div class='group-preview-chips' role='list' aria-label='Group members preview'>`;
+                            for (let vi = 0; vi < gb.elements.length; vi++) {
+                                const el = gb.elements[vi];
+                                const label = el.id ? `#${el.id}` : (el.classList && el.classList.length) ? '.' + Array.from(el.classList).join('.') : el.tagName;
+                                const dataIdx = startIndex + vi; // actual index into _groupPreviewEls
+                                selectorPanelHtml += `<button class='inventory-button badge badge--muted' data-category='group-preview' data-idx='${dataIdx}' aria-label='SVG element ${label}' role='listitem'>${label}</button>`;
+                            }
+                            selectorPanelHtml += `</div>`;
+                            selectorPanelHtml += `</div>`;
+
                             selectorPanelHtml += `</div>`;
                         });
                         selectorPanelHtml += `</div></div>`;
@@ -1910,6 +2011,16 @@
                 other
             };
 
+            // Sort helper: JIM-mapped items first, then alphanumeric selector (numeric-aware)
+            function sortByJIMThenSelector(a, b) {
+                if (a.hasJIM !== b.hasJIM) return a.hasJIM ? -1 : 1;
+                const sa = (a.selector || '').toString();
+                const sb = (b.selector || '').toString();
+                return sa.localeCompare(sb, undefined, { numeric: true, sensitivity: 'base' });
+            }
+            // Apply sort to each category to improve scanning in long SVGs
+            Object.values(byCategory).forEach(arr => arr.sort(sortByJIMThenSelector));
+
             let html = `
                 <h3 class="section-heading">
                     SVG Element Inventory
@@ -1922,23 +2033,39 @@
                 let label = category[0].toUpperCase() + category.slice(1) + ' Elements';
                 if (category === 'other') label = 'Other Elements';
                 html += `<h4 class="spec-heading">${label} (${items.length})</h4>`;
-                html += '<div class="wrap-chips">';
 
-                items.forEach((item, idx) => {
-                    const jimBadge = item.hasJIM
-                        ? '<span class="badge badge--jim" aria-label="JIM mapped" role="status">JIM</span>'
-                        : '<span class="badge badge--nojim" aria-label="No JIM mapping" role="status">No JIM</span>';
-                    // Render 'other' items as clickable buttons so users can inspect shapes
-                    html += `
-                        <button class="inventory-button" data-category="${category}" data-idx="${idx}" aria-label="SVG element ${item.selector}${item.hasJIM ? ', JIM mapped' : ', No JIM mapping'}" role="button">
-                            <div class="inline-row"><code class="inline-code">${item.selector}</code>${jimBadge}</div>
-                            ${item.textContent ? `<div class="inline-text">Text: \"${item.textContent}\"</div>` : ''}
-                            <!-- Accessibility attributes removed from visual output -->
-                                            ${item.suggestions?.length ? `<div class="muted-note"><span class="sr-only">Suggestion: </span>${ICONS.idea} ${item.suggestions.join('; ')}</div>` : ''}
-                        </button>`;
-                });
+                // For click handlers we need the index within the underlying inventoryData's
+                // same-category ordering. Compute that array so data-idx values match.
+                const actualItems = inv.filter(i => i.category === category);
 
-                html += '</div>';
+                // Split into JIM-mapped and not-mapped lists for clearer SR scanning
+                const jimItems = items.filter(i => i.hasJIM);
+                const noJimItems = items.filter(i => !i.hasJIM);
+
+                function renderList(listItems, labelText) {
+                    if (!listItems.length) return '';
+                    let out = '';
+                    out += `<h5 class="muted-note" role="heading" aria-level="5">${labelText} (${listItems.length})</h5>`;
+                    out += '<div class="wrap-chips">';
+                    listItems.forEach(item => {
+                        const jimBadge = item.hasJIM
+                            ? '<span class="badge badge--jim" aria-label="JIM mapped" role="status">JIM</span>'
+                            : '<span class="badge badge--nojim" aria-label="No JIM mapping" role="status">No JIM</span>';
+                        // Find the actual index within the underlying inventory ordering for this category
+                        const actualIdx = actualItems.indexOf(item);
+                        out += `
+                            <button class="inventory-button" data-category="${category}" data-idx="${actualIdx}" aria-label="SVG element ${item.selector}${item.hasJIM ? ', JIM mapped' : ', No JIM mapping'}" role="button">
+                                <div class="inline-row"><code class="inline-code">${item.selector}</code>${jimBadge}</div>
+                                ${item.textContent ? `<div class="inline-text">Text: \"${item.textContent}\"</div>` : ''}
+                                ${item.suggestions?.length ? `<div class="muted-note"><span class="sr-only">Suggestion: </span>${ICONS.idea} ${item.suggestions.join('; ')}</div>` : ''}
+                            </button>`;
+                    });
+                    out += '</div>';
+                    return out;
+                }
+
+                html += renderList(jimItems, 'JIM-mapped elements');
+                html += renderList(noJimItems, 'No JIM mapping');
             });
 
             return html;
@@ -2038,7 +2165,9 @@
 
                 // Interactive elements
                 allElements.forEach(el => {
-                    if (el.tagName.toLowerCase() === 'text') return;
+                    const tag = el.tagName.toLowerCase();
+                    // Skip text (handled above) and groups (handled in group pass)
+                    if (tag === 'text' || tag === 'g') return;
                     const hasAccessibility = el.hasAttribute('tabindex') ||
                                            el.hasAttribute('role') ||
                                            el.hasAttribute('aria-label') ||

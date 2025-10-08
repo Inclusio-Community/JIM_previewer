@@ -2,6 +2,12 @@ name: Axe (Playwright) smoke
 
 on:
   pull_request:
+    paths:
+      - 'jim-viewer.html'
+      - 'examples/**'
+      - 'scripts/**'
+      - 'tests/**'
+      - '.github/workflows/**'
   push:
     branches: [ main ]
   workflow_dispatch:
@@ -50,11 +56,20 @@ jobs:
           node scripts/ci-run-axe.js --base-url=http://127.0.0.1:8080 --out-dir=axe-output --fail-on-violations=${FAIL_ON_VIOLATIONS}
 
       - name: Show results
+        if: always()
         run: |
           echo 'axe-output contents:'
           ls -la axe-output || true
+          # If there are JSON reports, show them in logs when the run is failing or when requested
+          if [ -n "$(ls axe-output/*.json 2>/dev/null || true)" ]; then
+            echo '--- Begin axe JSON reports ---'
+            for f in axe-output/*.json; do
+              echo "--- $f ---"; cat "$f"; echo; done
+            echo '--- End axe JSON reports ---'
+          fi
 
       - name: Upload axe JSON artifacts
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: axe-output
