@@ -1,5 +1,7 @@
 # TODO / Checklist
 
+a. Finish two other CSUN examples and check overlay support
+
 This short checklist collects the immediate follow-ups you asked for.
 
 1) Check for JIM 0.4.1 → 0.4.2 changes
