@@ -117,14 +117,14 @@
                          - .jim-overlays-visible on #visualization forces overlays visible (stroke shown)
                          - .jim-overlays-hidden on #visualization forces overlays hidden except on hover/focus
                 */
-                .jim-shape-overlay { fill: transparent; stroke: var(--status-warning); stroke-opacity: 0; stroke-width: 2; pointer-events: all; cursor: pointer; transition: stroke-opacity .12s ease, filter .12s ease; }
+                .jim-shape-overlay { fill: transparent; stroke-opacity: 0; pointer-events: all; cursor: pointer; transition: stroke-opacity .12s ease, filter .12s ease; }
                 .jim-shape-overlay:focus, .jim-shape-overlay:hover { stroke-opacity: 0.95; filter: drop-shadow(0 1px 4px rgba(0,0,0,0.12)); outline: none; }
                 /* Visible state: force overlays visible */
-                .jim-overlays-visible .jim-shape-overlay { stroke-opacity: 0.95 !important; }
+                .jim-overlays-visible .jim-shape-overlay { stroke-opacity: 0.95; }
                 /* Hidden state: keep overlays visually hidden but allow hover/focus to show them */
-                .jim-overlays-hidden .jim-shape-overlay { stroke-opacity: 0 !important; }
+                .jim-overlays-hidden .jim-shape-overlay { stroke-opacity: 0; }
                 .jim-overlays-hidden .jim-shape-overlay:hover,
-                .jim-overlays-hidden .jim-shape-overlay:focus { stroke-opacity: 0.95 !important; filter: drop-shadow(0 1px 4px rgba(0,0,0,0.12)) !important; }
+                .jim-overlays-hidden .jim-shape-overlay:focus { stroke-opacity: 0.95; filter: drop-shadow(0 1px 4px rgba(0,0,0,0.12)); }
     .badge--muted { background:#e0e7ef; color:#1e293b; padding:2px 6px; margin-right:4px; }
     .muted-note.italic { font-style: italic; color: var(--muted-contrast); }
     .orphaned-list { padding-left:0; margin:8px 0; list-style:none; }
@@ -1177,24 +1177,22 @@
                                 const attr = map[k];
                                 const raw = String(payload[k]);
                                 // Special-case fill: map explicit 'none' to 'transparent' to preserve pointer interactions
-                                if (attr === 'fill') {
+                                    if (attr === 'fill') {
                                     const v = raw;
                                     const mapped = (v === 'none') ? 'transparent' : v;
-                                    // Set both the presentation attribute and an inline style so it overrides author stylesheet rules
+                                    // Set both the presentation attribute and an inline style
                                     overlayEl.setAttribute('fill', mapped);
                                     try { overlayEl.style.setProperty('fill', mapped); } catch (e) { /* ignore */ }
                                 } else {
-                                    // Apply as both attribute and inline style to ensure payload styling wins over viewer CSS
+                                    // Apply as both attribute and inline style
                                     overlayEl.setAttribute(attr, raw);
                                     try {
                                         // Add 'px' unit for numeric stroke-width values when needed
                                         let styleVal = raw;
-                                        if (attr === 'stroke-width' || attr === 'stroke-width') {
-                                            // If raw is numeric (e.g. '50'), append 'px'
+                                        if (attr === 'stroke-width') {
                                             if (/^\d+(?:\.\d+)?$/.test(raw)) styleVal = raw + 'px';
                                         }
-                                        // Use !important to ensure viewer stylesheet doesn't override author color/width
-                                        overlayEl.style.setProperty(attr, styleVal, 'important');
+                                        overlayEl.style.setProperty(attr, styleVal);
                                     } catch (e) { /* ignore */ }
                                 }
                             }
@@ -2770,7 +2768,7 @@
                                             const v = raw;
                                             const mapped = (v === 'none') ? 'transparent' : v;
                                             overlayEl.setAttribute('fill', mapped);
-                                            try { overlayEl.style.setProperty('fill', mapped, 'important'); } catch (e) { /* ignore */ }
+                                            try { overlayEl.style.setProperty('fill', mapped); } catch (e) { /* ignore */ }
                                         } else {
                                             overlayEl.setAttribute(attr, raw);
                                             try {
@@ -2778,7 +2776,7 @@
                                                 if (attr === 'stroke-width') {
                                                     if (/^\d+(?:\.\d+)?$/.test(raw)) styleVal = raw + 'px';
                                                 }
-                                                overlayEl.style.setProperty(attr, styleVal, 'important');
+                                                overlayEl.style.setProperty(attr, styleVal);
                                             } catch (e) { /* ignore */ }
                                         }
                                     }
