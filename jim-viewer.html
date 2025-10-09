@@ -1065,99 +1065,108 @@
                         return false;
                     }
                 });
-
-                    // Render overlays for behavior.target.shapes (if present)
-                    try {
-                        const ns = 'http://www.w3.org/2000/svg';
-                        let overlayGroup = svgClone.querySelector('g.jim-overlays');
-                        if (!overlayGroup) {
-                            overlayGroup = document.createElementNS(ns, 'g');
-                            overlayGroup.classList.add('jim-overlays');
-                            // Put overlays on top
-                            svgClone.appendChild(overlayGroup);
-                        }
-                        // Ensure inventoryData exists and is in-sync
-                        if (!this.inventoryData) this.inventoryData = [];
-                        // For each behavior, create overlays and attach handlers
-                        (this.jimData.behaviors || []).forEach((behavior, bi) => {
-                            const shapes = Array.isArray(behavior?.target?.shapes) ? behavior.target.shapes : [];
-                            shapes.forEach((shapeObj, si) => {
-                                if (!shapeObj || typeof shapeObj !== 'object') return;
-                                const kindKeys = Object.keys(shapeObj); if (!kindKeys.length) return;
-                                let kind = kindKeys[0]; if (kind === 'rectangle') kind = 'rect';
-                                const payload = shapeObj[kindKeys[0]] || {};
-                                let overlayEl = null;
-                                try {
-                                    switch (kind) {
-                                        case 'rect':
-                                            overlayEl = document.createElementNS(ns, 'rect');
-                                            overlayEl.setAttribute('x', payload.x ?? 0);
-                                            overlayEl.setAttribute('y', payload.y ?? 0);
-                                            overlayEl.setAttribute('width', payload.width ?? 0);
-                                            overlayEl.setAttribute('height', payload.height ?? 0);
-                                            break;
-                                        case 'circle':
-                                            overlayEl = document.createElementNS(ns, 'circle');
-                                            overlayEl.setAttribute('cx', payload.cx ?? 0);
-                                            overlayEl.setAttribute('cy', payload.cy ?? 0);
-                                            overlayEl.setAttribute('r', payload.r ?? 0);
-                                            break;
-                                        case 'ellipse':
-                                            overlayEl = document.createElementNS(ns, 'ellipse');
-                                            overlayEl.setAttribute('cx', payload.cx ?? 0);
-                                            overlayEl.setAttribute('cy', payload.cy ?? 0);
-                                            overlayEl.setAttribute('rx', payload.rx ?? 0);
-                                            overlayEl.setAttribute('ry', payload.ry ?? 0);
-                                            break;
-                                        case 'line':
-                                            overlayEl = document.createElementNS(ns, 'line');
-                                            overlayEl.setAttribute('x1', payload.x1 ?? 0);
-                                            overlayEl.setAttribute('y1', payload.y1 ?? 0);
-                                            overlayEl.setAttribute('x2', payload.x2 ?? 0);
-                                            overlayEl.setAttribute('y2', payload.y2 ?? 0);
-                                            break;
-                                        case 'polygon':
-                                        case 'polyline':
-                                            overlayEl = document.createElementNS(ns, kind);
-                                            overlayEl.setAttribute('points', Array.isArray(payload.points) ? payload.points.map(p => p.join(',')).join(' ') : (payload.points || ''));
-                                            break;
-                                        case 'path':
-                                            overlayEl = document.createElementNS(ns, 'path');
-                                            overlayEl.setAttribute('d', payload.d || '');
-                                            break;
-                                        default:
-                                            break;
-                                    }
-                                } catch (e) { overlayEl = null; }
-                                if (!overlayEl) return;
-                                overlayEl.classList.add('jim-shape-overlay');
-                                overlayEl.setAttribute('fill', 'transparent');
-                                overlayEl.setAttribute('tabindex', '0');
-                                overlayEl.dataset.behaviorIndex = String(bi);
-                                overlayEl.dataset.shapeIndex = String(si);
-                                // Event handlers show behavior info
-                                overlayEl.addEventListener('click', (ev) => { ev.stopPropagation(); this.showBehaviorInfo(behavior, 'click', overlayEl); });
-                                overlayEl.addEventListener('focus', () => this.showBehaviorInfo(behavior, 'focus', overlayEl));
-                                overlayGroup.appendChild(overlayEl);
-
-                                // Wire overlay DOM back to inventoryData if a synthetic overlay item was created
-                                try {
-                                    const invItem = this.inventoryData.find(it => it.category === 'overlay' && it.behaviorIndex === bi && it.shapeIndex === si);
-                                    if (invItem) invItem.domElement = overlayEl;
-                                } catch (e) { /* ignore */ }
-                            });
-                        });
-                        // Apply overlay visibility state
-                        if (window.jimViewer && window.jimViewer.showOverlays === false) {
-                            const viz = document.getElementById('visualization');
-                            if (viz) viz.classList.add('jim-overlays-hidden');
-                        }
-                    } catch (e) { /* non-fatal overlay render errors */ }
                 if (!hasJIM) {
                     this.showNonJIMElementInfo(targetElement, 'click');
                 }
             }
         });
+
+        // Render overlays for behavior.target.shapes (if present)
+        try {
+            const ns = 'http://www.w3.org/2000/svg';
+            let overlayGroup = svgClone.querySelector('g.jim-overlays');
+            if (!overlayGroup) {
+                overlayGroup = document.createElementNS(ns, 'g');
+                overlayGroup.classList.add('jim-overlays');
+                // Put overlays on top
+                svgClone.appendChild(overlayGroup);
+            }
+            // Ensure inventoryData exists and is in-sync
+            if (!this.inventoryData) this.inventoryData = [];
+            // For each behavior, create overlays and attach handlers
+            (this.jimData.behaviors || []).forEach((behavior, bi) => {
+                const shapes = Array.isArray(behavior?.target?.shapes) ? behavior.target.shapes : [];
+                shapes.forEach((shapeObj, si) => {
+                    if (!shapeObj || typeof shapeObj !== 'object') return;
+                    const kindKeys = Object.keys(shapeObj); if (!kindKeys.length) return;
+                    let kind = kindKeys[0]; if (kind === 'rectangle') kind = 'rect';
+                    const payload = shapeObj[kindKeys[0]] || {};
+                    let overlayEl = null;
+                    try {
+                        switch (kind) {
+                            case 'rect':
+                                overlayEl = document.createElementNS(ns, 'rect');
+                                overlayEl.setAttribute('x', payload.x ?? 0);
+                                overlayEl.setAttribute('y', payload.y ?? 0);
+                                overlayEl.setAttribute('width', payload.width ?? 0);
+                                overlayEl.setAttribute('height', payload.height ?? 0);
+                                break;
+                            case 'circle':
+                                overlayEl = document.createElementNS(ns, 'circle');
+                                overlayEl.setAttribute('cx', payload.cx ?? 0);
+                                overlayEl.setAttribute('cy', payload.cy ?? 0);
+                                overlayEl.setAttribute('r', payload.r ?? 0);
+                                break;
+                            case 'ellipse':
+                                overlayEl = document.createElementNS(ns, 'ellipse');
+                                overlayEl.setAttribute('cx', payload.cx ?? 0);
+                                overlayEl.setAttribute('cy', payload.cy ?? 0);
+                                overlayEl.setAttribute('rx', payload.rx ?? 0);
+                                overlayEl.setAttribute('ry', payload.ry ?? 0);
+                                break;
+                            case 'line':
+                                overlayEl = document.createElementNS(ns, 'line');
+                                overlayEl.setAttribute('x1', payload.x1 ?? 0);
+                                overlayEl.setAttribute('y1', payload.y1 ?? 0);
+                                overlayEl.setAttribute('x2', payload.x2 ?? 0);
+                                overlayEl.setAttribute('y2', payload.y2 ?? 0);
+                                break;
+                            case 'polygon':
+                            case 'polyline':
+                                overlayEl = document.createElementNS(ns, kind);
+                                overlayEl.setAttribute('points', Array.isArray(payload.points) ? payload.points.map(p => p.join(',')).join(' ') : (payload.points || ''));
+                                break;
+                            case 'path':
+                                overlayEl = document.createElementNS(ns, 'path');
+                                overlayEl.setAttribute('d', payload.d || '');
+                                break;
+                            default:
+                                break;
+                        }
+                    } catch (e) { overlayEl = null; }
+                    if (!overlayEl) return;
+                    overlayEl.classList.add('jim-shape-overlay');
+                    // Apply any visual stroke/fill hints from the payload if present (non-destructive)
+                    try {
+                        if (payload.stroke) overlayEl.setAttribute('stroke', payload.stroke);
+                        if (payload['stroke-width']) overlayEl.setAttribute('stroke-width', String(payload['stroke-width']));
+                        if (payload.fill) overlayEl.setAttribute('fill', payload.fill === 'none' ? 'transparent' : payload.fill);
+                    } catch (e) { /* ignore */ }
+                    overlayEl.setAttribute('fill', overlayEl.getAttribute('fill') || 'transparent');
+                    overlayEl.setAttribute('tabindex', '0');
+                    overlayEl.dataset.behaviorIndex = String(bi);
+                    overlayEl.dataset.shapeIndex = String(si);
+                    // Event handlers show behavior info
+                    overlayEl.addEventListener('click', (ev) => { ev.stopPropagation(); this.showBehaviorInfo(behavior, 'click', overlayEl); });
+                    overlayEl.addEventListener('focus', () => this.showBehaviorInfo(behavior, 'focus', overlayEl));
+                    overlayGroup.appendChild(overlayEl);
+
+                    // Wire overlay DOM back to inventoryData if a synthetic overlay item was created
+                    try {
+                        const invItem = this.inventoryData.find(it => it.category === 'overlay' && it.behaviorIndex === bi && it.shapeIndex === si);
+                        if (invItem) invItem.domElement = overlayEl;
+                    } catch (e) { /* ignore */ }
+                });
+            });
+            // Apply overlay visibility state
+            try {
+                if (window.jimViewer && window.jimViewer.showOverlays === false) {
+                    overlayGroup.style.display = 'none';
+                } else {
+                    overlayGroup.style.display = '';
+                }
+            } catch (e) { /* ignore */ }
+        } catch (e) { /* non-fatal overlay render errors */ }
         this.displayVisualization(svgClone);
     }
 
