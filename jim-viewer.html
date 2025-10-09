@@ -1186,7 +1186,16 @@
                                 } else {
                                     // Apply as both attribute and inline style to ensure payload styling wins over viewer CSS
                                     overlayEl.setAttribute(attr, raw);
-                                    try { overlayEl.style.setProperty(attr, raw); } catch (e) { /* ignore */ }
+                                    try {
+                                        // Add 'px' unit for numeric stroke-width values when needed
+                                        let styleVal = raw;
+                                        if (attr === 'stroke-width' || attr === 'stroke-width') {
+                                            // If raw is numeric (e.g. '50'), append 'px'
+                                            if (/^\d+(?:\.\d+)?$/.test(raw)) styleVal = raw + 'px';
+                                        }
+                                        // Use !important to ensure viewer stylesheet doesn't override author color/width
+                                        overlayEl.style.setProperty(attr, styleVal, 'important');
+                                    } catch (e) { /* ignore */ }
                                 }
                             }
                         }
