@@ -1175,12 +1175,18 @@
                         for (const k of Object.keys(map)) {
                             if (payload[k] !== undefined && payload[k] !== null) {
                                 const attr = map[k];
+                                const raw = String(payload[k]);
                                 // Special-case fill: map explicit 'none' to 'transparent' to preserve pointer interactions
                                 if (attr === 'fill') {
-                                    const v = String(payload[k]);
-                                    overlayEl.setAttribute('fill', v === 'none' ? 'transparent' : v);
+                                    const v = raw;
+                                    const mapped = (v === 'none') ? 'transparent' : v;
+                                    // Set both the presentation attribute and an inline style so it overrides author stylesheet rules
+                                    overlayEl.setAttribute('fill', mapped);
+                                    try { overlayEl.style.setProperty('fill', mapped); } catch (e) { /* ignore */ }
                                 } else {
-                                    overlayEl.setAttribute(attr, String(payload[k]));
+                                    // Apply as both attribute and inline style to ensure payload styling wins over viewer CSS
+                                    overlayEl.setAttribute(attr, raw);
+                                    try { overlayEl.style.setProperty(attr, raw); } catch (e) { /* ignore */ }
                                 }
                             }
                         }
