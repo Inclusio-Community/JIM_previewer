@@ -2270,8 +2270,12 @@
                 } else if (typeof explicit === 'object') {
                     const name = explicit.name ? String(explicit.name).trim() : null;
                     const desc = explicit.description ? String(explicit.description).trim() : null;
-                    if (name) html += `<div class="announcement announcement-success"><strong>Explicit Announcement</strong><br>${this.escapeHtml(name)}</div>`;
-                    if (desc) html += `<div class="muted-note">${this.escapeHtml(desc)}</div>`;
+                    if (name || desc) {
+                        html += `<div class="announcement announcement-success"><strong>Explicit Announcement</strong><br>`;
+                        if (name) html += `${this.escapeHtml(name)}`;
+                        if (desc) html += `<div class="muted-note" style="margin-top:6px">${this.escapeHtml(desc)}</div>`;
+                        html += `</div>`;
+                    }
                 }
             }
             // Default announcement from JSON if available
@@ -2786,8 +2790,12 @@
             } else if (typeof explicitAnn === 'object') {
                 const name = explicitAnn.name ? String(explicitAnn.name).trim() : null;
                 const desc = explicitAnn.description ? String(explicitAnn.description).trim() : null;
-                if (name) html += `<div class="announcement announcement-success"><strong>Explicit Announcement:</strong><br>${this.escapeHtml(name)}</div>`;
-                if (desc) html += `<div class="muted-note">${this.escapeHtml(desc)}</div>`;
+                if (name || desc) {
+                    html += `<div class="announcement announcement-success"><strong>Explicit Announcement:</strong><br>`;
+                    if (name) html += `${this.escapeHtml(name)}`;
+                    if (desc) html += `<div class="muted-note" style="margin-top:6px">${this.escapeHtml(desc)}</div>`;
+                    html += `</div>`;
+                }
             }
         }
         // Show default announcement box if present and different from explicit
