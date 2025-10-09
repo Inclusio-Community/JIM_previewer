@@ -67,6 +67,9 @@
                 .panel__heading { font-size: 15px; color: var(--text-normal); margin-bottom:8px; }
                 .btn { display: inline-flex; align-items: center; padding:6px 12px; border-radius:4px; cursor:pointer; font-size:13px; margin-bottom:6px; border:1px solid transparent; background: #e6eef6; color: var(--text-normal); }
                 .btn:focus { outline: 2px solid #3b82f6; outline-offset: 2px; }
+                /* Small variant/placement tweaks for the overlay toggle near the visualization heading */
+                .jim-overlay-toggle { margin-top:8px; margin-left:8px; }
+                .btn:focus { outline: 2px solid #3b82f6; outline-offset: 2px; }
                 .btn--selector { background: #e0e7ef; }
                 .btn--selector--mapped { background: #d1fae5; border-color: #10b981; color: #022f26; }
                 .btn--selector--group { background: #fef9c3; border-color: #f59e0b; color: #92400e; }
@@ -109,10 +112,19 @@
     .inline-text { color:var(--text-normal); margin-top:4px; }
     .details--spaced { margin-top:10px; }
     .pre-meta { background:#f8fafc; padding:8px; border-radius:4px; margin-top:6px; }
-        /* JIM shape overlay visuals (invisible by default; highlight on hover/focus) */
-        .jim-shape-overlay { fill: transparent; stroke: var(--status-warning); stroke-opacity: 0; stroke-width: 2; pointer-events: all; cursor: pointer; transition: stroke-opacity .12s ease, filter .12s ease; }
-        .jim-shape-overlay:focus, .jim-shape-overlay:hover { stroke-opacity: 0.95; filter: drop-shadow(0 1px 4px rgba(0,0,0,0.12)); outline: none; }
-        .jim-overlays-hidden .jim-shape-overlay { display: none !important; }
+                /* JIM shape overlay visuals (invisible by default; highlight on hover/focus)
+                     Toggle behavior:
+                         - .jim-overlays-visible on #visualization forces overlays visible (stroke shown)
+                         - .jim-overlays-hidden on #visualization forces overlays hidden except on hover/focus
+                */
+                .jim-shape-overlay { fill: transparent; stroke: var(--status-warning); stroke-opacity: 0; stroke-width: 2; pointer-events: all; cursor: pointer; transition: stroke-opacity .12s ease, filter .12s ease; }
+                .jim-shape-overlay:focus, .jim-shape-overlay:hover { stroke-opacity: 0.95; filter: drop-shadow(0 1px 4px rgba(0,0,0,0.12)); outline: none; }
+                /* Visible state: force overlays visible */
+                .jim-overlays-visible .jim-shape-overlay { stroke-opacity: 0.95 !important; }
+                /* Hidden state: keep overlays visually hidden but allow hover/focus to show them */
+                .jim-overlays-hidden .jim-shape-overlay { stroke-opacity: 0 !important; }
+                .jim-overlays-hidden .jim-shape-overlay:hover,
+                .jim-overlays-hidden .jim-shape-overlay:focus { stroke-opacity: 0.95 !important; filter: drop-shadow(0 1px 4px rgba(0,0,0,0.12)) !important; }
     .badge--muted { background:#e0e7ef; color:#1e293b; padding:2px 6px; margin-right:4px; }
     .muted-note.italic { font-style: italic; color: var(--muted-contrast); }
     .orphaned-list { padding-left:0; margin:8px 0; list-style:none; }
@@ -1007,6 +1019,10 @@
         if (container) {
             container.innerHTML = '';
             container.appendChild(svgClone);
+            // After inserting the visualization, ensure the overlay toggle exists
+            try {
+                if (typeof this._ensureOverlayToggle === 'function') this._ensureOverlayToggle();
+            } catch (e) { /* ignore */ }
         }
     }
 
@@ -1158,16 +1174,76 @@
                     } catch (e) { /* ignore */ }
                 });
             });
-            // Apply overlay visibility state
-            try {
-                if (window.jimViewer && window.jimViewer.showOverlays === false) {
-                    overlayGroup.style.display = 'none';
-                } else {
-                    overlayGroup.style.display = '';
-                }
-            } catch (e) { /* ignore */ }
+            // Overlay visibility is controlled via classes on #visualization (jim-overlays-visible / jim-overlays-hidden)
+            // Do not mutate overlayGroup.style.display here to avoid conflicting with class-based CSS control.
         } catch (e) { /* non-fatal overlay render errors */ }
         this.displayVisualization(svgClone);
+    }
+
+    // Ensure the overlay show/hide toggle exists inside #visualization and reflects current state
+    _ensureOverlayToggle() {
+        try {
+            const viz = document.getElementById('visualization');
+            const heading = document.getElementById('visualization-heading');
+            if (!viz || !heading) return;
+            const hasShapeOverlays = Array.isArray(this.jimData?.behaviors) && this.jimData.behaviors.some(b => Array.isArray(b?.target?.shapes) && b.target.shapes.length > 0);
+            // Look for existing toggle anywhere near the heading (by id)
+            const existing = document.getElementById('jim-overlay-toggle');
+            if (!hasShapeOverlays) {
+                if (existing) existing.remove();
+                viz.classList.remove('jim-overlays-visible','jim-overlays-hidden');
+                return;
+            }
+            if (!window.jimViewer) window.jimViewer = {};
+            if (typeof window.jimViewer.showOverlays === 'undefined') window.jimViewer.showOverlays = true;
+
+            const applyVizClass = () => {
+                viz.classList.remove('jim-overlays-visible','jim-overlays-hidden');
+                viz.classList.add(window.jimViewer.showOverlays ? 'jim-overlays-visible' : 'jim-overlays-hidden');
+            };
+
+            if (existing) {
+                // Update existing toggle state and accessible labels
+                existing.textContent = window.jimViewer.showOverlays ? 'Hide shape overlays' : 'Show shape overlays';
+                existing.setAttribute('aria-pressed', String(!!window.jimViewer.showOverlays));
+                existing.setAttribute('aria-label', 'Toggle shape overlays');
+                existing.title = window.jimViewer.showOverlays ? 'Hide shape overlays' : 'Show shape overlays';
+                // Rebind click handler safely by replacing node (which preserves attributes when cloned)
+                const newNode = existing.cloneNode(true);
+                existing.replaceWith(newNode);
+                const repl = document.getElementById('jim-overlay-toggle');
+                if (repl) repl.addEventListener('click', () => {
+                    window.jimViewer.showOverlays = !window.jimViewer.showOverlays;
+                    repl.textContent = window.jimViewer.showOverlays ? 'Hide shape overlays' : 'Show shape overlays';
+                    repl.setAttribute('aria-pressed', String(!!window.jimViewer.showOverlays));
+                    repl.title = window.jimViewer.showOverlays ? 'Hide shape overlays' : 'Show shape overlays';
+                    applyVizClass();
+                });
+                applyVizClass();
+                return;
+            }
+
+            const toggle = document.createElement('button');
+            toggle.id = 'jim-overlay-toggle';
+            toggle.className = 'btn jim-overlay-toggle';
+            toggle.setAttribute('aria-pressed', String(!!window.jimViewer.showOverlays));
+            toggle.setAttribute('aria-label', 'Toggle shape overlays');
+            toggle.title = window.jimViewer.showOverlays ? 'Hide shape overlays' : 'Show shape overlays';
+            toggle.textContent = window.jimViewer.showOverlays ? 'Hide shape overlays' : 'Show shape overlays';
+            toggle.addEventListener('click', () => {
+                window.jimViewer.showOverlays = !window.jimViewer.showOverlays;
+                toggle.textContent = window.jimViewer.showOverlays ? 'Hide shape overlays' : 'Show shape overlays';
+                toggle.setAttribute('aria-pressed', String(!!window.jimViewer.showOverlays));
+                toggle.title = window.jimViewer.showOverlays ? 'Hide shape overlays' : 'Show shape overlays';
+                applyVizClass();
+            });
+            applyVizClass();
+            // Insert after the visualization heading
+            if (heading.parentNode) {
+                if (heading.nextSibling) heading.parentNode.insertBefore(toggle, heading.nextSibling);
+                else heading.parentNode.appendChild(toggle);
+            }
+        } catch (e) { /* ignore failures */ }
     }
 
     // Show info for elements mapped by behavior (wildcard/class support)
@@ -1912,25 +1988,8 @@
                         </div>
                     `;
                     summary.innerHTML = html;
-                    // Add overlay toggle (only meaningful in SVG-only mode if there are overlays later)
-                    try {
-                        if (!window.jimViewer) window.jimViewer = {};
-                        if (typeof window.jimViewer.showOverlays === 'undefined') window.jimViewer.showOverlays = true;
-                        const toggle = document.createElement('button');
-                        toggle.className = 'btn';
-                        toggle.textContent = window.jimViewer.showOverlays ? 'Hide shape overlays' : 'Show shape overlays';
-                        toggle.addEventListener('click', () => {
-                            window.jimViewer.showOverlays = !window.jimViewer.showOverlays;
-                            toggle.textContent = window.jimViewer.showOverlays ? 'Hide shape overlays' : 'Show shape overlays';
-                            const viz = document.getElementById('visualization');
-                            if (viz) {
-                                if (!window.jimViewer.showOverlays) viz.classList.add('jim-overlays-hidden');
-                                else viz.classList.remove('jim-overlays-hidden');
-                            }
-                        });
-                        const md = document.getElementById('metadata-summary');
-                        if (md) md.insertBefore(toggle, md.firstChild);
-                    } catch (e) { /* ignore toggle failures */ }
+                    // Ensure the overlay toggle reflects current state and is rendered in the page
+                    try { if (typeof this._ensureOverlayToggle === 'function') this._ensureOverlayToggle(); } catch (e) { /* ignore */ }
                     // renderSVGInventoryOnly builds inventoryData and returns HTML that includes 'other' shapes
                     this.detailedAnalysis = this.renderSVGInventoryOnly();
                     this.updateDetailedAnalysis();
@@ -1975,25 +2034,8 @@
                     </div>
                 `;
                 summary.innerHTML = html;
-                // Insert overlay toggle for JIM-mode as well
-                try {
-                    if (!window.jimViewer) window.jimViewer = {};
-                    if (typeof window.jimViewer.showOverlays === 'undefined') window.jimViewer.showOverlays = true;
-                    const toggle = document.createElement('button');
-                    toggle.className = 'btn';
-                    toggle.textContent = window.jimViewer.showOverlays ? 'Hide shape overlays' : 'Show shape overlays';
-                    toggle.addEventListener('click', () => {
-                        window.jimViewer.showOverlays = !window.jimViewer.showOverlays;
-                        toggle.textContent = window.jimViewer.showOverlays ? 'Hide shape overlays' : 'Show shape overlays';
-                        const viz = document.getElementById('visualization');
-                        if (viz) {
-                            if (!window.jimViewer.showOverlays) viz.classList.add('jim-overlays-hidden');
-                            else viz.classList.remove('jim-overlays-hidden');
-                        }
-                    });
-                    const md = document.getElementById('metadata-summary');
-                    if (md) md.insertBefore(toggle, md.firstChild);
-                } catch (e) { /* ignore toggle failures */ }
+                // Ensure the overlay toggle reflects current state and is rendered below the visualization heading
+                try { if (typeof this._ensureOverlayToggle === 'function') this._ensureOverlayToggle(); } catch (e) { /* ignore */ }
                 this.detailedAnalysis = this.renderInventoryList(validation);
                 this.updateDetailedAnalysis();
             }
@@ -2560,6 +2602,97 @@
                         }
                     });
                 }
+
+                // --- Render overlays for behavior.target.shapes (if present) ---
+                try {
+                    const ns = 'http://www.w3.org/2000/svg';
+                    let overlayGroup = svgClone.querySelector('g.jim-overlays');
+                    if (!overlayGroup) {
+                        overlayGroup = document.createElementNS(ns, 'g');
+                        overlayGroup.classList.add('jim-overlays');
+                        // Put overlays on top
+                        svgClone.appendChild(overlayGroup);
+                    }
+                    // Ensure inventoryData exists and is in-sync
+                    if (!this.inventoryData) this.inventoryData = [];
+                    // For each behavior, create overlays and attach handlers
+                    (this.jimData.behaviors || []).forEach((behavior, bi) => {
+                        const shapes = Array.isArray(behavior?.target?.shapes) ? behavior.target.shapes : [];
+                        shapes.forEach((shapeObj, si) => {
+                            if (!shapeObj || typeof shapeObj !== 'object') return;
+                            const kindKeys = Object.keys(shapeObj); if (!kindKeys.length) return;
+                            let kind = kindKeys[0]; if (kind === 'rectangle') kind = 'rect';
+                            const payload = shapeObj[kindKeys[0]] || {};
+                            let overlayEl = null;
+                            try {
+                                switch (kind) {
+                                    case 'rect':
+                                        overlayEl = document.createElementNS(ns, 'rect');
+                                        overlayEl.setAttribute('x', payload.x ?? 0);
+                                        overlayEl.setAttribute('y', payload.y ?? 0);
+                                        overlayEl.setAttribute('width', payload.width ?? 0);
+                                        overlayEl.setAttribute('height', payload.height ?? 0);
+                                        break;
+                                    case 'circle':
+                                        overlayEl = document.createElementNS(ns, 'circle');
+                                        overlayEl.setAttribute('cx', payload.cx ?? 0);
+                                        overlayEl.setAttribute('cy', payload.cy ?? 0);
+                                        overlayEl.setAttribute('r', payload.r ?? 0);
+                                        break;
+                                    case 'ellipse':
+                                        overlayEl = document.createElementNS(ns, 'ellipse');
+                                        overlayEl.setAttribute('cx', payload.cx ?? 0);
+                                        overlayEl.setAttribute('cy', payload.cy ?? 0);
+                                        overlayEl.setAttribute('rx', payload.rx ?? 0);
+                                        overlayEl.setAttribute('ry', payload.ry ?? 0);
+                                        break;
+                                    case 'line':
+                                        overlayEl = document.createElementNS(ns, 'line');
+                                        overlayEl.setAttribute('x1', payload.x1 ?? 0);
+                                        overlayEl.setAttribute('y1', payload.y1 ?? 0);
+                                        overlayEl.setAttribute('x2', payload.x2 ?? 0);
+                                        overlayEl.setAttribute('y2', payload.y2 ?? 0);
+                                        break;
+                                    case 'polygon':
+                                    case 'polyline':
+                                        overlayEl = document.createElementNS(ns, kind);
+                                        overlayEl.setAttribute('points', Array.isArray(payload.points) ? payload.points.map(p => p.join(',')).join(' ') : (payload.points || ''));
+                                        break;
+                                    case 'path':
+                                        overlayEl = document.createElementNS(ns, 'path');
+                                        overlayEl.setAttribute('d', payload.d || '');
+                                        break;
+                                    default:
+                                        break;
+                                }
+                            } catch (e) { overlayEl = null; }
+                            if (!overlayEl) return;
+                            overlayEl.classList.add('jim-shape-overlay');
+                            // Apply any visual stroke/fill hints from the payload if present (non-destructive)
+                            try {
+                                if (payload.stroke) overlayEl.setAttribute('stroke', payload.stroke);
+                                if (payload['stroke-width']) overlayEl.setAttribute('stroke-width', String(payload['stroke-width']));
+                                if (payload.fill) overlayEl.setAttribute('fill', payload.fill === 'none' ? 'transparent' : payload.fill);
+                            } catch (e) { /* ignore */ }
+                            overlayEl.setAttribute('fill', overlayEl.getAttribute('fill') || 'transparent');
+                            overlayEl.setAttribute('tabindex', '0');
+                            overlayEl.dataset.behaviorIndex = String(bi);
+                            overlayEl.dataset.shapeIndex = String(si);
+                            // Event handlers show behavior info
+                            overlayEl.addEventListener('click', (ev) => { ev.stopPropagation(); this.showBehaviorInfo(behavior, 'click', overlayEl); });
+                            overlayEl.addEventListener('focus', () => this.showBehaviorInfo(behavior, 'focus', overlayEl));
+                            overlayGroup.appendChild(overlayEl);
+
+                            // Wire overlay DOM back to inventoryData if a synthetic overlay item was created
+                            try {
+                                const invItem = this.inventoryData.find(it => it.category === 'overlay' && it.behaviorIndex === bi && it.shapeIndex === si);
+                                if (invItem) invItem.domElement = overlayEl;
+                            } catch (e) { /* ignore */ }
+                        });
+                    });
+                    // Overlay visibility is controlled via classes on #visualization (jim-overlays-visible / jim-overlays-hidden)
+                    // Do not mutate overlayGroup.style.display here to avoid conflicting with class-based CSS control.
+                } catch (e) { /* non-fatal overlay render errors */ }
 
                 this.displayVisualization(svgClone);
             }
