@@ -1842,7 +1842,10 @@
             displayMetadataSummary() {
                 // Render selector list panel if JIM metadata is present
                 var selectorPanel = document.getElementById('selector-list-panel');
-                if (this.jimData && this.jimData.selectors && Object.keys(this.jimData.selectors).length) {
+                // Show selector panel if there are explicit selectors OR if there are shape behaviors
+                const hasSelectors = !!(this.jimData && this.jimData.selectors && Object.keys(this.jimData.selectors).length);
+                const hasShapeBehaviors = !!((this.jimData && Array.isArray(this.jimData.behaviors) && this.jimData.behaviors.some(b => Array.isArray(b?.target?.shapes) && b.target.shapes.length > 0)));
+                if (hasSelectors || hasShapeBehaviors) {
                     var selectorKeys = Object.keys(this.jimData.selectors);
                     var behaviors = this.jimData.behaviors || [];
                     var selectorPanelHtml = "<div class='selector-panel'>";
