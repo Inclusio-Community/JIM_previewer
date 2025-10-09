@@ -642,15 +642,109 @@
                                 // Require 'target'
                                 if (!('target' in b)) {
                                     errors.push(`Behavior[${i}] missing required 'target' property.`);
-                                } else if (typeof b.target !== "object" || b.target === null || typeof b.target.selector !== "string" || !b.target.selector.trim()) {
-                                    errors.push(`Behavior[${i}] 'target.selector' must be a non-empty string.`);
+                                } else if (typeof b.target !== "object" || b.target === null) {
+                                    errors.push(`Behavior[${i}] 'target' must be an object.`);
                                 } else {
-                                    // Flag non-standard keys in target
-                                    const allowedTargetKeys = new Set(["selector", "id", "name"]);
-                                    const targetKeys = Object.keys(b.target);
-                                    const illegalTargetKeys = targetKeys.filter(k => !allowedTargetKeys.has(k));
-                                    if (illegalTargetKeys.length) {
-                                        warnings.push(`Behavior[${i}] target has non-standard key(s): ${illegalTargetKeys.join(", ")}`);
+                                    // Accept either selector-based targets OR shapes-array-based targets
+                                    const tgt = b.target || {};
+                                    const hasSelector = typeof tgt.selector === 'string' && tgt.selector.trim();
+                                    const hasShapesArray = Array.isArray(tgt.shapes) && tgt.shapes.length > 0;
+                                    if (!hasSelector && !hasShapesArray) {
+                                        errors.push(`Behavior[${i}] target must include either 'selector' (non-empty string) or 'shapes' (non-empty array).`);
+                                    } else {
+                                        // Flag non-standard keys in target but allow selector/id/name/shapes
+                                        const allowedTargetKeys = new Set(["selector", "id", "name", "shapes"]);
+                                        const targetKeys = Object.keys(tgt);
+                                        const illegalTargetKeys = targetKeys.filter(k => !allowedTargetKeys.has(k));
+                                        if (illegalTargetKeys.length) {
+                                            warnings.push(`Behavior[${i}] target has non-standard key(s): ${illegalTargetKeys.join(", ")}`);
+                                        }
+                                        // If shapes array is present, validate each shape object's structure
+                                        if (hasShapesArray) {
+                                            const allowedShapeKinds = new Set(['rect','rectangle','circle','ellipse','line','polygon','polyline','path']);
+                                            tgt.shapes.forEach((shapeObj, sIdx) => {
+                                                if (!shapeObj || typeof shapeObj !== 'object' || Array.isArray(shapeObj)) {
+                                                    errors.push(`Behavior[${i}] target.shapes[${sIdx}] must be an object (found ${typeof shapeObj}).`);
+                                                    return;
+                                                }
+                                                const kindKeys = Object.keys(shapeObj);
+                                                if (kindKeys.length !== 1) {
+                                                    errors.push(`Behavior[${i}] target.shapes[${sIdx}] must contain exactly one shape kind key (found ${kindKeys.length}).`);
+                                                    return;
+                                                }
+                                                // Normalize alias 'rectangle' -> 'rect' for validation messages
+                                                let kind = kindKeys[0];
+                                                const originalKind = kind;
+                                                if (kind === 'rectangle') kind = 'rect';
+                                                if (!allowedShapeKinds.has(kind)) {
+                                                    errors.push(`Behavior[${i}] target.shapes[${sIdx}] has unknown shape kind '${originalKind}'. Allowed kinds: ${[...allowedShapeKinds].join(', ')}.`);
+                                                    return;
+                                                }
+                                                const payload = shapeObj[kindKeys[0]];
+                                                if (!payload || typeof payload !== 'object') {
+                                                    errors.push(`Behavior[${i}] target.shapes[${sIdx}].${originalKind} must be an object with shape properties.`);
+                                                    return;
+                                                }
+                                                const isNumericLike = (v) => (typeof v === 'number' && Number.isFinite(v)) || (typeof v === 'string' && v.trim() !== '' && !Number.isNaN(Number(v)));
+                                                const checkNumberProp = (propName) => {
+                                                    if (!(propName in payload)) {
+                                                        errors.push(`Behavior[${i}] target.shapes[${sIdx}].${originalKind}.${propName} is required.`);
+                                                    } else if (!isNumericLike(payload[propName])) {
+                                                        errors.push(`Behavior[${i}] target.shapes[${sIdx}].${originalKind}.${propName} must be a number.`);
+                                                    } else if (typeof payload[propName] === 'string') {
+                                                        warnings.push(`Behavior[${i}] target.shapes[${sIdx}].${originalKind}.${propName} is a string; expected a numeric type.`);
+                                                    }
+                                                };
+
+                                                switch (kind) {
+                                                    case 'rect':
+                                                        ['x','y','width','height'].forEach(checkNumberProp);
+                                                        break;
+                                                    case 'circle':
+                                                        ['cx','cy','r'].forEach(checkNumberProp);
+                                                        break;
+                                                    case 'ellipse':
+                                                        ['cx','cy','rx','ry'].forEach(checkNumberProp);
+                                                        break;
+                                                    case 'line':
+                                                        ['x1','y1','x2','y2'].forEach(checkNumberProp);
+                                                        break;
+                                                    case 'polygon':
+                                                    case 'polyline':
+                                                        if (!('points' in payload)) {
+                                                            errors.push(`Behavior[${i}] target.shapes[${sIdx}].${originalKind}.points is required.`);
+                                                        } else {
+                                                            const pts = payload.points;
+                                                            if (typeof pts === 'string') {
+                                                                if (!pts.trim()) errors.push(`Behavior[${i}] target.shapes[${sIdx}].${originalKind}.points must be a non-empty string.`);
+                                                            } else if (Array.isArray(pts)) {
+                                                                if (pts.length === 0) {
+                                                                    errors.push(`Behavior[${i}] target.shapes[${sIdx}].${originalKind}.points must be a non-empty array.`);
+                                                                } else {
+                                                                    pts.forEach((p, pi) => {
+                                                                        if (!Array.isArray(p) || p.length < 2 || !isNumericLike(p[0]) || !isNumericLike(p[1])) {
+                                                                            errors.push(`Behavior[${i}] target.shapes[${sIdx}].${originalKind}.points[${pi}] must be a pair of numbers [x,y].`);
+                                                                        } else if (typeof p[0] === 'string' || typeof p[1] === 'string') {
+                                                                            warnings.push(`Behavior[${i}] target.shapes[${sIdx}].${originalKind}.points[${pi}] uses string values; numeric types are preferred.`);
+                                                                        }
+                                                                    });
+                                                                }
+                                                            } else {
+                                                                errors.push(`Behavior[${i}] target.shapes[${sIdx}].${originalKind}.points must be a string or array of point pairs.`);
+                                                            }
+                                                        }
+                                                        break;
+                                                    case 'path':
+                                                        if (!('d' in payload) || typeof payload.d !== 'string' || !payload.d.trim()) {
+                                                            errors.push(`Behavior[${i}] target.shapes[${sIdx}].${originalKind}.d is required and must be a non-empty string.`);
+                                                        }
+                                                        break;
+                                                    default:
+                                                        // no-op for kinds already validated above
+                                                        break;
+                                                }
+                                            });
+                                        }
                                     }
                                 }
                                 // Check event blocks (enter, details, activate, exit)
