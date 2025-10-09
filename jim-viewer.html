@@ -1686,6 +1686,12 @@
                                     // Inspect the actual element from the visualization
                                     this.showNonJIMElementInfo(el, 'select');
                                 }
+                            // Special case: shape behavior inspect buttons rendered in the Selectors panel
+                            } else if (category === 'shape-behavior') {
+                                const behavior = this._shapeBehaviors && this._shapeBehaviors[idx];
+                                if (behavior) {
+                                    this.showBehaviorInfo(behavior, 'select', null);
+                                }
                             } else {
                                 // Use global handler for inventory items
                                 window.handleInventoryItemClick && window.handleInventoryItemClick(category, idx);
@@ -1994,6 +2000,26 @@
                         // Attach the preview element references to the instance for the delegated click handler
                         try { this._groupPreviewElements = _groupPreviewEls; } catch (e) { /* ignore if not in class context */ }
                     }
+
+                    // Shape Behaviors subsection: behaviors that define target.shapes
+                    try {
+                        const shapeBehaviors = (this.jimData.behaviors || []).map((b, idx) => ({ b, idx })).filter(x => Array.isArray(x.b?.target?.shapes) && x.b.target.shapes.length > 0);
+                        if (shapeBehaviors.length) {
+                            selectorPanelHtml += `<div style='margin-top:16px;'><h3 class='panel__heading'>Shape Behaviors</h3><div class='group-behaviors-list' aria-hidden='false'>`;
+                            // store behavior refs for delegated handler
+                            this._shapeBehaviors = [];
+                            shapeBehaviors.forEach(sb => {
+                                const b = sb.b;
+                                const bi = sb.idx;
+                                const label = b.enter && b.enter.announcement ? (typeof b.enter.announcement === 'string' ? b.enter.announcement : (b.enter.announcement.name || `Behavior ${bi}`)) : `Behavior ${bi}`;
+                                // Compact button to inspect the behavior (opens behavior info panel)
+                                selectorPanelHtml += `<div class='panel group-behavior' style='padding:8px;margin-bottom:8px;display:inline-block;'><button class='inventory-button' data-category='shape-behavior' data-idx='${this._shapeBehaviors.length}' aria-label='Inspect shape behavior ${this.escapeHtml(label)}' style='font-weight:600;margin-right:8px;'>Inspect</button><span style='vertical-align:middle;'>${this.escapeHtml(label)}</span></div>`;
+                                this._shapeBehaviors.push(b);
+                            });
+                            selectorPanelHtml += `</div></div>`;
+                        }
+                    } catch (e) { /* ignore shape-behavior UI failures */ }
+
                     selectorPanelHtml += "</div>";
                     selectorPanel.innerHTML = selectorPanelHtml;
                     selectorPanel.classList.remove('hidden');
