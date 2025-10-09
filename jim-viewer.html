@@ -1569,6 +1569,27 @@
         }
         return null;
     }
+    // Choose a human-friendly announcement string to display.
+    // Preference: announcement.description, then announcement.name, then string value, then compact JSON.
+    formatAnnouncement(ann) {
+        if (!ann && ann !== 0) return null;
+        // Plain string announcement
+        if (typeof ann === 'string') {
+            const s = ann.trim();
+            return s ? s : null;
+        }
+        // Object: prefer description then name
+        if (typeof ann === 'object') {
+            if (ann.description && String(ann.description).trim()) return String(ann.description).trim();
+            if (ann.name && String(ann.name).trim()) return String(ann.name).trim();
+            // Try common alternate fields
+            if (ann.label && String(ann.label).trim()) return String(ann.label).trim();
+            // Fallback: compact JSON
+            try { return JSON.stringify(ann); } catch (e) { return String(ann); }
+        }
+        // Other primitive
+        return String(ann);
+    }
             setupEventListeners() {
                 // File input handler
                 const fileInput = document.getElementById('jim-file');
@@ -2240,10 +2261,11 @@
                 if (tgt.selector) html += `<div><strong>Selector:</strong> <code>${this.escapeHtml(String(tgt.selector))}</code></div>`;
                 else if (tgt.shapes) html += `<div><strong>Shapes:</strong> <code>${tgt.shapes.length} shape(s)</code></div>`;
             }
-            // Explicit announcement
-            const explicit = behavior.enter?.announcement || null;
-            if (explicit) {
-                html += `<div class="announcement announcement-success"><strong>Explicit Announcement</strong><br>${typeof explicit === 'object' ? this.escapeHtml(explicit.description || JSON.stringify(explicit)) : this.escapeHtml(String(explicit))}</div>`;
+            // Explicit announcement (human-friendly)
+            const explicit = this.getExplicitAnnouncement(behavior);
+            const explicitText = this.formatAnnouncement(explicit);
+            if (explicitText) {
+                html += `<div class="announcement announcement-success"><strong>Explicit Announcement</strong><br>${this.escapeHtml(explicitText)}</div>`;
             }
             // Default announcement from JSON if available
             let defaultAnn = null;
@@ -2743,17 +2765,16 @@
                 return false;
             }
         });
-        // Show explicit announcement box if present
+        // Show explicit announcement box if present (use human-friendly format)
         let explicitAnn = null;
         for (const b of matchedBehaviors) {
-            if (b.enter?.announcement) {
-                explicitAnn = b.enter.announcement;
-                break;
-            }
+            const ea = this.getExplicitAnnouncement(b);
+            if (ea) { explicitAnn = ea; break; }
         }
-        if (explicitAnn) {
+        const explicitAnnText = this.formatAnnouncement(explicitAnn);
+        if (explicitAnnText) {
             html += `<div class="announcement announcement-success">
-                <strong>Explicit Announcement:</strong><br>${typeof explicitAnn === 'object' ? (explicitAnn.description || JSON.stringify(explicitAnn)) : explicitAnn}
+                <strong>Explicit Announcement:</strong><br>${this.escapeHtml(explicitAnnText)}
             </div>`;
         }
         // Show default announcement box if present and different from explicit
