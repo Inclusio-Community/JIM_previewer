@@ -1154,9 +1154,36 @@
                     overlayEl.classList.add('jim-shape-overlay');
                     // Apply any visual stroke/fill hints from the payload if present (non-destructive)
                     try {
-                        if (payload.stroke) overlayEl.setAttribute('stroke', payload.stroke);
-                        if (payload['stroke-width']) overlayEl.setAttribute('stroke-width', String(payload['stroke-width']));
-                        if (payload.fill) overlayEl.setAttribute('fill', payload.fill === 'none' ? 'transparent' : payload.fill);
+                        // Basic attributes (support both kebab-case and camelCase keys)
+                        const map = {
+                            'stroke': 'stroke',
+                            'stroke-width': 'stroke-width',
+                            'strokeWidth': 'stroke-width',
+                            'stroke-linecap': 'stroke-linecap',
+                            'strokeLinecap': 'stroke-linecap',
+                            'stroke-linejoin': 'stroke-linejoin',
+                            'strokeLinejoin': 'stroke-linejoin',
+                            'stroke-dasharray': 'stroke-dasharray',
+                            'strokeDasharray': 'stroke-dasharray',
+                            'stroke-opacity': 'stroke-opacity',
+                            'strokeOpacity': 'stroke-opacity',
+                            'fill': 'fill',
+                            'fill-opacity': 'fill-opacity',
+                            'fillOpacity': 'fill-opacity',
+                            'opacity': 'opacity'
+                        };
+                        for (const k of Object.keys(map)) {
+                            if (payload[k] !== undefined && payload[k] !== null) {
+                                const attr = map[k];
+                                // Special-case fill: map explicit 'none' to 'transparent' to preserve pointer interactions
+                                if (attr === 'fill') {
+                                    const v = String(payload[k]);
+                                    overlayEl.setAttribute('fill', v === 'none' ? 'transparent' : v);
+                                } else {
+                                    overlayEl.setAttribute(attr, String(payload[k]));
+                                }
+                            }
+                        }
                     } catch (e) { /* ignore */ }
                     overlayEl.setAttribute('fill', overlayEl.getAttribute('fill') || 'transparent');
                     overlayEl.setAttribute('tabindex', '0');
