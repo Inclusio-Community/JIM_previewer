@@ -2939,19 +2939,34 @@
                 if (!validation) return '<div class="muted-italic">No validation data available</div>';
                 let html = '';
                 // Facet validation
-                    if (validation.facetSummary) {
-                        if (validation.facetSummary.missing && validation.facetSummary.missing.length) {
-                            html += `<div class="status-warning-line"><span class="sr-only">Warning: </span>${ICONS.warn} ${validation.facetSummary.missing.length} record properties lack facet definitions: ${validation.facetSummary.missing.join(', ')}</div>`;
-                        } else if (validation.facetSummary.total > 0) {
-                            html += `<div class="status-success-line"><span class="sr-only">Success: </span>${ICONS.check} All record properties have facet definitions</div>`;
-                        }
+                if (validation.facetSummary) {
+                    if (validation.facetSummary.missing && validation.facetSummary.missing.length) {
+                        html += `<div class="status-warning-line"><span class="sr-only">Warning: </span>${ICONS.warn} ${validation.facetSummary.missing.length} record properties lack facet definitions: ${validation.facetSummary.missing.join(', ')}</div>`;
+                    } else if (validation.facetSummary.total > 0) {
+                        html += `<div class="status-success-line"><span class="sr-only">Success: </span>${ICONS.check} All record properties have facet definitions</div>`;
                     }
-                // Behavior validation
+                }
+
+                // Behavior validation: clarify mapping vs overlay-only behaviors
                 if (validation.behaviorSummary) {
-                    if (validation.behaviorSummary.missing && validation.behaviorSummary.missing.length) {
-                        html += `<div class="status-warning-line"><span class="sr-only">Warning: </span>${ICONS.warn} ${validation.behaviorSummary.missing.length} selector(s) lack behavior definitions: ${validation.behaviorSummary.missing.join(', ')}</div>`;
-                    } else if (validation.behaviorSummary.total > 0) {
-                        html += `<div class="status-success-line"><span class="sr-only">Success: </span>${ICONS.check} All selectors have behavior definitions</div>`;
+                    const totalSelectors = validation.behaviorSummary.total || 0;
+                    const mappedCount = typeof validation.behaviorSummary.mapped === 'number' ? validation.behaviorSummary.mapped : 0;
+                    const missing = validation.behaviorSummary.missing || [];
+                    const shapeBehaviors = validation.behaviorSummary.shapeBehaviors || 0;
+
+                    // If selectors are missing behavior definitions, surface as a warning
+                    if (missing.length) {
+                        html += `<div class="status-warning-line"><span class="sr-only">Warning: </span>${ICONS.warn} ${missing.length} selector(s) lack behavior definitions: ${missing.join(', ')}</div>`;
+                    } else if (totalSelectors > 0) {
+                        html += `<div class="status-success-line"><span class="sr-only">Success: </span>${ICONS.check} All ${totalSelectors} selector(s) have behavior definitions</div>`;
+                    }
+
+                    // Clarify mapping: how many declared selectors actually matched behaviors
+                    html += `<div class="status-success-line"><span class="sr-only">Info: </span>${ICONS.check} Selectors with matching behavior(s): ${mappedCount} of ${totalSelectors}</div>`;
+
+                    // Informational line about overlay-only behaviors (these may not map to selectors)
+                    if (shapeBehaviors && shapeBehaviors > 0) {
+                        html += `<div class="muted-note">${ICONS.idea} ${shapeBehaviors} behavior(s) define shapes (overlay-only). These may not map to selectors; use the overlay toggle to inspect them.</div>`;
                     }
                 }
                 // Selector/DOM validation
