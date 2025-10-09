@@ -2261,11 +2261,18 @@
                 if (tgt.selector) html += `<div><strong>Selector:</strong> <code>${this.escapeHtml(String(tgt.selector))}</code></div>`;
                 else if (tgt.shapes) html += `<div><strong>Shapes:</strong> <code>${tgt.shapes.length} shape(s)</code></div>`;
             }
-            // Explicit announcement (human-friendly)
+            // Explicit announcement (show name then description if present)
             const explicit = this.getExplicitAnnouncement(behavior);
-            const explicitText = this.formatAnnouncement(explicit);
-            if (explicitText) {
-                html += `<div class="announcement announcement-success"><strong>Explicit Announcement</strong><br>${this.escapeHtml(explicitText)}</div>`;
+            if (explicit) {
+                // If it's a primitive string, show it as the name line
+                if (typeof explicit === 'string') {
+                    html += `<div class="announcement announcement-success"><strong>Explicit Announcement</strong><br>${this.escapeHtml(explicit)}</div>`;
+                } else if (typeof explicit === 'object') {
+                    const name = explicit.name ? String(explicit.name).trim() : null;
+                    const desc = explicit.description ? String(explicit.description).trim() : null;
+                    if (name) html += `<div class="announcement announcement-success"><strong>Explicit Announcement</strong><br>${this.escapeHtml(name)}</div>`;
+                    if (desc) html += `<div class="muted-note">${this.escapeHtml(desc)}</div>`;
+                }
             }
             // Default announcement from JSON if available
             let defaultAnn = null;
@@ -2771,11 +2778,17 @@
             const ea = this.getExplicitAnnouncement(b);
             if (ea) { explicitAnn = ea; break; }
         }
-        const explicitAnnText = this.formatAnnouncement(explicitAnn);
-        if (explicitAnnText) {
-            html += `<div class="announcement announcement-success">
-                <strong>Explicit Announcement:</strong><br>${this.escapeHtml(explicitAnnText)}
-            </div>`;
+        if (explicitAnn) {
+            if (typeof explicitAnn === 'string') {
+                html += `<div class="announcement announcement-success">
+                    <strong>Explicit Announcement:</strong><br>${this.escapeHtml(explicitAnn)}
+                </div>`;
+            } else if (typeof explicitAnn === 'object') {
+                const name = explicitAnn.name ? String(explicitAnn.name).trim() : null;
+                const desc = explicitAnn.description ? String(explicitAnn.description).trim() : null;
+                if (name) html += `<div class="announcement announcement-success"><strong>Explicit Announcement:</strong><br>${this.escapeHtml(name)}</div>`;
+                if (desc) html += `<div class="muted-note">${this.escapeHtml(desc)}</div>`;
+            }
         }
         // Show default announcement box if present and different from explicit
         if (defaultAnnouncement && (!explicitAnn || (typeof explicitAnn === 'object' ? explicitAnn.description : explicitAnn) !== defaultAnnouncement)) {
