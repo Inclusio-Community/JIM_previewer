@@ -1393,10 +1393,9 @@
                 warnings: behaviorWarnings,
                 shapeBehaviors
             };
-            if (shapeBehaviors && shapeBehaviors > 0) {
-                // Add a friendly line to warnings so users see behavior overlays exist
-                results.warnings.push(`${shapeBehaviors} behavior(s) define 'shapes' overlays. Use the overlay toggle to inspect them.`);
-            }
+            // Note: overlay-only behavior info is rendered in the validation UI as an informational
+            // muted-note (see renderValidationResults). Do not duplicate it in results.warnings
+            // to avoid showing both an informational line and a warning triangle.
         }
         // --- Add synthetic inventory items for behavior.target.shapes so they appear in Analysis panel ---
         try {
