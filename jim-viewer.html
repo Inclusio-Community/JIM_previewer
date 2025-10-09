@@ -1942,7 +1942,8 @@
                                 const el = gb.elements[vi];
                                 const label = el.id ? `#${el.id}` : (el.classList && el.classList.length) ? '.' + Array.from(el.classList).join('.') : el.tagName;
                                 const dataIdx = startIndex + vi; // actual index into _groupPreviewEls
-                                selectorPanelHtml += `<button class='inventory-button badge badge--muted' data-category='group-preview' data-idx='${dataIdx}' aria-label='SVG element ${label}' role='listitem'>${label}</button>`;
+                                // Per ARIA, role=listitem should be on a container element (not on a button).
+                                selectorPanelHtml += `<div role='listitem' class='group-preview-item' style='margin-right:6px;margin-bottom:6px;'><button class='inventory-button badge badge--muted' data-category='group-preview' data-idx='${dataIdx}' aria-label='SVG element ${label}'>${label}</button></div>`;
                             }
                             selectorPanelHtml += `</div>`;
                             selectorPanelHtml += `</div>`;
