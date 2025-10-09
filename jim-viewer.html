@@ -1257,50 +1257,61 @@
             }
         }
         // --- Behavior validation ---
-        if (Object.keys(selectors).length) {
+        // Compute behavior mapping and warnings even when selectors are empty so overlay-only behaviors are surfaced
+        {
             const selectorKeys = Object.keys(selectors);
             const mapped = [];
             const missing = [];
             const behaviorWarnings = [];
             var svg = this.currentDoc.querySelector('svg');
+            // Warn if behavior.target.selector doesn't match anything
             for (let j = 0; j < behaviors.length; j++) {
                 const tgtSelector = behaviors[j].target && behaviors[j].target.selector;
-                if (tgtSelector) {
+                if (tgtSelector && svg) {
                     let B = [];
                     try { B = Array.from(svg.querySelectorAll(tgtSelector)); } catch (e) {}
                     if (B.length === 0) behaviorWarnings.push(`Behavior[${j}] target.selector '${tgtSelector}' matched no SVG elements.`);
                 }
             }
-            for (let i = 0; i < selectorKeys.length; i++) {
-                const key = selectorKeys[i];
-                const dom = selectors[key]?.dom;
-                let isMapped = false;
-                let behaviorElsewhere = false;
-                let A = [];
-                try { A = Array.from(svg.querySelectorAll(dom)); } catch (e) {}
-                for (let j = 0; j < behaviors.length; j++) {
-                    const tgtSelector = behaviors[j].target && behaviors[j].target.selector;
-                    if (tgtSelector) {
-                        let B = [];
-                        try { B = Array.from(svg.querySelectorAll(tgtSelector)); } catch (e) {}
-                        // Intersection
-                        if (A.some(n => n.matches && n.matches(tgtSelector))) { isMapped = true; break; }
-                        // Behavior ancestor of selector
-                        if (A.some(a => B.some(b => b.contains && b.contains(a)))) { isMapped = true; break; }
-                        // Selector ancestor of behavior
-                        if (B.some(b => A.some(a => a.contains && a.contains(b)))) { isMapped = true; break; }
-                        if (B.length && !isMapped) behaviorElsewhere = true;
+            if (selectorKeys.length) {
+                for (let i = 0; i < selectorKeys.length; i++) {
+                    const key = selectorKeys[i];
+                    const dom = selectors[key]?.dom;
+                    let isMapped = false;
+                    let behaviorElsewhere = false;
+                    let A = [];
+                    try { A = Array.from(svg.querySelectorAll(dom)); } catch (e) {}
+                    for (let j = 0; j < behaviors.length; j++) {
+                        const tgtSelector = behaviors[j].target && behaviors[j].target.selector;
+                        if (tgtSelector) {
+                            let B = [];
+                            try { B = Array.from(svg.querySelectorAll(tgtSelector)); } catch (e) {}
+                            // Intersection
+                            if (A.some(n => n.matches && n.matches(tgtSelector))) { isMapped = true; break; }
+                            // Behavior ancestor of selector
+                            if (A.some(a => B.some(b => b.contains && b.contains(a)))) { isMapped = true; break; }
+                            // Selector ancestor of behavior
+                            if (B.some(b => A.some(a => a.contains && a.contains(b)))) { isMapped = true; break; }
+                            if (B.length && !isMapped) behaviorElsewhere = true;
+                        }
                     }
+                    if (isMapped) mapped.push(key);
+                    else missing.push(key);
                 }
-                if (isMapped) mapped.push(key);
-                else missing.push(key);
             }
+            // Count behaviors that have shapes (overlays)
+            const shapeBehaviors = (behaviors || []).filter(b => Array.isArray(b?.target?.shapes) && b.target.shapes.length > 0).length;
             results.behaviorSummary = {
                 missing,
                 total: selectorKeys.length,
                 mapped: mapped.length,
-                warnings: behaviorWarnings
+                warnings: behaviorWarnings,
+                shapeBehaviors
             };
+            if (shapeBehaviors && shapeBehaviors > 0) {
+                // Add a friendly line to warnings so users see behavior overlays exist
+                results.warnings.push(`${shapeBehaviors} behavior(s) define 'shapes' overlays. Use the overlay toggle to inspect them.`);
+            }
         }
         // --- Add synthetic inventory items for behavior.target.shapes so they appear in Analysis panel ---
         try {
@@ -1955,6 +1966,25 @@
                     </div>
                 `;
                 summary.innerHTML = html;
+                // Insert overlay toggle for JIM-mode as well
+                try {
+                    if (!window.jimViewer) window.jimViewer = {};
+                    if (typeof window.jimViewer.showOverlays === 'undefined') window.jimViewer.showOverlays = true;
+                    const toggle = document.createElement('button');
+                    toggle.className = 'btn';
+                    toggle.textContent = window.jimViewer.showOverlays ? 'Hide shape overlays' : 'Show shape overlays';
+                    toggle.addEventListener('click', () => {
+                        window.jimViewer.showOverlays = !window.jimViewer.showOverlays;
+                        toggle.textContent = window.jimViewer.showOverlays ? 'Hide shape overlays' : 'Show shape overlays';
+                        const viz = document.getElementById('visualization');
+                        if (viz) {
+                            if (!window.jimViewer.showOverlays) viz.classList.add('jim-overlays-hidden');
+                            else viz.classList.remove('jim-overlays-hidden');
+                        }
+                    });
+                    const md = document.getElementById('metadata-summary');
+                    if (md) md.insertBefore(toggle, md.firstChild);
+                } catch (e) { /* ignore toggle failures */ }
                 this.detailedAnalysis = this.renderInventoryList(validation);
                 this.updateDetailedAnalysis();
             }
