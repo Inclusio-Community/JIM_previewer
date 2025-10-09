@@ -2963,9 +2963,12 @@
                     // Clarify mapping: how many declared selectors actually matched behaviors
                     html += `<div class="status-success-line"><span class="sr-only">Info: </span>${ICONS.check} Selectors with matching behavior(s): ${mappedCount} of ${totalSelectors}</div>`;
 
-                    // Informational line about overlay-only behaviors (these may not map to selectors)
+                    // Success line for behaviors mapped by selector (explicit mapping)
+                    html += `<div class="status-success-line"><span class="sr-only">Success: </span>${ICONS.check} ${mappedCount} behavior(s) mapped by selector</div>`;
+
+                    // Short success line for behaviors mapped to shapes (overlay-only)
                     if (shapeBehaviors && shapeBehaviors > 0) {
-                        html += `<div class="muted-note">${ICONS.idea} ${shapeBehaviors} behavior(s) define shapes (overlay-only). These may not map to selectors; use the overlay toggle to inspect them.</div>`;
+                        html += `<div class="status-success-line"><span class="sr-only">Success: </span>${ICONS.check} ${shapeBehaviors} behavior(s) mapped to shapes (overlay-only)</div>`;
                     }
                 }
                 // Selector/DOM validation
