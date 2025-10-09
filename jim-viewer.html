@@ -2745,9 +2745,44 @@
                             overlayEl.classList.add('jim-shape-overlay');
                             // Apply any visual stroke/fill hints from the payload if present (non-destructive)
                             try {
-                                if (payload.stroke) overlayEl.setAttribute('stroke', payload.stroke);
-                                if (payload['stroke-width']) overlayEl.setAttribute('stroke-width', String(payload['stroke-width']));
-                                if (payload.fill) overlayEl.setAttribute('fill', payload.fill === 'none' ? 'transparent' : payload.fill);
+                                const map = {
+                                    'stroke': 'stroke',
+                                    'stroke-width': 'stroke-width',
+                                    'strokeWidth': 'stroke-width',
+                                    'stroke-linecap': 'stroke-linecap',
+                                    'strokeLinecap': 'stroke-linecap',
+                                    'stroke-linejoin': 'stroke-linejoin',
+                                    'strokeLinejoin': 'stroke-linejoin',
+                                    'stroke-dasharray': 'stroke-dasharray',
+                                    'strokeDasharray': 'stroke-dasharray',
+                                    'stroke-opacity': 'stroke-opacity',
+                                    'strokeOpacity': 'stroke-opacity',
+                                    'fill': 'fill',
+                                    'fill-opacity': 'fill-opacity',
+                                    'fillOpacity': 'fill-opacity',
+                                    'opacity': 'opacity'
+                                };
+                                for (const k of Object.keys(map)) {
+                                    if (payload[k] !== undefined && payload[k] !== null) {
+                                        const attr = map[k];
+                                        const raw = String(payload[k]);
+                                        if (attr === 'fill') {
+                                            const v = raw;
+                                            const mapped = (v === 'none') ? 'transparent' : v;
+                                            overlayEl.setAttribute('fill', mapped);
+                                            try { overlayEl.style.setProperty('fill', mapped, 'important'); } catch (e) { /* ignore */ }
+                                        } else {
+                                            overlayEl.setAttribute(attr, raw);
+                                            try {
+                                                let styleVal = raw;
+                                                if (attr === 'stroke-width') {
+                                                    if (/^\d+(?:\.\d+)?$/.test(raw)) styleVal = raw + 'px';
+                                                }
+                                                overlayEl.style.setProperty(attr, styleVal, 'important');
+                                            } catch (e) { /* ignore */ }
+                                        }
+                                    }
+                                }
                             } catch (e) { /* ignore */ }
                             overlayEl.setAttribute('fill', overlayEl.getAttribute('fill') || 'transparent');
                             overlayEl.setAttribute('tabindex', '0');
