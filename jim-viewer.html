@@ -2976,10 +2976,6 @@
                     html += `<div class="status-success-line"><span class="sr-only">Success: </span>${ICONS.check} ${validation.selectorSummary.domValid} DOM selector(s) valid</div>`;
                     html += `<div class="status-success-line"><span class="sr-only">Success: </span>${ICONS.check} ${validation.selectorSummary.jsonValid} JSON path(s) valid</div>`;
                 }
-                // Behavior mapping
-                if (validation.behaviorSummary && typeof validation.behaviorSummary.mapped === 'number') {
-                    html += `<div class="status-success-line"><span class="sr-only">Success: </span>${ICONS.check} ${validation.behaviorSummary.mapped} behavior(s) properly mapped</div>`;
-                }
                 // Errors, warnings, passes
                 validation.errors?.forEach(err => {
                     html += `<div class="status-error-line"><span class="sr-only">Error: </span>${ICONS.cross} ${err}</div>`;
