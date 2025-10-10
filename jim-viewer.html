@@ -1031,6 +1031,49 @@
             try {
                 if (typeof this._ensureOverlayToggle === 'function') this._ensureOverlayToggle();
             } catch (e) { /* ignore */ }
+            // Map any stored inventoryData.domElement references (which may point to
+            // elements in the parsed document) to the corresponding elements in the
+            // newly-inserted cloned SVG so inventory clicks target live DOM nodes.
+            try {
+                const viz = container;
+                if (viz && Array.isArray(this.inventoryData) && this.inventoryData.length) {
+                    this.inventoryData.forEach(item => {
+                        try {
+                            if (!item || !item.domElement) return;
+                            // Prefer mapping by element ID when available
+                            let mapped = null;
+                            const original = item.domElement;
+                            if (original && original.id) {
+                                try {
+                                    if (typeof CSS !== 'undefined' && typeof CSS.escape === 'function') {
+                                        mapped = viz.querySelector('#' + CSS.escape(original.id));
+                                    } else {
+                                        mapped = viz.querySelector('#' + original.id);
+                                    }
+                                } catch (e) { mapped = null; }
+                            }
+                            // Next try any stored selector string
+                            if (!mapped && item.selector) {
+                                try { mapped = viz.querySelector(item.selector); } catch (e) { mapped = null; }
+                            }
+                            // Fallback: try basic tag+class matching
+                            if (!mapped && original && original.tagName) {
+                                try {
+                                    const tag = original.tagName.toLowerCase();
+                                    const cls = (original.classList && original.classList.length) ? Array.from(original.classList) : [];
+                                    const candidates = Array.from(viz.querySelectorAll(tag));
+                                    if (cls.length) {
+                                        mapped = candidates.find(c => cls.every(cn => c.classList && c.classList.contains(cn)));
+                                    } else if (candidates.length === 1) {
+                                        mapped = candidates[0];
+                                    }
+                                } catch (e) { mapped = null; }
+                            }
+                            if (mapped) item.domElement = mapped;
+                        } catch (e) { /* per-item mapping failures are non-fatal */ }
+                    });
+                }
+            } catch (e) { /* ignore mapping failures */ }
         }
     }
 
