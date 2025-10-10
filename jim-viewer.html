@@ -2014,9 +2014,9 @@
                             shapeBehaviors.forEach(sb => {
                                 const b = sb.b;
                                 const bi = sb.idx;
-                                const label = b.enter && b.enter.announcement ? (typeof b.enter.announcement === 'string' ? b.enter.announcement : (b.enter.announcement.name || `Behavior ${bi}`)) : `Behavior ${bi}`;
-                                // Compact button to inspect the behavior (opens behavior info panel)
-                                selectorPanelHtml += `<div class='panel group-behavior' style='padding:8px;margin-bottom:8px;display:inline-block;'><button class='inventory-button' data-category='shape-behavior' data-idx='${this._shapeBehaviors.length}' aria-label='Inspect shape behavior ${this.escapeHtml(label)}' style='font-weight:600;margin-right:8px;'>Inspect</button><span style='vertical-align:middle;'>${this.escapeHtml(label)}</span></div>`;
+                                // Simple label: always use 'Behavior N' to keep list compact and predictable
+                                const btnLabel = `Behavior ${bi}`;
+                                selectorPanelHtml += `<div class='panel group-behavior' style='padding:8px;margin-bottom:8px;display:inline-block;'><button class='inventory-button' data-category='shape-behavior' data-idx='${this._shapeBehaviors.length}' aria-label='Open ${this.escapeHtml(btnLabel)}' style='font-weight:600;margin-right:8px;'>${this.escapeHtml(btnLabel)}</button></div>`;
                                 this._shapeBehaviors.push(b);
                             });
                             selectorPanelHtml += `</div></div>`;
