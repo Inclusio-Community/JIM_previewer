@@ -27,6 +27,14 @@
         .muted-italic { color: var(--muted); font-style: italic; }
         .spec-heading { margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--metadata-border); font-size: 15px; color: var(--text-normal); }
         .inventory-button { background: #f8fafc; border: 1px solid #e2e8f0; padding: 8px; border-radius: 4px; font-size: 12px; cursor: pointer; box-sizing: border-box; display: inline-block; vertical-align: top; margin-bottom: 4px; color: var(--text-normal); }
+        /* Ensure inventory buttons receive a visible highlight when focused (keyboard) or clicked (mouse).
+           Some browsers suppress focus outlines on mouse interaction; add explicit :active and :focus styles
+           so clicking or keyboard navigation both give a clear visual state. */
+        .inventory-button:focus, .inventory-button:active, .inventory-button:focus-visible {
+            outline: 2px solid #3b82f6;
+            outline-offset: 2px;
+            box-shadow: none;
+        }
     .warning-text { color: var(--status-warning); }
         .status-success-line { color: var(--status-success); margin:4px 0; font-weight:600; }
         .status-warning-line { color: var(--status-warning); margin:4px 0; }
