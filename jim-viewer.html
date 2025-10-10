@@ -1962,7 +1962,7 @@
                     // Add group behaviors section
                     if (groupBehaviors.length) {
                         // Build interactive group behavior controls: header button + member preview buttons
-                        selectorPanelHtml += `<div style='margin-top:16px;'><h3 class='panel__heading'>Group Behaviors</h3><div class='group-behaviors-list' aria-hidden='false'>`;
+                        selectorPanelHtml += `<div style='margin-top:16px;'><h3 class='panel__heading'>Group Behaviors (${groupBehaviors.length})</h3><div class='group-behaviors-list' aria-hidden='false'>`;
                         // We'll collect referenced elements so the delegated handler can inspect them
                         var _groupPreviewEls = [];
                         var _gpIndex = 0;
@@ -2008,7 +2008,7 @@
                     try {
                         const shapeBehaviors = (this.jimData.behaviors || []).map((b, idx) => ({ b, idx })).filter(x => Array.isArray(x.b?.target?.shapes) && x.b.target.shapes.length > 0);
                         if (shapeBehaviors.length) {
-                            selectorPanelHtml += `<div style='margin-top:16px;'><h3 class='panel__heading'>Shape Behaviors</h3><div class='group-behaviors-list' aria-hidden='false'>`;
+                            selectorPanelHtml += `<div style='margin-top:16px;'><h3 class='panel__heading'>Shape Behaviors (${shapeBehaviors.length})</h3><div class='group-behaviors-list' aria-hidden='false'>`;
                             // store behavior refs for delegated handler
                             this._shapeBehaviors = [];
                             shapeBehaviors.forEach(sb => {
