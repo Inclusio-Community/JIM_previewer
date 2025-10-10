@@ -15,6 +15,7 @@ An interactive tool for analyzing and validating JSON for Interactive Media (JIM
 - **Robust JIM Validation**: Preflight normalization, error/warning reporting, and spec compliance checks for JIM metadata
 - **SVG Accessibility Audit**: Analyzes ARIA, roles, labels, keyboard navigation, and accessibility attributes
 - **Interactive Visualization**: Click or focus SVG elements to inspect JIM mappings, behaviors, and accessibility info
+- **Shape behavior overlays**: Renders shapes declared by JIM behavior payloads (rect, circle, ellipse, line, polygon, polyline, path) as focusable, keyboard-accessible overlays. Overlays respect author-provided style hints (stroke, fill, stroke-width, opacity), can be toggled with the Show/Hide overlays control, and are surfaced in the Selectors / Inventory panels as "Shape Behaviors" for quick inspection.
 - **Selector List Panel**: Displays all JIM selectors and visually indicates which are mapped by behaviors (including wildcards and compound selectors)
 - **Detailed Analysis Panel**: Shows validation results, orphaned selectors, facet coverage, and a categorized inventory of SVG elements
 - **Advanced Selector Support**: Handles wildcards, descendant, and compound CSS selectors in behavior mapping
@@ -42,6 +43,7 @@ An interactive tool for analyzing and validating JSON for Interactive Media (JIM
 	- `Distribution_of_the_workforce_across_economic_sectors_in_India_2019.svg`
 	- `Number_of_Xbox_Live_MAU_Q1_2016___Q4_2019.svg`
 	- `Unemployment_rate_in_Greece_1999_2019.svg`
+	- `JLGjim-photosynthesis-vav-monarch-approved.pdf.svg`
 
 ## Running accessibility checks
 

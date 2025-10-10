@@ -27,6 +27,14 @@
         .muted-italic { color: var(--muted); font-style: italic; }
         .spec-heading { margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--metadata-border); font-size: 15px; color: var(--text-normal); }
         .inventory-button { background: #f8fafc; border: 1px solid #e2e8f0; padding: 8px; border-radius: 4px; font-size: 12px; cursor: pointer; box-sizing: border-box; display: inline-block; vertical-align: top; margin-bottom: 4px; color: var(--text-normal); }
+        /* Ensure inventory buttons receive a visible highlight when focused (keyboard) or clicked (mouse).
+           Some browsers suppress focus outlines on mouse interaction; add explicit :active and :focus styles
+           so clicking or keyboard navigation both give a clear visual state. */
+        .inventory-button:focus, .inventory-button:active, .inventory-button:focus-visible {
+            outline: 2px solid #3b82f6;
+            outline-offset: 2px;
+            box-shadow: none;
+        }
     .warning-text { color: var(--status-warning); }
         .status-success-line { color: var(--status-success); margin:4px 0; font-weight:600; }
         .status-warning-line { color: var(--status-warning); margin:4px 0; }
@@ -66,6 +74,9 @@
                 .panel--success { background: #ecfdf5; border-color: #10b981; }
                 .panel__heading { font-size: 15px; color: var(--text-normal); margin-bottom:8px; }
                 .btn { display: inline-flex; align-items: center; padding:6px 12px; border-radius:4px; cursor:pointer; font-size:13px; margin-bottom:6px; border:1px solid transparent; background: #e6eef6; color: var(--text-normal); }
+                .btn:focus { outline: 2px solid #3b82f6; outline-offset: 2px; }
+                /* Small variant/placement tweaks for the overlay toggle near the visualization heading */
+                .jim-overlay-toggle { margin-top:8px; margin-left:8px; }
                 .btn:focus { outline: 2px solid #3b82f6; outline-offset: 2px; }
                 .btn--selector { background: #e0e7ef; }
                 .btn--selector--mapped { background: #d1fae5; border-color: #10b981; color: #022f26; }
@@ -109,6 +120,19 @@
     .inline-text { color:var(--text-normal); margin-top:4px; }
     .details--spaced { margin-top:10px; }
     .pre-meta { background:#f8fafc; padding:8px; border-radius:4px; margin-top:6px; }
+                /* JIM shape overlay visuals (invisible by default; highlight on hover/focus)
+                     Toggle behavior:
+                         - .jim-overlays-visible on #visualization forces overlays visible (stroke shown)
+                         - .jim-overlays-hidden on #visualization forces overlays hidden except on hover/focus
+                */
+                .jim-shape-overlay { fill: transparent; stroke-opacity: 0; pointer-events: all; cursor: pointer; transition: stroke-opacity .12s ease, filter .12s ease; }
+                .jim-shape-overlay:focus, .jim-shape-overlay:hover { stroke-opacity: 0.95; filter: drop-shadow(0 1px 4px rgba(0,0,0,0.12)); outline: none; }
+                /* Visible state: force overlays visible */
+                .jim-overlays-visible .jim-shape-overlay { stroke-opacity: 0.95; }
+                /* Hidden state: keep overlays visually hidden but allow hover/focus to show them */
+                .jim-overlays-hidden .jim-shape-overlay { stroke-opacity: 0; }
+                .jim-overlays-hidden .jim-shape-overlay:hover,
+                .jim-overlays-hidden .jim-shape-overlay:focus { stroke-opacity: 0.95; filter: drop-shadow(0 1px 4px rgba(0,0,0,0.12)); }
     .badge--muted { background:#e0e7ef; color:#1e293b; padding:2px 6px; margin-right:4px; }
     .muted-note.italic { font-style: italic; color: var(--muted-contrast); }
     .orphaned-list { padding-left:0; margin:8px 0; list-style:none; }
@@ -642,15 +666,109 @@
                                 // Require 'target'
                                 if (!('target' in b)) {
                                     errors.push(`Behavior[${i}] missing required 'target' property.`);
-                                } else if (typeof b.target !== "object" || b.target === null || typeof b.target.selector !== "string" || !b.target.selector.trim()) {
-                                    errors.push(`Behavior[${i}] 'target.selector' must be a non-empty string.`);
+                                } else if (typeof b.target !== "object" || b.target === null) {
+                                    errors.push(`Behavior[${i}] 'target' must be an object.`);
                                 } else {
-                                    // Flag non-standard keys in target
-                                    const allowedTargetKeys = new Set(["selector", "id", "name"]);
-                                    const targetKeys = Object.keys(b.target);
-                                    const illegalTargetKeys = targetKeys.filter(k => !allowedTargetKeys.has(k));
-                                    if (illegalTargetKeys.length) {
-                                        warnings.push(`Behavior[${i}] target has non-standard key(s): ${illegalTargetKeys.join(", ")}`);
+                                    // Accept either selector-based targets OR shapes-array-based targets
+                                    const tgt = b.target || {};
+                                    const hasSelector = typeof tgt.selector === 'string' && tgt.selector.trim();
+                                    const hasShapesArray = Array.isArray(tgt.shapes) && tgt.shapes.length > 0;
+                                    if (!hasSelector && !hasShapesArray) {
+                                        errors.push(`Behavior[${i}] target must include either 'selector' (non-empty string) or 'shapes' (non-empty array).`);
+                                    } else {
+                                        // Flag non-standard keys in target but allow selector/id/name/shapes
+                                        const allowedTargetKeys = new Set(["selector", "id", "name", "shapes"]);
+                                        const targetKeys = Object.keys(tgt);
+                                        const illegalTargetKeys = targetKeys.filter(k => !allowedTargetKeys.has(k));
+                                        if (illegalTargetKeys.length) {
+                                            warnings.push(`Behavior[${i}] target has non-standard key(s): ${illegalTargetKeys.join(", ")}`);
+                                        }
+                                        // If shapes array is present, validate each shape object's structure
+                                        if (hasShapesArray) {
+                                            const allowedShapeKinds = new Set(['rect','rectangle','circle','ellipse','line','polygon','polyline','path']);
+                                            tgt.shapes.forEach((shapeObj, sIdx) => {
+                                                if (!shapeObj || typeof shapeObj !== 'object' || Array.isArray(shapeObj)) {
+                                                    errors.push(`Behavior[${i}] target.shapes[${sIdx}] must be an object (found ${typeof shapeObj}).`);
+                                                    return;
+                                                }
+                                                const kindKeys = Object.keys(shapeObj);
+                                                if (kindKeys.length !== 1) {
+                                                    errors.push(`Behavior[${i}] target.shapes[${sIdx}] must contain exactly one shape kind key (found ${kindKeys.length}).`);
+                                                    return;
+                                                }
+                                                // Normalize alias 'rectangle' -> 'rect' for validation messages
+                                                let kind = kindKeys[0];
+                                                const originalKind = kind;
+                                                if (kind === 'rectangle') kind = 'rect';
+                                                if (!allowedShapeKinds.has(kind)) {
+                                                    errors.push(`Behavior[${i}] target.shapes[${sIdx}] has unknown shape kind '${originalKind}'. Allowed kinds: ${[...allowedShapeKinds].join(', ')}.`);
+                                                    return;
+                                                }
+                                                const payload = shapeObj[kindKeys[0]];
+                                                if (!payload || typeof payload !== 'object') {
+                                                    errors.push(`Behavior[${i}] target.shapes[${sIdx}].${originalKind} must be an object with shape properties.`);
+                                                    return;
+                                                }
+                                                const isNumericLike = (v) => (typeof v === 'number' && Number.isFinite(v)) || (typeof v === 'string' && v.trim() !== '' && !Number.isNaN(Number(v)));
+                                                const checkNumberProp = (propName) => {
+                                                    if (!(propName in payload)) {
+                                                        errors.push(`Behavior[${i}] target.shapes[${sIdx}].${originalKind}.${propName} is required.`);
+                                                    } else if (!isNumericLike(payload[propName])) {
+                                                        errors.push(`Behavior[${i}] target.shapes[${sIdx}].${originalKind}.${propName} must be a number.`);
+                                                    } else if (typeof payload[propName] === 'string') {
+                                                        warnings.push(`Behavior[${i}] target.shapes[${sIdx}].${originalKind}.${propName} is a string; expected a numeric type.`);
+                                                    }
+                                                };
+
+                                                switch (kind) {
+                                                    case 'rect':
+                                                        ['x','y','width','height'].forEach(checkNumberProp);
+                                                        break;
+                                                    case 'circle':
+                                                        ['cx','cy','r'].forEach(checkNumberProp);
+                                                        break;
+                                                    case 'ellipse':
+                                                        ['cx','cy','rx','ry'].forEach(checkNumberProp);
+                                                        break;
+                                                    case 'line':
+                                                        ['x1','y1','x2','y2'].forEach(checkNumberProp);
+                                                        break;
+                                                    case 'polygon':
+                                                    case 'polyline':
+                                                        if (!('points' in payload)) {
+                                                            errors.push(`Behavior[${i}] target.shapes[${sIdx}].${originalKind}.points is required.`);
+                                                        } else {
+                                                            const pts = payload.points;
+                                                            if (typeof pts === 'string') {
+                                                                if (!pts.trim()) errors.push(`Behavior[${i}] target.shapes[${sIdx}].${originalKind}.points must be a non-empty string.`);
+                                                            } else if (Array.isArray(pts)) {
+                                                                if (pts.length === 0) {
+                                                                    errors.push(`Behavior[${i}] target.shapes[${sIdx}].${originalKind}.points must be a non-empty array.`);
+                                                                } else {
+                                                                    pts.forEach((p, pi) => {
+                                                                        if (!Array.isArray(p) || p.length < 2 || !isNumericLike(p[0]) || !isNumericLike(p[1])) {
+                                                                            errors.push(`Behavior[${i}] target.shapes[${sIdx}].${originalKind}.points[${pi}] must be a pair of numbers [x,y].`);
+                                                                        } else if (typeof p[0] === 'string' || typeof p[1] === 'string') {
+                                                                            warnings.push(`Behavior[${i}] target.shapes[${sIdx}].${originalKind}.points[${pi}] uses string values; numeric types are preferred.`);
+                                                                        }
+                                                                    });
+                                                                }
+                                                            } else {
+                                                                errors.push(`Behavior[${i}] target.shapes[${sIdx}].${originalKind}.points must be a string or array of point pairs.`);
+                                                            }
+                                                        }
+                                                        break;
+                                                    case 'path':
+                                                        if (!('d' in payload) || typeof payload.d !== 'string' || !payload.d.trim()) {
+                                                            errors.push(`Behavior[${i}] target.shapes[${sIdx}].${originalKind}.d is required and must be a non-empty string.`);
+                                                        }
+                                                        break;
+                                                    default:
+                                                        // no-op for kinds already validated above
+                                                        break;
+                                                }
+                                            });
+                                        }
                                     }
                                 }
                                 // Check event blocks (enter, details, activate, exit)
@@ -909,6 +1027,10 @@
         if (container) {
             container.innerHTML = '';
             container.appendChild(svgClone);
+            // After inserting the visualization, ensure the overlay toggle exists
+            try {
+                if (typeof this._ensureOverlayToggle === 'function') this._ensureOverlayToggle();
+            } catch (e) { /* ignore */ }
         }
     }
 
@@ -972,7 +1094,204 @@
                 }
             }
         });
+
+        // Render overlays for behavior.target.shapes (if present)
+        try {
+            const ns = 'http://www.w3.org/2000/svg';
+            let overlayGroup = svgClone.querySelector('g.jim-overlays');
+            if (!overlayGroup) {
+                overlayGroup = document.createElementNS(ns, 'g');
+                overlayGroup.classList.add('jim-overlays');
+                // Put overlays on top
+                svgClone.appendChild(overlayGroup);
+            }
+            // Ensure inventoryData exists and is in-sync
+            if (!this.inventoryData) this.inventoryData = [];
+            // For each behavior, create overlays and attach handlers
+            (this.jimData.behaviors || []).forEach((behavior, bi) => {
+                const shapes = Array.isArray(behavior?.target?.shapes) ? behavior.target.shapes : [];
+                shapes.forEach((shapeObj, si) => {
+                    if (!shapeObj || typeof shapeObj !== 'object') return;
+                    const kindKeys = Object.keys(shapeObj); if (!kindKeys.length) return;
+                    let kind = kindKeys[0]; if (kind === 'rectangle') kind = 'rect';
+                    const payload = shapeObj[kindKeys[0]] || {};
+                    let overlayEl = null;
+                    try {
+                        switch (kind) {
+                            case 'rect':
+                                overlayEl = document.createElementNS(ns, 'rect');
+                                overlayEl.setAttribute('x', payload.x ?? 0);
+                                overlayEl.setAttribute('y', payload.y ?? 0);
+                                overlayEl.setAttribute('width', payload.width ?? 0);
+                                overlayEl.setAttribute('height', payload.height ?? 0);
+                                break;
+                            case 'circle':
+                                overlayEl = document.createElementNS(ns, 'circle');
+                                overlayEl.setAttribute('cx', payload.cx ?? 0);
+                                overlayEl.setAttribute('cy', payload.cy ?? 0);
+                                overlayEl.setAttribute('r', payload.r ?? 0);
+                                break;
+                            case 'ellipse':
+                                overlayEl = document.createElementNS(ns, 'ellipse');
+                                overlayEl.setAttribute('cx', payload.cx ?? 0);
+                                overlayEl.setAttribute('cy', payload.cy ?? 0);
+                                overlayEl.setAttribute('rx', payload.rx ?? 0);
+                                overlayEl.setAttribute('ry', payload.ry ?? 0);
+                                break;
+                            case 'line':
+                                overlayEl = document.createElementNS(ns, 'line');
+                                overlayEl.setAttribute('x1', payload.x1 ?? 0);
+                                overlayEl.setAttribute('y1', payload.y1 ?? 0);
+                                overlayEl.setAttribute('x2', payload.x2 ?? 0);
+                                overlayEl.setAttribute('y2', payload.y2 ?? 0);
+                                break;
+                            case 'polygon':
+                            case 'polyline':
+                                overlayEl = document.createElementNS(ns, kind);
+                                overlayEl.setAttribute('points', Array.isArray(payload.points) ? payload.points.map(p => p.join(',')).join(' ') : (payload.points || ''));
+                                break;
+                            case 'path':
+                                overlayEl = document.createElementNS(ns, 'path');
+                                overlayEl.setAttribute('d', payload.d || '');
+                                break;
+                            default:
+                                break;
+                        }
+                    } catch (e) { overlayEl = null; }
+                    if (!overlayEl) return;
+                    overlayEl.classList.add('jim-shape-overlay');
+                    // Apply any visual stroke/fill hints from the payload if present (non-destructive)
+                    try {
+                        // Basic attributes (support both kebab-case and camelCase keys)
+                        const map = {
+                            'stroke': 'stroke',
+                            'stroke-width': 'stroke-width',
+                            'strokeWidth': 'stroke-width',
+                            'stroke-linecap': 'stroke-linecap',
+                            'strokeLinecap': 'stroke-linecap',
+                            'stroke-linejoin': 'stroke-linejoin',
+                            'strokeLinejoin': 'stroke-linejoin',
+                            'stroke-dasharray': 'stroke-dasharray',
+                            'strokeDasharray': 'stroke-dasharray',
+                            'stroke-opacity': 'stroke-opacity',
+                            'strokeOpacity': 'stroke-opacity',
+                            'fill': 'fill',
+                            'fill-opacity': 'fill-opacity',
+                            'fillOpacity': 'fill-opacity',
+                            'opacity': 'opacity'
+                        };
+                        for (const k of Object.keys(map)) {
+                            if (payload[k] !== undefined && payload[k] !== null) {
+                                const attr = map[k];
+                                const raw = String(payload[k]);
+                                // Special-case fill: map explicit 'none' to 'transparent' to preserve pointer interactions
+                                    if (attr === 'fill') {
+                                    const v = raw;
+                                    const mapped = (v === 'none') ? 'transparent' : v;
+                                    // Set both the presentation attribute and an inline style
+                                    overlayEl.setAttribute('fill', mapped);
+                                    try { overlayEl.style.setProperty('fill', mapped); } catch (e) { /* ignore */ }
+                                } else {
+                                    // Apply as both attribute and inline style
+                                    overlayEl.setAttribute(attr, raw);
+                                    try {
+                                        // Add 'px' unit for numeric stroke-width values when needed
+                                        let styleVal = raw;
+                                        if (attr === 'stroke-width') {
+                                            if (/^\d+(?:\.\d+)?$/.test(raw)) styleVal = raw + 'px';
+                                        }
+                                        overlayEl.style.setProperty(attr, styleVal);
+                                    } catch (e) { /* ignore */ }
+                                }
+                            }
+                        }
+                    } catch (e) { /* ignore */ }
+                    overlayEl.setAttribute('fill', overlayEl.getAttribute('fill') || 'transparent');
+                    overlayEl.setAttribute('tabindex', '0');
+                    overlayEl.dataset.behaviorIndex = String(bi);
+                    overlayEl.dataset.shapeIndex = String(si);
+                    // Event handlers show behavior info
+                    overlayEl.addEventListener('click', (ev) => { ev.stopPropagation(); this.showBehaviorInfo(behavior, 'click', overlayEl); });
+                    overlayEl.addEventListener('focus', () => this.showBehaviorInfo(behavior, 'focus', overlayEl));
+                    overlayGroup.appendChild(overlayEl);
+
+                    // Wire overlay DOM back to inventoryData if a synthetic overlay item was created
+                    try {
+                        const invItem = this.inventoryData.find(it => it.category === 'overlay' && it.behaviorIndex === bi && it.shapeIndex === si);
+                        if (invItem) invItem.domElement = overlayEl;
+                    } catch (e) { /* ignore */ }
+                });
+            });
+            // Overlay visibility is controlled via classes on #visualization (jim-overlays-visible / jim-overlays-hidden)
+            // Do not mutate overlayGroup.style.display here to avoid conflicting with class-based CSS control.
+        } catch (e) { /* non-fatal overlay render errors */ }
         this.displayVisualization(svgClone);
+    }
+
+    // Ensure the overlay show/hide toggle exists inside #visualization and reflects current state
+    _ensureOverlayToggle() {
+        try {
+            const viz = document.getElementById('visualization');
+            const heading = document.getElementById('visualization-heading');
+            if (!viz || !heading) return;
+            const hasShapeOverlays = Array.isArray(this.jimData?.behaviors) && this.jimData.behaviors.some(b => Array.isArray(b?.target?.shapes) && b.target.shapes.length > 0);
+            // Look for existing toggle anywhere near the heading (by id)
+            const existing = document.getElementById('jim-overlay-toggle');
+            if (!hasShapeOverlays) {
+                if (existing) existing.remove();
+                viz.classList.remove('jim-overlays-visible','jim-overlays-hidden');
+                return;
+            }
+            if (!window.jimViewer) window.jimViewer = {};
+            if (typeof window.jimViewer.showOverlays === 'undefined') window.jimViewer.showOverlays = true;
+
+            const applyVizClass = () => {
+                viz.classList.remove('jim-overlays-visible','jim-overlays-hidden');
+                viz.classList.add(window.jimViewer.showOverlays ? 'jim-overlays-visible' : 'jim-overlays-hidden');
+            };
+
+            if (existing) {
+                // Update existing toggle state and accessible labels
+                existing.textContent = window.jimViewer.showOverlays ? 'Hide shape overlays' : 'Show shape overlays';
+                existing.setAttribute('aria-pressed', String(!!window.jimViewer.showOverlays));
+                existing.setAttribute('aria-label', 'Toggle shape overlays');
+                existing.title = window.jimViewer.showOverlays ? 'Hide shape overlays' : 'Show shape overlays';
+                // Rebind click handler safely by replacing node (which preserves attributes when cloned)
+                const newNode = existing.cloneNode(true);
+                existing.replaceWith(newNode);
+                const repl = document.getElementById('jim-overlay-toggle');
+                if (repl) repl.addEventListener('click', () => {
+                    window.jimViewer.showOverlays = !window.jimViewer.showOverlays;
+                    repl.textContent = window.jimViewer.showOverlays ? 'Hide shape overlays' : 'Show shape overlays';
+                    repl.setAttribute('aria-pressed', String(!!window.jimViewer.showOverlays));
+                    repl.title = window.jimViewer.showOverlays ? 'Hide shape overlays' : 'Show shape overlays';
+                    applyVizClass();
+                });
+                applyVizClass();
+                return;
+            }
+
+            const toggle = document.createElement('button');
+            toggle.id = 'jim-overlay-toggle';
+            toggle.className = 'btn jim-overlay-toggle';
+            toggle.setAttribute('aria-pressed', String(!!window.jimViewer.showOverlays));
+            toggle.setAttribute('aria-label', 'Toggle shape overlays');
+            toggle.title = window.jimViewer.showOverlays ? 'Hide shape overlays' : 'Show shape overlays';
+            toggle.textContent = window.jimViewer.showOverlays ? 'Hide shape overlays' : 'Show shape overlays';
+            toggle.addEventListener('click', () => {
+                window.jimViewer.showOverlays = !window.jimViewer.showOverlays;
+                toggle.textContent = window.jimViewer.showOverlays ? 'Hide shape overlays' : 'Show shape overlays';
+                toggle.setAttribute('aria-pressed', String(!!window.jimViewer.showOverlays));
+                toggle.title = window.jimViewer.showOverlays ? 'Hide shape overlays' : 'Show shape overlays';
+                applyVizClass();
+            });
+            applyVizClass();
+            // Insert after the visualization heading
+            if (heading.parentNode) {
+                if (heading.nextSibling) heading.parentNode.insertBefore(toggle, heading.nextSibling);
+                else heading.parentNode.appendChild(toggle);
+            }
+        } catch (e) { /* ignore failures */ }
     }
 
     // Show info for elements mapped by behavior (wildcard/class support)
@@ -1071,51 +1390,84 @@
             }
         }
         // --- Behavior validation ---
-        if (Object.keys(selectors).length) {
+        // Compute behavior mapping and warnings even when selectors are empty so overlay-only behaviors are surfaced
+        {
             const selectorKeys = Object.keys(selectors);
             const mapped = [];
             const missing = [];
             const behaviorWarnings = [];
             var svg = this.currentDoc.querySelector('svg');
+            // Warn if behavior.target.selector doesn't match anything
             for (let j = 0; j < behaviors.length; j++) {
                 const tgtSelector = behaviors[j].target && behaviors[j].target.selector;
-                if (tgtSelector) {
+                if (tgtSelector && svg) {
                     let B = [];
                     try { B = Array.from(svg.querySelectorAll(tgtSelector)); } catch (e) {}
                     if (B.length === 0) behaviorWarnings.push(`Behavior[${j}] target.selector '${tgtSelector}' matched no SVG elements.`);
                 }
             }
-            for (let i = 0; i < selectorKeys.length; i++) {
-                const key = selectorKeys[i];
-                const dom = selectors[key]?.dom;
-                let isMapped = false;
-                let behaviorElsewhere = false;
-                let A = [];
-                try { A = Array.from(svg.querySelectorAll(dom)); } catch (e) {}
-                for (let j = 0; j < behaviors.length; j++) {
-                    const tgtSelector = behaviors[j].target && behaviors[j].target.selector;
-                    if (tgtSelector) {
-                        let B = [];
-                        try { B = Array.from(svg.querySelectorAll(tgtSelector)); } catch (e) {}
-                        // Intersection
-                        if (A.some(n => n.matches && n.matches(tgtSelector))) { isMapped = true; break; }
-                        // Behavior ancestor of selector
-                        if (A.some(a => B.some(b => b.contains && b.contains(a)))) { isMapped = true; break; }
-                        // Selector ancestor of behavior
-                        if (B.some(b => A.some(a => a.contains && a.contains(b)))) { isMapped = true; break; }
-                        if (B.length && !isMapped) behaviorElsewhere = true;
+            if (selectorKeys.length) {
+                for (let i = 0; i < selectorKeys.length; i++) {
+                    const key = selectorKeys[i];
+                    const dom = selectors[key]?.dom;
+                    let isMapped = false;
+                    let behaviorElsewhere = false;
+                    let A = [];
+                    try { A = Array.from(svg.querySelectorAll(dom)); } catch (e) {}
+                    for (let j = 0; j < behaviors.length; j++) {
+                        const tgtSelector = behaviors[j].target && behaviors[j].target.selector;
+                        if (tgtSelector) {
+                            let B = [];
+                            try { B = Array.from(svg.querySelectorAll(tgtSelector)); } catch (e) {}
+                            // Intersection
+                            if (A.some(n => n.matches && n.matches(tgtSelector))) { isMapped = true; break; }
+                            // Behavior ancestor of selector
+                            if (A.some(a => B.some(b => b.contains && b.contains(a)))) { isMapped = true; break; }
+                            // Selector ancestor of behavior
+                            if (B.some(b => A.some(a => a.contains && a.contains(b)))) { isMapped = true; break; }
+                            if (B.length && !isMapped) behaviorElsewhere = true;
+                        }
                     }
+                    if (isMapped) mapped.push(key);
+                    else missing.push(key);
                 }
-                if (isMapped) mapped.push(key);
-                else missing.push(key);
             }
+            // Count behaviors that have shapes (overlays)
+            const shapeBehaviors = (behaviors || []).filter(b => Array.isArray(b?.target?.shapes) && b.target.shapes.length > 0).length;
             results.behaviorSummary = {
                 missing,
                 total: selectorKeys.length,
                 mapped: mapped.length,
-                warnings: behaviorWarnings
+                warnings: behaviorWarnings,
+                shapeBehaviors
             };
+            // Note: overlay-only behavior info is rendered in the validation UI as an informational
+            // muted-note (see renderValidationResults). Do not duplicate it in results.warnings
+            // to avoid showing both an informational line and a warning triangle.
         }
+        // --- Add synthetic inventory items for behavior.target.shapes so they appear in Analysis panel ---
+        try {
+            if (Array.isArray(jim.behaviors) && jim.behaviors.length) {
+                jim.behaviors.forEach((b, bi) => {
+                    const shapes = Array.isArray(b?.target?.shapes) ? b.target.shapes : [];
+                    shapes.forEach((s, si) => {
+                        if (!s || typeof s !== 'object') return;
+                        const kindKeys = Object.keys(s);
+                        const kind = kindKeys.length ? kindKeys[0] : 'shape';
+                        // Create a minimal synthetic inventory item for overlays
+                        results.svgInventory.push({
+                            category: 'overlay',
+                            selector: `behavior[${bi}].shapes[${si}] (${kind})`,
+                            element: kind,
+                            hasJIM: true,
+                            behaviorIndex: bi,
+                            shapeIndex: si,
+                            domElement: null // overlay DOM created later in renderVisualization
+                        });
+                    });
+                });
+            }
+        } catch (e) { /* non-fatal inventory augmentation */ }
         // --- SVG Element Inventory: ALWAYS run ---
         if (this.currentDoc) {
             let svg = this.currentDoc.querySelector('svg');
@@ -1265,6 +1617,27 @@
         }
         return null;
     }
+    // Choose a human-friendly announcement string to display.
+    // Preference: announcement.description, then announcement.name, then string value, then compact JSON.
+    formatAnnouncement(ann) {
+        if (!ann && ann !== 0) return null;
+        // Plain string announcement
+        if (typeof ann === 'string') {
+            const s = ann.trim();
+            return s ? s : null;
+        }
+        // Object: prefer description then name
+        if (typeof ann === 'object') {
+            if (ann.description && String(ann.description).trim()) return String(ann.description).trim();
+            if (ann.name && String(ann.name).trim()) return String(ann.name).trim();
+            // Try common alternate fields
+            if (ann.label && String(ann.label).trim()) return String(ann.label).trim();
+            // Fallback: compact JSON
+            try { return JSON.stringify(ann); } catch (e) { return String(ann); }
+        }
+        // Other primitive
+        return String(ann);
+    }
             setupEventListeners() {
                 // File input handler
                 const fileInput = document.getElementById('jim-file');
@@ -1320,6 +1693,12 @@
                                 if (el) {
                                     // Inspect the actual element from the visualization
                                     this.showNonJIMElementInfo(el, 'select');
+                                }
+                            // Special case: shape behavior inspect buttons rendered in the Selectors panel
+                            } else if (category === 'shape-behavior') {
+                                const behavior = this._shapeBehaviors && this._shapeBehaviors[idx];
+                                if (behavior) {
+                                    this.showBehaviorInfo(behavior, 'select', null);
                                 }
                             } else {
                                 // Use global handler for inventory items
@@ -1471,7 +1850,10 @@
             displayMetadataSummary() {
                 // Render selector list panel if JIM metadata is present
                 var selectorPanel = document.getElementById('selector-list-panel');
-                if (this.jimData && this.jimData.selectors && Object.keys(this.jimData.selectors).length) {
+                // Show selector panel if there are explicit selectors OR if there are shape behaviors
+                const hasSelectors = !!(this.jimData && this.jimData.selectors && Object.keys(this.jimData.selectors).length);
+                const hasShapeBehaviors = !!((this.jimData && Array.isArray(this.jimData.behaviors) && this.jimData.behaviors.some(b => Array.isArray(b?.target?.shapes) && b.target.shapes.length > 0)));
+                if (hasSelectors || hasShapeBehaviors) {
                     var selectorKeys = Object.keys(this.jimData.selectors);
                     var behaviors = this.jimData.behaviors || [];
                     var selectorPanelHtml = "<div class='selector-panel'>";
@@ -1588,7 +1970,7 @@
                     // Add group behaviors section
                     if (groupBehaviors.length) {
                         // Build interactive group behavior controls: header button + member preview buttons
-                        selectorPanelHtml += `<div style='margin-top:16px;'><h3 class='panel__heading'>Group Behaviors</h3><div class='group-behaviors-list' aria-hidden='false'>`;
+                        selectorPanelHtml += `<div style='margin-top:16px;'><h3 class='panel__heading'>Group Behaviors (${groupBehaviors.length})</h3><div class='group-behaviors-list' aria-hidden='false'>`;
                         // We'll collect referenced elements so the delegated handler can inspect them
                         var _groupPreviewEls = [];
                         var _gpIndex = 0;
@@ -1617,7 +1999,8 @@
                                 const el = gb.elements[vi];
                                 const label = el.id ? `#${el.id}` : (el.classList && el.classList.length) ? '.' + Array.from(el.classList).join('.') : el.tagName;
                                 const dataIdx = startIndex + vi; // actual index into _groupPreviewEls
-                                selectorPanelHtml += `<button class='inventory-button badge badge--muted' data-category='group-preview' data-idx='${dataIdx}' aria-label='SVG element ${label}' role='listitem'>${label}</button>`;
+                                // Per ARIA, role=listitem should be on a container element (not on a button).
+                                selectorPanelHtml += `<div role='listitem' class='group-preview-item' style='margin-right:6px;margin-bottom:6px;'><button class='inventory-button badge badge--muted' data-category='group-preview' data-idx='${dataIdx}' aria-label='SVG element ${label}'>${label}</button></div>`;
                             }
                             selectorPanelHtml += `</div>`;
                             selectorPanelHtml += `</div>`;
@@ -1628,6 +2011,26 @@
                         // Attach the preview element references to the instance for the delegated click handler
                         try { this._groupPreviewElements = _groupPreviewEls; } catch (e) { /* ignore if not in class context */ }
                     }
+
+                    // Shape Behaviors subsection: behaviors that define target.shapes
+                    try {
+                        const shapeBehaviors = (this.jimData.behaviors || []).map((b, idx) => ({ b, idx })).filter(x => Array.isArray(x.b?.target?.shapes) && x.b.target.shapes.length > 0);
+                        if (shapeBehaviors.length) {
+                            selectorPanelHtml += `<div style='margin-top:16px;'><h3 class='panel__heading'>Shape Behaviors (${shapeBehaviors.length})</h3><div class='group-behaviors-list' aria-hidden='false'>`;
+                            // store behavior refs for delegated handler
+                            this._shapeBehaviors = [];
+                            shapeBehaviors.forEach(sb => {
+                                const b = sb.b;
+                                const bi = sb.idx;
+                                // Simple label: always use 'Behavior N' to keep list compact and predictable
+                                const btnLabel = `Behavior ${bi}`;
+                                selectorPanelHtml += `<div class='panel group-behavior' style='padding:8px;margin-bottom:8px;display:inline-block;'><button class='inventory-button' data-category='shape-behavior' data-idx='${this._shapeBehaviors.length}' aria-label='Open ${this.escapeHtml(btnLabel)}' style='font-weight:600;margin-right:8px;'>${this.escapeHtml(btnLabel)}</button></div>`;
+                                this._shapeBehaviors.push(b);
+                            });
+                            selectorPanelHtml += `</div></div>`;
+                        }
+                    } catch (e) { /* ignore shape-behavior UI failures */ }
+
                     selectorPanelHtml += "</div>";
                     selectorPanel.innerHTML = selectorPanelHtml;
                     selectorPanel.classList.remove('hidden');
@@ -1683,6 +2086,8 @@
                         </div>
                     `;
                     summary.innerHTML = html;
+                    // Ensure the overlay toggle reflects current state and is rendered in the page
+                    try { if (typeof this._ensureOverlayToggle === 'function') this._ensureOverlayToggle(); } catch (e) { /* ignore */ }
                     // renderSVGInventoryOnly builds inventoryData and returns HTML that includes 'other' shapes
                     this.detailedAnalysis = this.renderSVGInventoryOnly();
                     this.updateDetailedAnalysis();
@@ -1727,6 +2132,8 @@
                     </div>
                 `;
                 summary.innerHTML = html;
+                // Ensure the overlay toggle reflects current state and is rendered below the visualization heading
+                try { if (typeof this._ensureOverlayToggle === 'function') this._ensureOverlayToggle(); } catch (e) { /* ignore */ }
                 this.detailedAnalysis = this.renderInventoryList(validation);
                 this.updateDetailedAnalysis();
             }
@@ -1921,6 +2328,59 @@
             }
         }
 
+        // Show a panel for a single behavior (used by overlays)
+        showBehaviorInfo(behavior, eventType, overlayEl) {
+            if (!behavior) return;
+            let html = '';
+            // Render a minimal header: 'Behavior N' (index) for clarity and consistency with the selectors list
+            const bi = (this.jimData && Array.isArray(this.jimData.behaviors)) ? this.jimData.behaviors.indexOf(behavior) : -1;
+            const headerLabel = bi >= 0 ? `Behavior ${bi}` : 'Behavior';
+            html += `<div><strong>Behavior</strong> <code>${this.escapeHtml(headerLabel)}</code></div>`;
+            html += `<div><strong>Event:</strong> <code>${eventType}</code></div>`;
+            if (behavior.target) {
+                const tgt = behavior.target;
+                if (tgt.selector) html += `<div><strong>Selector:</strong> <code>${this.escapeHtml(String(tgt.selector))}</code></div>`;
+                else if (tgt.shapes) html += `<div><strong>Shapes:</strong> <code>${tgt.shapes.length} shape(s)</code></div>`;
+            }
+            // Explicit announcement (show name then description if present)
+            const explicit = this.getExplicitAnnouncement(behavior);
+            if (explicit) {
+                // If it's a primitive string, show it as the name line
+                if (typeof explicit === 'string') {
+                    html += `<div class="announcement announcement-success"><strong>Explicit Announcement</strong><br>${this.escapeHtml(explicit)}</div>`;
+                } else if (typeof explicit === 'object') {
+                    const name = explicit.name ? String(explicit.name).trim() : null;
+                    const desc = explicit.description ? String(explicit.description).trim() : null;
+                    if (name || desc) {
+                        html += `<div class="announcement announcement-success"><strong>Explicit Announcement</strong><br>`;
+                        if (name) html += `${this.escapeHtml(name)}`;
+                        if (desc) html += `<div class="muted-note" style="margin-top:6px">${this.escapeHtml(desc)}</div>`;
+                        html += `</div>`;
+                    }
+                }
+            }
+            // Default announcement from JSON if available
+            let defaultAnn = null;
+            try {
+                const jsonPath = behavior.target?.json;
+                if (jsonPath) {
+                    const data = this.getDataFromJSONPath(jsonPath);
+                    defaultAnn = data ? this.getDefaultAnnouncement(data) : null;
+                }
+            } catch (e) { /* ignore */ }
+            if (defaultAnn) html += `<div class="announcement announcement-note"><strong>Default Announcement</strong><br>${this.escapeHtml(defaultAnn)}</div>`;
+
+            html += `<details open class="details--spaced"><summary class="details-summary">Behavior JSON</summary><pre class="pre-meta meta-text">${this.escapeHtml(JSON.stringify(behavior, null, 2))}</pre></details>`;
+
+            this.infoContent.innerHTML = html;
+            this.infoPanel.classList.add('visible');
+            const liveRegion = document.getElementById('info-panel-live');
+            if (liveRegion) {
+                liveRegion.textContent = '';
+                requestAnimationFrame(() => { liveRegion.textContent = `Behavior info opened (${eventType})`; });
+            }
+        }
+
         // Primary action for a group selector: open full element info for the first matched member
         showGroupPrimaryAction(selector) {
             if (!selector) return;
@@ -2004,10 +2464,12 @@
             const group = inv.filter(i => i.category === 'group');
             // Other: not in interactive, text, or group
             const other = inv.filter(i => i.category !== 'interactive' && i.category !== 'text' && i.category !== 'group');
+            const overlay = inv.filter(i => i.category === 'overlay');
             const byCategory = {
                 interactive,
                 text,
                 group,
+                overlay,
                 other
             };
 
@@ -2254,6 +2716,132 @@
                     });
                 }
 
+                // --- Render overlays for behavior.target.shapes (if present) ---
+                try {
+                    const ns = 'http://www.w3.org/2000/svg';
+                    let overlayGroup = svgClone.querySelector('g.jim-overlays');
+                    if (!overlayGroup) {
+                        overlayGroup = document.createElementNS(ns, 'g');
+                        overlayGroup.classList.add('jim-overlays');
+                        // Put overlays on top
+                        svgClone.appendChild(overlayGroup);
+                    }
+                    // Ensure inventoryData exists and is in-sync
+                    if (!this.inventoryData) this.inventoryData = [];
+                    // For each behavior, create overlays and attach handlers
+                    (this.jimData.behaviors || []).forEach((behavior, bi) => {
+                        const shapes = Array.isArray(behavior?.target?.shapes) ? behavior.target.shapes : [];
+                        shapes.forEach((shapeObj, si) => {
+                            if (!shapeObj || typeof shapeObj !== 'object') return;
+                            const kindKeys = Object.keys(shapeObj); if (!kindKeys.length) return;
+                            let kind = kindKeys[0]; if (kind === 'rectangle') kind = 'rect';
+                            const payload = shapeObj[kindKeys[0]] || {};
+                            let overlayEl = null;
+                            try {
+                                switch (kind) {
+                                    case 'rect':
+                                        overlayEl = document.createElementNS(ns, 'rect');
+                                        overlayEl.setAttribute('x', payload.x ?? 0);
+                                        overlayEl.setAttribute('y', payload.y ?? 0);
+                                        overlayEl.setAttribute('width', payload.width ?? 0);
+                                        overlayEl.setAttribute('height', payload.height ?? 0);
+                                        break;
+                                    case 'circle':
+                                        overlayEl = document.createElementNS(ns, 'circle');
+                                        overlayEl.setAttribute('cx', payload.cx ?? 0);
+                                        overlayEl.setAttribute('cy', payload.cy ?? 0);
+                                        overlayEl.setAttribute('r', payload.r ?? 0);
+                                        break;
+                                    case 'ellipse':
+                                        overlayEl = document.createElementNS(ns, 'ellipse');
+                                        overlayEl.setAttribute('cx', payload.cx ?? 0);
+                                        overlayEl.setAttribute('cy', payload.cy ?? 0);
+                                        overlayEl.setAttribute('rx', payload.rx ?? 0);
+                                        overlayEl.setAttribute('ry', payload.ry ?? 0);
+                                        break;
+                                    case 'line':
+                                        overlayEl = document.createElementNS(ns, 'line');
+                                        overlayEl.setAttribute('x1', payload.x1 ?? 0);
+                                        overlayEl.setAttribute('y1', payload.y1 ?? 0);
+                                        overlayEl.setAttribute('x2', payload.x2 ?? 0);
+                                        overlayEl.setAttribute('y2', payload.y2 ?? 0);
+                                        break;
+                                    case 'polygon':
+                                    case 'polyline':
+                                        overlayEl = document.createElementNS(ns, kind);
+                                        overlayEl.setAttribute('points', Array.isArray(payload.points) ? payload.points.map(p => p.join(',')).join(' ') : (payload.points || ''));
+                                        break;
+                                    case 'path':
+                                        overlayEl = document.createElementNS(ns, 'path');
+                                        overlayEl.setAttribute('d', payload.d || '');
+                                        break;
+                                    default:
+                                        break;
+                                }
+                            } catch (e) { overlayEl = null; }
+                            if (!overlayEl) return;
+                            overlayEl.classList.add('jim-shape-overlay');
+                            // Apply any visual stroke/fill hints from the payload if present (non-destructive)
+                            try {
+                                const map = {
+                                    'stroke': 'stroke',
+                                    'stroke-width': 'stroke-width',
+                                    'strokeWidth': 'stroke-width',
+                                    'stroke-linecap': 'stroke-linecap',
+                                    'strokeLinecap': 'stroke-linecap',
+                                    'stroke-linejoin': 'stroke-linejoin',
+                                    'strokeLinejoin': 'stroke-linejoin',
+                                    'stroke-dasharray': 'stroke-dasharray',
+                                    'strokeDasharray': 'stroke-dasharray',
+                                    'stroke-opacity': 'stroke-opacity',
+                                    'strokeOpacity': 'stroke-opacity',
+                                    'fill': 'fill',
+                                    'fill-opacity': 'fill-opacity',
+                                    'fillOpacity': 'fill-opacity',
+                                    'opacity': 'opacity'
+                                };
+                                for (const k of Object.keys(map)) {
+                                    if (payload[k] !== undefined && payload[k] !== null) {
+                                        const attr = map[k];
+                                        const raw = String(payload[k]);
+                                        if (attr === 'fill') {
+                                            const v = raw;
+                                            const mapped = (v === 'none') ? 'transparent' : v;
+                                            overlayEl.setAttribute('fill', mapped);
+                                            try { overlayEl.style.setProperty('fill', mapped); } catch (e) { /* ignore */ }
+                                        } else {
+                                            overlayEl.setAttribute(attr, raw);
+                                            try {
+                                                let styleVal = raw;
+                                                if (attr === 'stroke-width') {
+                                                    if (/^\d+(?:\.\d+)?$/.test(raw)) styleVal = raw + 'px';
+                                                }
+                                                overlayEl.style.setProperty(attr, styleVal);
+                                            } catch (e) { /* ignore */ }
+                                        }
+                                    }
+                                }
+                            } catch (e) { /* ignore */ }
+                            overlayEl.setAttribute('fill', overlayEl.getAttribute('fill') || 'transparent');
+                            overlayEl.setAttribute('tabindex', '0');
+                            overlayEl.dataset.behaviorIndex = String(bi);
+                            overlayEl.dataset.shapeIndex = String(si);
+                            // Event handlers show behavior info
+                            overlayEl.addEventListener('click', (ev) => { ev.stopPropagation(); this.showBehaviorInfo(behavior, 'click', overlayEl); });
+                            overlayEl.addEventListener('focus', () => this.showBehaviorInfo(behavior, 'focus', overlayEl));
+                            overlayGroup.appendChild(overlayEl);
+
+                            // Wire overlay DOM back to inventoryData if a synthetic overlay item was created
+                            try {
+                                const invItem = this.inventoryData.find(it => it.category === 'overlay' && it.behaviorIndex === bi && it.shapeIndex === si);
+                                if (invItem) invItem.domElement = overlayEl;
+                            } catch (e) { /* ignore */ }
+                        });
+                    });
+                    // Overlay visibility is controlled via classes on #visualization (jim-overlays-visible / jim-overlays-hidden)
+                    // Do not mutate overlayGroup.style.display here to avoid conflicting with class-based CSS control.
+                } catch (e) { /* non-fatal overlay render errors */ }
+
                 this.displayVisualization(svgClone);
             }
 
@@ -2304,18 +2892,27 @@
                 return false;
             }
         });
-        // Show explicit announcement box if present
+        // Show explicit announcement box if present (use human-friendly format)
         let explicitAnn = null;
         for (const b of matchedBehaviors) {
-            if (b.enter?.announcement) {
-                explicitAnn = b.enter.announcement;
-                break;
-            }
+            const ea = this.getExplicitAnnouncement(b);
+            if (ea) { explicitAnn = ea; break; }
         }
         if (explicitAnn) {
-            html += `<div class="announcement announcement-success">
-                <strong>Explicit Announcement:</strong><br>${typeof explicitAnn === 'object' ? (explicitAnn.description || JSON.stringify(explicitAnn)) : explicitAnn}
-            </div>`;
+            if (typeof explicitAnn === 'string') {
+                html += `<div class="announcement announcement-success">
+                    <strong>Explicit Announcement:</strong><br>${this.escapeHtml(explicitAnn)}
+                </div>`;
+            } else if (typeof explicitAnn === 'object') {
+                const name = explicitAnn.name ? String(explicitAnn.name).trim() : null;
+                const desc = explicitAnn.description ? String(explicitAnn.description).trim() : null;
+                if (name || desc) {
+                    html += `<div class="announcement announcement-success"><strong>Explicit Announcement:</strong><br>`;
+                    if (name) html += `${this.escapeHtml(name)}`;
+                    if (desc) html += `<div class="muted-note" style="margin-top:6px">${this.escapeHtml(desc)}</div>`;
+                    html += `</div>`;
+                }
+            }
         }
         // Show default announcement box if present and different from explicit
         if (defaultAnnouncement && (!explicitAnn || (typeof explicitAnn === 'object' ? explicitAnn.description : explicitAnn) !== defaultAnnouncement)) {
@@ -2499,29 +3096,43 @@
                 if (!validation) return '<div class="muted-italic">No validation data available</div>';
                 let html = '';
                 // Facet validation
-                    if (validation.facetSummary) {
-                        if (validation.facetSummary.missing && validation.facetSummary.missing.length) {
-                            html += `<div class="status-warning-line"><span class="sr-only">Warning: </span>${ICONS.warn} ${validation.facetSummary.missing.length} record properties lack facet definitions: ${validation.facetSummary.missing.join(', ')}</div>`;
-                        } else if (validation.facetSummary.total > 0) {
-                            html += `<div class="status-success-line"><span class="sr-only">Success: </span>${ICONS.check} All record properties have facet definitions</div>`;
-                        }
+                if (validation.facetSummary) {
+                    if (validation.facetSummary.missing && validation.facetSummary.missing.length) {
+                        html += `<div class="status-warning-line"><span class="sr-only">Warning: </span>${ICONS.warn} ${validation.facetSummary.missing.length} record properties lack facet definitions: ${validation.facetSummary.missing.join(', ')}</div>`;
+                    } else if (validation.facetSummary.total > 0) {
+                        html += `<div class="status-success-line"><span class="sr-only">Success: </span>${ICONS.check} All record properties have facet definitions</div>`;
                     }
-                // Behavior validation
+                }
+
+                // Behavior validation: clarify mapping vs overlay-only behaviors
                 if (validation.behaviorSummary) {
-                    if (validation.behaviorSummary.missing && validation.behaviorSummary.missing.length) {
-                        html += `<div class="status-warning-line"><span class="sr-only">Warning: </span>${ICONS.warn} ${validation.behaviorSummary.missing.length} selector(s) lack behavior definitions: ${validation.behaviorSummary.missing.join(', ')}</div>`;
-                    } else if (validation.behaviorSummary.total > 0) {
-                        html += `<div class="status-success-line"><span class="sr-only">Success: </span>${ICONS.check} All selectors have behavior definitions</div>`;
+                    const totalSelectors = validation.behaviorSummary.total || 0;
+                    const mappedCount = typeof validation.behaviorSummary.mapped === 'number' ? validation.behaviorSummary.mapped : 0;
+                    const missing = validation.behaviorSummary.missing || [];
+                    const shapeBehaviors = validation.behaviorSummary.shapeBehaviors || 0;
+
+                    // If selectors are missing behavior definitions, surface as a warning
+                    if (missing.length) {
+                        html += `<div class="status-warning-line"><span class="sr-only">Warning: </span>${ICONS.warn} ${missing.length} selector(s) lack behavior definitions: ${missing.join(', ')}</div>`;
+                    } else if (totalSelectors > 0) {
+                        html += `<div class="status-success-line"><span class="sr-only">Success: </span>${ICONS.check} All ${totalSelectors} selector(s) have behavior definitions</div>`;
+                    }
+
+                    // Clarify mapping: how many declared selectors actually matched behaviors
+                    html += `<div class="status-success-line"><span class="sr-only">Info: </span>${ICONS.check} Selectors with matching behavior(s): ${mappedCount} of ${totalSelectors}</div>`;
+
+                    // Success line for behaviors mapped by selector (explicit mapping)
+                    html += `<div class="status-success-line"><span class="sr-only">Success: </span>${ICONS.check} ${mappedCount} behavior(s) mapped by selector</div>`;
+
+                    // Short success line for behaviors mapped to shapes (overlay-only)
+                    if (shapeBehaviors && shapeBehaviors > 0) {
+                        html += `<div class="status-success-line"><span class="sr-only">Success: </span>${ICONS.check} ${shapeBehaviors} behavior(s) mapped to shapes (overlay-only)</div>`;
                     }
                 }
                 // Selector/DOM validation
                 if (validation.selectorSummary) {
                     html += `<div class="status-success-line"><span class="sr-only">Success: </span>${ICONS.check} ${validation.selectorSummary.domValid} DOM selector(s) valid</div>`;
                     html += `<div class="status-success-line"><span class="sr-only">Success: </span>${ICONS.check} ${validation.selectorSummary.jsonValid} JSON path(s) valid</div>`;
-                }
-                // Behavior mapping
-                if (validation.behaviorSummary && typeof validation.behaviorSummary.mapped === 'number') {
-                    html += `<div class="status-success-line"><span class="sr-only">Success: </span>${ICONS.check} ${validation.behaviorSummary.mapped} behavior(s) properly mapped</div>`;
                 }
                 // Errors, warnings, passes
                 validation.errors?.forEach(err => {
@@ -2920,6 +3531,31 @@
             // Find the item in the inventory by category and index
             const items = window.jimViewer.inventoryData.filter(i => i.category === category);
             const item = items[idx];
+            if (!item) return;
+            // If this is an overlay synthetic item, show behavior info
+            if (category === 'overlay') {
+                try {
+                    // If domElement exists, focus it; otherwise render info directly
+                    if (item.domElement) {
+                        item.domElement.focus();
+                        // Fire the viewer helper
+                        const bi = item.behaviorIndex;
+                        const si = item.shapeIndex;
+                        const behavior = window.jimViewer.jimData?.behaviors?.[bi];
+                        if (behavior && typeof window.jimViewer.showBehaviorInfo === 'function') {
+                            window.jimViewer.showBehaviorInfo(behavior, 'select', item.domElement);
+                            return;
+                        }
+                    } else {
+                        const bi = item.behaviorIndex;
+                        const behavior = window.jimViewer.jimData?.behaviors?.[bi];
+                        if (behavior && typeof window.jimViewer.showBehaviorInfo === 'function') {
+                            window.jimViewer.showBehaviorInfo(behavior, 'select', null);
+                            return;
+                        }
+                    }
+                } catch (e) { /* ignore overlay handler failures */ }
+            }
             if (item && item.domElement) {
                 if (item.hasJIM && window.jimViewer.jimData && window.jimViewer.jimData.selectors) {
                     // Try to find the selectorKey for this element

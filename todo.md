@@ -1,6 +1,6 @@
 # TODO / Checklist
 
-a. Finish two other CSUN examples and check overlay support
+a. Finish map CSUN example
 
 This short checklist collects the immediate follow-ups you asked for.
 
