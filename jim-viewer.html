@@ -1063,36 +1063,69 @@
         // Attach behaviors using target.selector (supports wildcards/classes)
         behaviors.forEach((behavior, i) => {
             const tgtSelector = behavior?.target?.selector;
-            if (typeof tgtSelector === 'string' && tgtSelector.trim()) {
+                if (typeof tgtSelector === 'string' && tgtSelector.trim()) {
                 let elements = [];
-                try {
+                    try {
                     elements = Array.from(svgClone.querySelectorAll(tgtSelector));
                 } catch (e) {
                     console.warn(`[JIMViewer] Invalid behavior target.selector '${tgtSelector}'`, e);
                 }
-                elements.forEach(el => {
+                elements.forEach((el, idx) => {
+                    // Attaching handlers for behavior-targeted element
                     // Attach behavior event listeners
                     el.addEventListener('focus', () => this.showElementInfoByBehavior(behavior, 'focus', el));
-                    el.addEventListener('click', () => this.showElementInfoByBehavior(behavior, 'click', el));
+                    el.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        this.showElementInfoByBehavior(behavior, 'click', el);
+                    });
                 });
             }
         });
 
         // Add fallback handler for ANY SVG element (for elements without JIM mappings)
+        // Enhanced: walk up from the event target to find any matching behavior selector
         svgClone.addEventListener('click', (e) => {
             const targetElement = e.target;
-            if (targetElement instanceof SVGElement && targetElement !== svgClone) {
-                const hasJIM = Object.values(selectors).some(s => {
-                    try {
-                        return targetElement.matches(s.dom);
-                    } catch {
-                        return false;
+            if (!(targetElement instanceof SVGElement) || targetElement === svgClone) return;
+
+            // First: check if any behavior selector matches the target or its ancestors up to the svgClone
+            let matched = false;
+            try {
+                for (let bi = 0; bi < behaviors.length && !matched; bi++) {
+                    const behavior = behaviors[bi];
+                    const tgtSelector = behavior?.target?.selector;
+                    if (!tgtSelector) continue;
+
+                    // Walk up from the clicked element to the svg root, checking .matches at each step
+                    let current = targetElement;
+                    while (current && current !== svgClone && !matched) {
+                        try {
+                            if (current.matches && current.matches(tgtSelector)) {
+                                // Found a parent (or the element itself) that the behavior targets
+                                e.stopPropagation();
+                                try { this.showElementInfoByBehavior(behavior, 'click', current); } catch (err) { this.showBehaviorInfo(behavior, 'click', current); }
+                                matched = true;
+                                break;
+                            }
+                        } catch (err) {
+                            // invalid selector or other error: ignore and continue up the tree
+                        }
+                        current = current.parentElement;
                     }
-                });
-                if (!hasJIM) {
-                    this.showNonJIMElementInfo(targetElement, 'click');
                 }
+            } catch (err) {
+                // If anything goes wrong, fall back to original behavior
+                matched = false;
             }
+
+            if (matched) return;
+
+            // If no behavior selector matched, fall back to showing non-JIM element info when appropriate
+            const selectors = this.jimData?.selectors || {};
+            const hasJIM = Object.values(selectors).some(s => {
+                try { return targetElement.matches(s.dom); } catch { return false; }
+            });
+            if (!hasJIM) this.showNonJIMElementInfo(targetElement, 'click');
         });
 
         // Render overlays for behavior.target.shapes (if present)
@@ -1391,59 +1424,106 @@
         }
         // --- Behavior validation ---
         // Compute behavior mapping and warnings even when selectors are empty so overlay-only behaviors are surfaced
-        {
+        if (Array.isArray(behaviors) && behaviors.length > 0) {
             const selectorKeys = Object.keys(selectors);
-            const mapped = [];
+            const mapped = new Set(); // track which selector keys have behaviors
             const missing = [];
-            const behaviorWarnings = [];
-            var svg = this.currentDoc.querySelector('svg');
-            // Warn if behavior.target.selector doesn't match anything
-            for (let j = 0; j < behaviors.length; j++) {
-                const tgtSelector = behaviors[j].target && behaviors[j].target.selector;
-                if (tgtSelector && svg) {
-                    let B = [];
-                    try { B = Array.from(svg.querySelectorAll(tgtSelector)); } catch (e) {}
-                    if (B.length === 0) behaviorWarnings.push(`Behavior[${j}] target.selector '${tgtSelector}' matched no SVG elements.`);
+            let shapeBehaviors = 0;
+
+            // Count shape-based behaviors
+            behaviors.forEach(b => {
+                if (Array.isArray(b?.target?.shapes) && b.target.shapes.length > 0) {
+                    shapeBehaviors++;
                 }
-            }
-            if (selectorKeys.length) {
-                for (let i = 0; i < selectorKeys.length; i++) {
-                    const key = selectorKeys[i];
-                    const dom = selectors[key]?.dom;
-                    let isMapped = false;
-                    let behaviorElsewhere = false;
-                    let A = [];
-                    try { A = Array.from(svg.querySelectorAll(dom)); } catch (e) {}
-                    for (let j = 0; j < behaviors.length; j++) {
-                        const tgtSelector = behaviors[j].target && behaviors[j].target.selector;
-                        if (tgtSelector) {
-                            let B = [];
-                            try { B = Array.from(svg.querySelectorAll(tgtSelector)); } catch (e) {}
-                            // Intersection
-                            if (A.some(n => n.matches && n.matches(tgtSelector))) { isMapped = true; break; }
-                            // Behavior ancestor of selector
-                            if (A.some(a => B.some(b => b.contains && b.contains(a)))) { isMapped = true; break; }
-                            // Selector ancestor of behavior
-                            if (B.some(b => A.some(a => a.contains && a.contains(b)))) { isMapped = true; break; }
-                            if (B.length && !isMapped) behaviorElsewhere = true;
-                        }
+            });
+
+            // Check each declared selector to see if any behavior targets it
+            const svg = this.currentDoc.querySelector('svg');
+            if (svg) {
+                selectorKeys.forEach(key => {
+                    const selectorDom = selectors[key].dom;
+                    let hasMatchingBehavior = false;
+
+                    // Get elements this selector matches
+                    let selectorElements = [];
+                    try {
+                        selectorElements = Array.from(svg.querySelectorAll(selectorDom));
+                    } catch (e) {
+                        console.warn(`Invalid selector for key '${key}':`, selectorDom);
                     }
-                    if (isMapped) mapped.push(key);
+
+                    if (selectorElements.length === 0) {
+                        // Selector doesn't match anything in DOM - will be reported elsewhere as orphaned
+                        return;
+                    }
+
+                    // Check if any behavior targets these elements
+                    behaviors.forEach(b => {
+                        const targetSelector = b?.target?.selector;
+                        if (!targetSelector) return;
+
+                        // Get elements the behavior targets
+                        let behaviorElements = [];
+                        try {
+                            behaviorElements = Array.from(svg.querySelectorAll(targetSelector));
+                        } catch (e) {
+                            return;
+                        }
+
+                        // Check if there's any relationship between selector elements and behavior elements.
+                        // Only treat direct matches or containment (ancestor/descendant) as mapped.
+                        // Sibling / common-ancestor relationships should NOT mark a declared selector as
+                        // directly mapped unless the behavior selector itself is group-like (matches
+                        // multiple elements), in which case we consider it 'group-mapped'.
+                        let relationFound = false;
+                        let relationKind = null; // 'direct'|'descendant'|'ancestor'|'sibling'|'commonAncestor'
+                        for (let si = 0; si < selectorElements.length && !relationFound; si++) {
+                            const selectorEl = selectorElements[si];
+                            for (let bi = 0; bi < behaviorElements.length && !relationFound; bi++) {
+                                const behaviorEl = behaviorElements[bi];
+                                if (selectorEl === behaviorEl) { relationFound = true; relationKind = 'direct'; break; }
+                                if (behaviorEl.contains && behaviorEl.contains(selectorEl)) { relationFound = true; relationKind = 'descendant'; break; }
+                                if (selectorEl.contains && selectorEl.contains(behaviorEl)) { relationFound = true; relationKind = 'ancestor'; break; }
+                                // siblings (same parent)
+                                const selectorParent = selectorEl.parentElement;
+                                const behaviorParent = behaviorEl.parentElement;
+                                if (selectorParent && behaviorParent && selectorParent === behaviorParent) { relationFound = true; relationKind = 'sibling'; break; }
+                                // common ancestor within 3 levels
+                                const sAncestors = [];
+                                let tmp = selectorEl.parentElement;
+                                for (let ai = 0; ai < 3 && tmp; ai++) { sAncestors.push(tmp); tmp = tmp.parentElement; }
+                                tmp = behaviorEl.parentElement;
+                                for (let ci = 0; ci < 3 && tmp; ci++) {
+                                    if (sAncestors.indexOf(tmp) !== -1) { relationFound = true; relationKind = 'commonAncestor'; break; }
+                                    tmp = tmp.parentElement;
+                                }
+                            }
+                        }
+                        if (relationFound) {
+                            // Only count as a direct mapped behavior when relation is direct/descendant/ancestor.
+                            if (relationKind === 'direct' || relationKind === 'descendant' || relationKind === 'ancestor') {
+                                hasMatchingBehavior = true;
+                            } else {
+                                // sibling/common ancestor: treat as group-mapped only if the behavior selector
+                                // itself is group-like (matches multiple elements). Do not mark as directly mapped.
+                                if (behaviorElements.length > 1) {
+                                    hasMatchingBehavior = true; // treat as covered by group behavior
+                                }
+                            }
+                        }
+                    });
+
+                    if (hasMatchingBehavior) mapped.add(key);
                     else missing.push(key);
-                }
+                });
             }
-            // Count behaviors that have shapes (overlays)
-            const shapeBehaviors = (behaviors || []).filter(b => Array.isArray(b?.target?.shapes) && b.target.shapes.length > 0).length;
+
             results.behaviorSummary = {
-                missing,
                 total: selectorKeys.length,
-                mapped: mapped.length,
-                warnings: behaviorWarnings,
-                shapeBehaviors
+                mapped: mapped.size,
+                missing: missing,
+                shapeBehaviors: shapeBehaviors
             };
-            // Note: overlay-only behavior info is rendered in the validation UI as an informational
-            // muted-note (see renderValidationResults). Do not duplicate it in results.warnings
-            // to avoid showing both an informational line and a warning triangle.
         }
         // --- Add synthetic inventory items for behavior.target.shapes so they appear in Analysis panel ---
         try {
@@ -1700,6 +1780,11 @@
                                 if (behavior) {
                                     this.showBehaviorInfo(behavior, 'select', null);
                                 }
+                            } else if (category === 'behavior-without-selector') {
+                                const behavior = this._behaviorsWithoutSelectors && this._behaviorsWithoutSelectors[idx];
+                                if (behavior) {
+                                    this.showBehaviorInfo(behavior, 'select', null);
+                                }
                             } else {
                                 // Use global handler for inventory items
                                 window.handleInventoryItemClick && window.handleInventoryItemClick(category, idx);
@@ -1901,29 +1986,73 @@
                     // Build a list of visible selectors (those that match at least one SVG element),
                     // annotate them with mapping state, then sort: mapped first, group-mapped second,
                     // unmapped last. Within each bucket sort alphabetically by selector key.
+                    // FIRST: detect behaviors that target DOM elements directly but have no matching
+                    // declared JIM selector entry. We'll surface these in the Selectors panel so
+                    // authors know to add a selector if desired.
+                    var svg = this.currentDoc.querySelector('svg');
+                    var behaviorsWithoutSelectors = [];
+                    for (var bj = 0; bj < behaviors.length; bj++) {
+                        var tgtSelector = behaviors[bj].target && behaviors[bj].target.selector;
+                        if (!tgtSelector) continue;
+                        // Does this behavior selector match any declared selectors[].dom exactly?
+                        var matchesDeclaredSelector = false;
+                        for (var dk = 0; dk < selectorKeys.length; dk++) {
+                            var declaredKey = selectorKeys[dk];
+                            var declaredDom = this.jimData.selectors[declaredKey].dom;
+                            if (tgtSelector === declaredDom) { matchesDeclaredSelector = true; break; }
+                        }
+                        if (!matchesDeclaredSelector) {
+                            var B = [];
+                            try { B = Array.from(svg.querySelectorAll(tgtSelector)); } catch (e) {}
+                            if (B.length > 0) {
+                                behaviorsWithoutSelectors.push({ selector: tgtSelector, elementCount: B.length, behavior: behaviors[bj] });
+                            }
+                        }
+                    }
+
                     var visibleSelectors = [];
                     for (var k = 0; k < selectorKeys.length; k++) {
                         var key = selectorKeys[k];
                         var dom = this.jimData.selectors[key].dom;
                         var hasBehavior = false;
                         var isGroupMapped = false;
-                        var A = [];
-                        try { A = Array.from(svg.querySelectorAll(dom)); } catch (e) {}
+                        // Get elements this selector matches
+                        var selectorElements = [];
+                        try { selectorElements = Array.from(svg.querySelectorAll(dom)); } catch (e) { console.warn(`Invalid selector for key '${key}':`, dom); }
                         // Only include selectors that match at least one SVG element
-                        if (!A.length) continue;
+                        if (!selectorElements.length) continue;
+
+                        // Check each behavior to see if it targets these elements
                         for (var j = 0; j < behaviors.length; j++) {
                             var tgtSelector = behaviors[j].target && behaviors[j].target.selector;
-                            if (tgtSelector) {
-                                var B = [];
-                                try { B = Array.from(svg.querySelectorAll(tgtSelector)); } catch (e) {}
-                                // Direct mapping: selector's dom exactly matches behavior's selector
-                                if (dom === tgtSelector) { hasBehavior = true; break; }
-                                // If not direct, but covered by a group behavior
-                                if (!hasBehavior && B.length > 1 && B.some(function(b){ return A.includes(b); })) {
-                                    isGroupMapped = true;
+                            if (!tgtSelector) continue;
+
+                            // Get elements the behavior targets
+                            var behaviorElements = [];
+                            try { behaviorElements = Array.from(svg.querySelectorAll(tgtSelector)); } catch (e) { continue; }
+
+                            // Check for relationship: only DIRECT match or containment (ancestor/descendant) mark as mapped.
+                            var relationFound = false;
+                            var relationKind = null;
+                            for (var si = 0; si < selectorElements.length && !relationFound; si++) {
+                                var selectorEl = selectorElements[si];
+                                for (var bi = 0; bi < behaviorElements.length && !relationFound; bi++) {
+                                    var behaviorEl = behaviorElements[bi];
+                                    if (selectorEl === behaviorEl) { relationFound = true; relationKind = 'direct'; break; }
+                                    if (behaviorEl.contains && behaviorEl.contains(selectorEl)) { relationFound = true; relationKind = 'descendant'; break; }
+                                    if (selectorEl.contains && selectorEl.contains(behaviorEl)) { relationFound = true; relationKind = 'ancestor'; break; }
+                                    // NOTE: intentionally do NOT consider siblings or common ancestors here.
+                                }
+                            }
+
+                            if (relationFound) {
+                                if (relationKind === 'direct' || relationKind === 'descendant' || relationKind === 'ancestor') {
+                                    hasBehavior = true;
+                                    break;
                                 }
                             }
                         }
+
                         visibleSelectors.push({ key: key, dom: dom, hasBehavior: hasBehavior, isGroupMapped: isGroupMapped });
                     }
 
@@ -1967,6 +2096,29 @@
                     selectorPanelHtml += renderBucket('Mapped Selectors', mapped);
                     selectorPanelHtml += renderBucket('Group-mapped Selectors', groupMapped);
                     selectorPanelHtml += renderBucket('Unmapped Selectors', unmapped);
+
+                    // Behaviors Without JIM Selectors section (BEFORE group behaviors) - INTERACTIVE
+                    if (behaviorsWithoutSelectors.length) {
+                        selectorPanelHtml += `<div style='margin-top:16px;'><h3 class='panel__heading'>Behaviors Without JIM Selectors (${behaviorsWithoutSelectors.length})</h3>`;
+                        selectorPanelHtml += `<div class='muted-note'>These behaviors target DOM elements directly but have no corresponding JIM selector entries. Click to inspect:</div>`;
+
+                        // Store behavior references for the delegated handler
+                        this._behaviorsWithoutSelectors = [];
+
+                        behaviorsWithoutSelectors.forEach(function(b) {
+                            const btnIdx = this._behaviorsWithoutSelectors.length;
+                            this._behaviorsWithoutSelectors.push(b.behavior);
+
+                            selectorPanelHtml += `<div class='panel panel--warning' style='padding:8px;margin:8px 0;display:inline-block;'>`;
+                            selectorPanelHtml += `<button class='inventory-button' data-category='behavior-without-selector' data-idx='${btnIdx}' aria-label='Inspect behavior targeting ${b.selector}' style='font-weight:600;margin-right:8px;'>Inspect</button>`;
+                            selectorPanelHtml += `<strong>Selector:</strong> <code>${b.selector}</code><br>`;
+                            selectorPanelHtml += `<span class='muted'>Matches ${b.elementCount} element(s) in DOM</span>`;
+                            selectorPanelHtml += `</div>`;
+                        }.bind(this));
+
+                        selectorPanelHtml += `</div>`;
+                    }
+
                     // Add group behaviors section
                     if (groupBehaviors.length) {
                         // Build interactive group behavior controls: header button + member preview buttons
@@ -2669,180 +2821,6 @@
                 // Use the same rendering logic as JIM mode
                 return this.renderInventoryList({ svgInventory: inventory });
                 // ...existing code...
-            }
-
-            renderVisualization() {
-                const svg = this.currentDoc.querySelector('svg');
-                if (!svg) {
-                    this.showError('No SVG found in document');
-                    return;
-                }
-
-                // Clone the SVG to avoid modifying the original document
-                const svgClone = svg.cloneNode(true);
-
-                // Only attach JIM behaviors if JIM metadata is present
-                if (this.jimData && this.jimData.selectors) {
-                    const selectors = this.jimData.selectors;
-                    Object.entries(selectors).forEach(([key, selector]) => {
-                        let element = null;
-                        try {
-                            element = svgClone.querySelector(selector.dom);
-                        } catch (e) {
-                            console.warn(`[JIMViewer] Invalid selector for key '${key}' in renderVisualization: '${selector.dom}'`, e);
-                            return; // skip this selector
-                        }
-                        if (element) {
-                            this.attachJIMBehavior(element, key);
-                        }
-                    });
-
-                    // Add fallback handler for ANY SVG element (for elements without JIM mappings)
-                    svgClone.addEventListener('click', (e) => {
-                        // Only handle if target doesn't already have JIM behavior
-                        const targetElement = e.target;
-                        if (targetElement instanceof SVGElement && targetElement !== svgClone) {
-                            const hasJIM = Object.values(selectors).some(s => {
-                                try {
-                                    return targetElement.matches(s.dom);
-                                } catch {
-                                    return false;
-                                }
-                            });
-                            if (!hasJIM) {
-                                this.showNonJIMElementInfo(targetElement, 'click');
-                            }
-                        }
-                    });
-                }
-
-                // --- Render overlays for behavior.target.shapes (if present) ---
-                try {
-                    const ns = 'http://www.w3.org/2000/svg';
-                    let overlayGroup = svgClone.querySelector('g.jim-overlays');
-                    if (!overlayGroup) {
-                        overlayGroup = document.createElementNS(ns, 'g');
-                        overlayGroup.classList.add('jim-overlays');
-                        // Put overlays on top
-                        svgClone.appendChild(overlayGroup);
-                    }
-                    // Ensure inventoryData exists and is in-sync
-                    if (!this.inventoryData) this.inventoryData = [];
-                    // For each behavior, create overlays and attach handlers
-                    (this.jimData.behaviors || []).forEach((behavior, bi) => {
-                        const shapes = Array.isArray(behavior?.target?.shapes) ? behavior.target.shapes : [];
-                        shapes.forEach((shapeObj, si) => {
-                            if (!shapeObj || typeof shapeObj !== 'object') return;
-                            const kindKeys = Object.keys(shapeObj); if (!kindKeys.length) return;
-                            let kind = kindKeys[0]; if (kind === 'rectangle') kind = 'rect';
-                            const payload = shapeObj[kindKeys[0]] || {};
-                            let overlayEl = null;
-                            try {
-                                switch (kind) {
-                                    case 'rect':
-                                        overlayEl = document.createElementNS(ns, 'rect');
-                                        overlayEl.setAttribute('x', payload.x ?? 0);
-                                        overlayEl.setAttribute('y', payload.y ?? 0);
-                                        overlayEl.setAttribute('width', payload.width ?? 0);
-                                        overlayEl.setAttribute('height', payload.height ?? 0);
-                                        break;
-                                    case 'circle':
-                                        overlayEl = document.createElementNS(ns, 'circle');
-                                        overlayEl.setAttribute('cx', payload.cx ?? 0);
-                                        overlayEl.setAttribute('cy', payload.cy ?? 0);
-                                        overlayEl.setAttribute('r', payload.r ?? 0);
-                                        break;
-                                    case 'ellipse':
-                                        overlayEl = document.createElementNS(ns, 'ellipse');
-                                        overlayEl.setAttribute('cx', payload.cx ?? 0);
-                                        overlayEl.setAttribute('cy', payload.cy ?? 0);
-                                        overlayEl.setAttribute('rx', payload.rx ?? 0);
-                                        overlayEl.setAttribute('ry', payload.ry ?? 0);
-                                        break;
-                                    case 'line':
-                                        overlayEl = document.createElementNS(ns, 'line');
-                                        overlayEl.setAttribute('x1', payload.x1 ?? 0);
-                                        overlayEl.setAttribute('y1', payload.y1 ?? 0);
-                                        overlayEl.setAttribute('x2', payload.x2 ?? 0);
-                                        overlayEl.setAttribute('y2', payload.y2 ?? 0);
-                                        break;
-                                    case 'polygon':
-                                    case 'polyline':
-                                        overlayEl = document.createElementNS(ns, kind);
-                                        overlayEl.setAttribute('points', Array.isArray(payload.points) ? payload.points.map(p => p.join(',')).join(' ') : (payload.points || ''));
-                                        break;
-                                    case 'path':
-                                        overlayEl = document.createElementNS(ns, 'path');
-                                        overlayEl.setAttribute('d', payload.d || '');
-                                        break;
-                                    default:
-                                        break;
-                                }
-                            } catch (e) { overlayEl = null; }
-                            if (!overlayEl) return;
-                            overlayEl.classList.add('jim-shape-overlay');
-                            // Apply any visual stroke/fill hints from the payload if present (non-destructive)
-                            try {
-                                const map = {
-                                    'stroke': 'stroke',
-                                    'stroke-width': 'stroke-width',
-                                    'strokeWidth': 'stroke-width',
-                                    'stroke-linecap': 'stroke-linecap',
-                                    'strokeLinecap': 'stroke-linecap',
-                                    'stroke-linejoin': 'stroke-linejoin',
-                                    'strokeLinejoin': 'stroke-linejoin',
-                                    'stroke-dasharray': 'stroke-dasharray',
-                                    'strokeDasharray': 'stroke-dasharray',
-                                    'stroke-opacity': 'stroke-opacity',
-                                    'strokeOpacity': 'stroke-opacity',
-                                    'fill': 'fill',
-                                    'fill-opacity': 'fill-opacity',
-                                    'fillOpacity': 'fill-opacity',
-                                    'opacity': 'opacity'
-                                };
-                                for (const k of Object.keys(map)) {
-                                    if (payload[k] !== undefined && payload[k] !== null) {
-                                        const attr = map[k];
-                                        const raw = String(payload[k]);
-                                        if (attr === 'fill') {
-                                            const v = raw;
-                                            const mapped = (v === 'none') ? 'transparent' : v;
-                                            overlayEl.setAttribute('fill', mapped);
-                                            try { overlayEl.style.setProperty('fill', mapped); } catch (e) { /* ignore */ }
-                                        } else {
-                                            overlayEl.setAttribute(attr, raw);
-                                            try {
-                                                let styleVal = raw;
-                                                if (attr === 'stroke-width') {
-                                                    if (/^\d+(?:\.\d+)?$/.test(raw)) styleVal = raw + 'px';
-                                                }
-                                                overlayEl.style.setProperty(attr, styleVal);
-                                            } catch (e) { /* ignore */ }
-                                        }
-                                    }
-                                }
-                            } catch (e) { /* ignore */ }
-                            overlayEl.setAttribute('fill', overlayEl.getAttribute('fill') || 'transparent');
-                            overlayEl.setAttribute('tabindex', '0');
-                            overlayEl.dataset.behaviorIndex = String(bi);
-                            overlayEl.dataset.shapeIndex = String(si);
-                            // Event handlers show behavior info
-                            overlayEl.addEventListener('click', (ev) => { ev.stopPropagation(); this.showBehaviorInfo(behavior, 'click', overlayEl); });
-                            overlayEl.addEventListener('focus', () => this.showBehaviorInfo(behavior, 'focus', overlayEl));
-                            overlayGroup.appendChild(overlayEl);
-
-                            // Wire overlay DOM back to inventoryData if a synthetic overlay item was created
-                            try {
-                                const invItem = this.inventoryData.find(it => it.category === 'overlay' && it.behaviorIndex === bi && it.shapeIndex === si);
-                                if (invItem) invItem.domElement = overlayEl;
-                            } catch (e) { /* ignore */ }
-                        });
-                    });
-                    // Overlay visibility is controlled via classes on #visualization (jim-overlays-visible / jim-overlays-hidden)
-                    // Do not mutate overlayGroup.style.display here to avoid conflicting with class-based CSS control.
-                } catch (e) { /* non-fatal overlay render errors */ }
-
-                this.displayVisualization(svgClone);
             }
 
             attachJIMBehavior(element, selectorKey) {
