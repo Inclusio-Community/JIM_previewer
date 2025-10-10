@@ -2332,7 +2332,10 @@
         showBehaviorInfo(behavior, eventType, overlayEl) {
             if (!behavior) return;
             let html = '';
-            html += `<div><strong>Behavior</strong> <code>${behavior.id || behavior.name || ''}</code></div>`;
+            // Render a minimal header: 'Behavior N' (index) for clarity and consistency with the selectors list
+            const bi = (this.jimData && Array.isArray(this.jimData.behaviors)) ? this.jimData.behaviors.indexOf(behavior) : -1;
+            const headerLabel = bi >= 0 ? `Behavior ${bi}` : 'Behavior';
+            html += `<div><strong>Behavior</strong> <code>${this.escapeHtml(headerLabel)}</code></div>`;
             html += `<div><strong>Event:</strong> <code>${eventType}</code></div>`;
             if (behavior.target) {
                 const tgt = behavior.target;
