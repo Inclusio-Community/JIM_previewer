@@ -44,6 +44,7 @@ An interactive tool for analyzing and validating JSON for Interactive Media (JIM
 	- `Number_of_Xbox_Live_MAU_Q1_2016___Q4_2019.svg`
 	- `Unemployment_rate_in_Greece_1999_2019.svg`
 	- `JLGjim-photosynthesis-vav-monarch-approved.pdf.svg`
+	- `JLGjim-us-midwest-map-monarch-approved.pdf.svg`
 
 ## Running accessibility checks
 
