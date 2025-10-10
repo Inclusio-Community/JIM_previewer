@@ -1,0 +1,133 @@
+<svg viewBox="0 0 220 120" xmlns="http://www.w3.org/2000/svg">
+  <desc>A right triangle with vertices A, B, and C</desc>
+
+  <style>
+    text {
+      font-family: Verdana;
+      font-size: 20px;
+    }
+
+    #background {
+      fill: none;
+	  stroke: gainsboro;
+      pointer-events: all;
+    }
+
+    #triangle {
+      stroke: black;
+      stroke-width: 3px;
+      stroke-linejoin: miter;
+	  stroke-miterlimit: 5;
+      fill: gainsboro;
+    }
+
+    .side {
+      stroke: none;
+      stroke-width: 3px;
+      pointer-events: stroke;
+    }
+
+    .vertex {
+      fill: none;
+      stroke-linejoin: miter;
+      stroke-linecap: square;
+      stroke-width: 3px;
+      pointer-events: stroke;
+    }
+  </style>
+  <rect id="background" width="100%" height="100%"/>
+
+  <!-- Triangle using polygon to ensure shape is closed -->
+  <polygon id="triangle" points="35,100 190,100 190,20" aria-labelledby="triangleTitle">
+    <title id="triangleTitle">Right Triangle</title>
+  </polygon>
+
+  <path id="side-A-C" class="side" d="M35,100 190,100"/>
+  <path id="side-B-C" class="side" d="M190,20 190,100"/>
+  <path id="side-A-B" class="side" d="M190,20 35,100"/>
+
+  <!-- Right angle marker -->
+  <rect id="right-angle-marker" x="178.5" y="88.5" width="10" height="10" fill="red" aria-labelledby="rectTitle">
+    <title id="rectTitle">Right angle marker</title>
+  </rect>
+
+  <!-- Angle markers -->
+  <path id="vertex-A" class="vertex" d="M38.9,97 L35,100 L40,100"/> 
+  <path id="vertex-B" class="vertex" d="M186,23 L190,20 L190,25"/> 
+  <path id="vertex-C" class="vertex" d="M185,100 L190,100 L190,95"/> 
+
+  <!-- Labels -->
+  <text id="vertex-label-A" x="15" y="115" font-family="Verdana" font-size="20">A</text> <!-- A -->
+  <text id="vertex-label-B" x="195" y="20" font-family="Verdana" font-size="20">B</text> <!-- B -->
+  <text id="vertex-label-C" x="195" y="115" font-family="Verdana" font-size="20">C</text> <!-- C -->
+
+
+  <metadata data-type="text/jim+json">
+    {
+      "datasets": [
+        {
+          "title": "Right Triangle",
+          "description": "A right triangle with vertices A, B, and C",
+          "source": {
+            "url": "https://inclusioproject.com/graphics/exemplars/right-triangle.svg",
+            "name": "Inclusio Project accessible graphic examplar: Right Triangle"
+          },
+          "items": {
+            "shape": {
+              "right_triangle": {
+                "label": "Right Triangle"
+              },
+              "side_A_C": {
+                "label": "Leg A-C"
+              },
+              "side_B_C": {
+                "label": "Leg B-C"
+              },
+              "side_A_B": {
+                "label": "Hypotenuse A-B"
+              }
+            },
+            "vertices": {
+              "angle_a": {
+                "label": "Angle A",
+                "description": "Intersection of A-B and A-C"
+              },
+              "angle_b": {
+                "label": "Angle B",
+                "description": "Intersection of A-B and B-C"
+              },
+              "angle_c": {
+                "label": "Angle C",
+                "description": "Right angle intersection of A-C and B-C"
+              }
+            },
+            "markers": {
+              "right_angle": {
+                "label": "Right angle"
+              }
+            }
+          }
+        }
+      ],
+      "selectors": {
+        "#diagram-title": "$.datasets[0].title",
+        
+        "#triangle": "$.datasets[0].items.shape.right_triangle.label",
+
+        "#side-A-C": "$.datasets[0].items.shape.side_A_C.label",
+        "#side-B-C": "$.datasets[0].items.shape.side_B_C.label",
+        "#side-A-B": "$.datasets[0].items.shape.side_A_B.label",
+
+        "#vertex-A": "$.datasets[0].items.vertices.angle_a.label",
+        "#vertex-B": "$.datasets[0].items.vertices.angle_b.label",
+        "#vertex-C": "$.datasets[0].items.vertices.angle_c.label",
+
+        "#vertex-label-A": "$.datasets[0].items.vertices.angle_a.label",
+        "#vertex-label-B": "$.datasets[0].items.vertices.angle_b.label",
+        "#vertex-label-C": "$.datasets[0].items.vertices.angle_c.label",
+
+        "#right-angle-marker": "$.datasets[0].items.markers.right_angle.label"
+      }
+    }
+  </metadata>
+</svg>
