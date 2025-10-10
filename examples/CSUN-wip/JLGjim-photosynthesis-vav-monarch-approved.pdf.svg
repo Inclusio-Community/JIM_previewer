@@ -155,7 +155,9 @@
         ]
       },
       "enter": {
-        "haptic": { "durations": [0, 1000, 0, 1000], "repeatIndex": 0 }
+        "announcement": {
+          "name": "Sun"
+        }
       }
     },
     {
