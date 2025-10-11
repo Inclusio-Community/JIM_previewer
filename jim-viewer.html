@@ -1477,7 +1477,7 @@
         }
         // --- Behavior validation ---
         // Compute behavior mapping and warnings even when selectors are empty so overlay-only behaviors are surfaced
-        if (Array.isArray(behaviors) && behaviors.length > 0) {
+        if (Array.isArray(behaviors)) {
             const selectorKeys = Object.keys(selectors);
             const mapped = new Set(); // track which selector keys have behaviors
             const missing = [];
@@ -1511,60 +1511,50 @@
                     }
 
                     // Check if any behavior targets these elements
-                    behaviors.forEach(b => {
+                    for (let bi = 0; bi < behaviors.length && !hasMatchingBehavior; bi++) {
+                        const b = behaviors[bi];
                         const targetSelector = b?.target?.selector;
-                        if (!targetSelector) return;
+                        if (!targetSelector) continue;
 
-                        // Get elements the behavior targets
+                        // 1) Try per-element matches() first (handles classes, wildcards, comma-lists)
+                        for (let si = 0; si < selectorElements.length && !hasMatchingBehavior; si++) {
+                            const selEl = selectorElements[si];
+                            try {
+                                if (selEl.matches(targetSelector)) {
+                                    hasMatchingBehavior = true;
+                                    break;
+                                }
+                            } catch (e) {
+                                // matches() can throw for invalid selectors — ignore and fall back below
+                            }
+                        }
+                        if (hasMatchingBehavior) break;
+
+                        // 2) Fallback: query behavior elements and test equality/containment (ancestor/descendant)
                         let behaviorElements = [];
-                        try {
-                            behaviorElements = Array.from(svg.querySelectorAll(targetSelector));
-                        } catch (e) {
-                            return;
+                        try { behaviorElements = Array.from(svg.querySelectorAll(targetSelector)); } catch (e) { behaviorElements = []; }
+                        if (!behaviorElements.length) continue;
+
+                        for (let si = 0; si < selectorElements.length && !hasMatchingBehavior; si++) {
+                            const selectorEl = selectorElements[si];
+                            for (let be = 0; be < behaviorElements.length && !hasMatchingBehavior; be++) {
+                                const behaviorEl = behaviorElements[be];
+                                if (selectorEl === behaviorEl) { hasMatchingBehavior = true; break; }
+                                if (behaviorEl.contains && behaviorEl.contains(selectorEl)) { hasMatchingBehavior = true; break; }
+                                if (selectorEl.contains && selectorEl.contains(behaviorEl)) { hasMatchingBehavior = true; break; }
+                            }
                         }
 
-                        // Check if there's any relationship between selector elements and behavior elements.
-                        // Only treat direct matches or containment (ancestor/descendant) as mapped.
-                        // Sibling / common-ancestor relationships should NOT mark a declared selector as
-                        // directly mapped unless the behavior selector itself is group-like (matches
-                        // multiple elements), in which case we consider it 'group-mapped'.
-                        let relationFound = false;
-                        let relationKind = null; // 'direct'|'descendant'|'ancestor'|'sibling'|'commonAncestor'
-                        for (let si = 0; si < selectorElements.length && !relationFound; si++) {
-                            const selectorEl = selectorElements[si];
-                            for (let bi = 0; bi < behaviorElements.length && !relationFound; bi++) {
-                                const behaviorEl = behaviorElements[bi];
-                                if (selectorEl === behaviorEl) { relationFound = true; relationKind = 'direct'; break; }
-                                if (behaviorEl.contains && behaviorEl.contains(selectorEl)) { relationFound = true; relationKind = 'descendant'; break; }
-                                if (selectorEl.contains && selectorEl.contains(behaviorEl)) { relationFound = true; relationKind = 'ancestor'; break; }
-                                // siblings (same parent)
-                                const selectorParent = selectorEl.parentElement;
-                                const behaviorParent = behaviorEl.parentElement;
-                                if (selectorParent && behaviorParent && selectorParent === behaviorParent) { relationFound = true; relationKind = 'sibling'; break; }
-                                // common ancestor within 3 levels
-                                const sAncestors = [];
-                                let tmp = selectorEl.parentElement;
-                                for (let ai = 0; ai < 3 && tmp; ai++) { sAncestors.push(tmp); tmp = tmp.parentElement; }
-                                tmp = behaviorEl.parentElement;
-                                for (let ci = 0; ci < 3 && tmp; ci++) {
-                                    if (sAncestors.indexOf(tmp) !== -1) { relationFound = true; relationKind = 'commonAncestor'; break; }
-                                    tmp = tmp.parentElement;
+                        // 3) If behavior selector matches multiple elements and any of those are members
+                        //    of our selectorElements, treat as covered (group behavior)
+                        if (!hasMatchingBehavior && behaviorElements.length > 1) {
+                            try {
+                                if (behaviorElements.some(beEl => selectorElements.includes(beEl))) {
+                                    hasMatchingBehavior = true;
                                 }
-                            }
+                            } catch (e) { /* ignore */ }
                         }
-                        if (relationFound) {
-                            // Only count as a direct mapped behavior when relation is direct/descendant/ancestor.
-                            if (relationKind === 'direct' || relationKind === 'descendant' || relationKind === 'ancestor') {
-                                hasMatchingBehavior = true;
-                            } else {
-                                // sibling/common ancestor: treat as group-mapped only if the behavior selector
-                                // itself is group-like (matches multiple elements). Do not mark as directly mapped.
-                                if (behaviorElements.length > 1) {
-                                    hasMatchingBehavior = true; // treat as covered by group behavior
-                                }
-                            }
-                        }
-                    });
+                    }
 
                     if (hasMatchingBehavior) mapped.add(key);
                     else missing.push(key);
@@ -1575,7 +1565,8 @@
                 total: selectorKeys.length,
                 mapped: mapped.size,
                 missing: missing,
-                shapeBehaviors: shapeBehaviors
+                shapeBehaviors: shapeBehaviors,
+                behaviorCount: Array.isArray(behaviors) ? behaviors.length : 0
             };
         }
         // --- Add synthetic inventory items for behavior.target.shapes so they appear in Analysis panel ---
@@ -3141,7 +3132,11 @@
                     const mappedCount = typeof validation.behaviorSummary.mapped === 'number' ? validation.behaviorSummary.mapped : 0;
                     const missing = validation.behaviorSummary.missing || [];
                     const shapeBehaviors = validation.behaviorSummary.shapeBehaviors || 0;
+                    const behaviorCount = typeof validation.behaviorSummary.behaviorCount === 'number' ? validation.behaviorSummary.behaviorCount : 0;
 
+                    if (totalSelectors) {
+                        html += `<div class="status-success-line"><span class="sr-only">Success: </span>${ICONS.check} ${totalSelectors} selectors found with ${mappedCount} mapped selectors and ${missing.length} unmapped selectors</div>`;
+                    }
                     // If selectors are missing behavior definitions, surface as a warning
                     if (missing.length) {
                         html += `<div class="status-warning-line"><span class="sr-only">Warning: </span>${ICONS.warn} ${missing.length} selector(s) lack behavior definitions: ${missing.join(', ')}</div>`;
@@ -3149,16 +3144,19 @@
                         html += `<div class="status-success-line"><span class="sr-only">Success: </span>${ICONS.check} All ${totalSelectors} selector(s) have behavior definitions</div>`;
                     }
 
+                    // Show how many behavior definitions exist (always present, even 0)
+                    html += `<div class="status-success-line"><span class="sr-only">Info: </span>${ICONS.check} ${behaviorCount} behavior(s) defined</div>`;
+                    // If there are shape-only behaviors, show a small breakdown
+                    if (shapeBehaviors > 0) {
+                        const selectorBased = Math.max(0, behaviorCount - shapeBehaviors);
+                        html += `<div class="status-success-line"><span class="sr-only">Info: </span>${ICONS.check} ${selectorBased} selector-based, ${shapeBehaviors} shape-based (overlays)</div>`;
+                    }
+
                     // Clarify mapping: how many declared selectors actually matched behaviors
                     html += `<div class="status-success-line"><span class="sr-only">Info: </span>${ICONS.check} Selectors with matching behavior(s): ${mappedCount} of ${totalSelectors}</div>`;
 
                     // Success line for behaviors mapped by selector (explicit mapping)
                     html += `<div class="status-success-line"><span class="sr-only">Success: </span>${ICONS.check} ${mappedCount} behavior(s) mapped by selector</div>`;
-
-                    // Short success line for behaviors mapped to shapes (overlay-only)
-                    if (shapeBehaviors && shapeBehaviors > 0) {
-                        html += `<div class="status-success-line"><span class="sr-only">Success: </span>${ICONS.check} ${shapeBehaviors} behavior(s) mapped to shapes (overlay-only)</div>`;
-                    }
                 }
                 // Selector/DOM validation
                 if (validation.selectorSummary) {
