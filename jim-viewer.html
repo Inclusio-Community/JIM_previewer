@@ -1107,24 +1107,18 @@
         behaviors.forEach((behavior, i) => {
             const tgtSelector = behavior?.target?.selector;
             if (typeof tgtSelector === 'string' && tgtSelector.trim()) {
-                // TRACE: report behavior processing
-                console.log(`[TRACE] Processing behavior ${i} with selector: "${tgtSelector}"`);
                 let elements = [];
                 try {
                     elements = Array.from(svgClone.querySelectorAll(tgtSelector));
-                    console.log(`[TRACE] Found ${elements.length} elements matching "${tgtSelector}":`, elements);
                 } catch (e) {
                     console.warn(`[JIMViewer] Invalid behavior target.selector '${tgtSelector}'`, e);
                 }
                 elements.forEach((el, idx) => {
-                    console.log(`[TRACE] Attaching click/focus handlers to element ${idx}:`, el);
                     // Attach behavior event listeners with TRACE logs
                     el.addEventListener('focus', () => {
-                        console.log('[TRACE] Focus event fired on element (behavior attach):', el);
                         this.showElementInfoByBehavior(behavior, 'focus', el);
                     });
                     el.addEventListener('click', (e) => {
-                        console.log('[TRACE] Click event fired on element (behavior attach):', el);
                         e.stopPropagation();
                         this.showElementInfoByBehavior(behavior, 'click', el);
                     });
@@ -1379,11 +1373,9 @@
 
     // Show info for elements mapped by behavior (wildcard/class support)
     showElementInfoByBehavior(behavior, eventType, element) {
-        console.log('[TRACE] showElementInfoByBehavior called:', { behavior, eventType, element });
         // Try to find a selectorKey for this element if possible
         const selectors = this.jimData.selectors || {};
         let selectorKey = null;
-        console.log('[TRACE] Available selectors keys:', Object.keys(selectors));
         // First, try to match by selector dom (e.g., #edge-AB)
         for (const [key, sel] of Object.entries(selectors)) {
             try {
@@ -1402,11 +1394,18 @@
                 }
             }
         }
-        // Fallback: use behavior target.selector as key if no match
-        if (!selectorKey) selectorKey = behavior.target?.selector || 'unknown';
-        console.log('[TRACE] Resolved selectorKey for element:', selectorKey);
-        // Use existing showElementInfo, but pass the found selectorKey
-        this.showElementInfo(selectorKey, eventType, element);
+        // Fallback: use behavior target.selector as a hint if no declared selectorKey found
+        if (!selectorKey) selectorKey = behavior.target?.selector || null;
+    // console.trace info removed
+
+        // If selectorKey corresponds to a declared JIM selector key, show element info for that key.
+        // Otherwise, this is a behavior-only target (e.g. '.number-line') — show behavior-level info.
+        if (selectorKey && Object.prototype.hasOwnProperty.call(selectors, selectorKey)) {
+            this.showElementInfo(selectorKey, eventType, element);
+        } else {
+            // Behavior-only target: surface the behavior info directly using the live cloned element
+            this.showBehaviorInfo(behavior, eventType, element);
+        }
     }
     // Full SVG accessibility and JIM selector validation
     validateJIMStructure() {
