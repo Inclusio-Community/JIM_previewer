@@ -121,6 +121,10 @@
             "selector": ".number-line"
           },
           "enter": {
+            "announcement": {
+              "name": "Number line",
+              "description": "A number line from -10 to 10"
+            },
             "haptic": {
               "durations": [0, 300, 100],
               "repeatInterval": 0

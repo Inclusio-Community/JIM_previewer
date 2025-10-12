@@ -1,6 +1,7 @@
 # TODO / Checklist
-
 This short checklist collects the immediate follow-ups you asked for.
+
+Complete conversion of other two exemplars
 
 1) Check for JIM 0.4.1 → 0.4.2 changes
 
