@@ -3,7 +3,11 @@
   <title>Monthly Rainfall in Chestnut City: Line Chart</title>
   <metadata data-type="text/jim+json">
     {
-      "dataset": [
+      "version": {
+        "document": "1.0.1",
+        "jim": "0.4.1"
+      },
+      "datasets": [
         {
           "title": "Monthly Rainfall in Chestnut City",
           "representation": {
@@ -94,138 +98,286 @@
         }
       ],
       "selectors": {
-        "#chart-title": "$.dataset[0].title",
-        "#y-Rainfall_inches_": "$.dataset[0].facets.y.label",
-        "#x-Month": "$.dataset[0].facets.x.label",
-        "#x-axis-line": "$.dataset[0].series[1].records[0].y",
-        "g.tick-group-y:nth-child(1) use": "$.dataset[0].series[1].records[0].y",
-        "g.tick-group-y:nth-child(2) use": "$.dataset[0].series[1].records[1].y",
-        "g.tick-group-y:nth-child(3) use": "$.dataset[0].series[1].records[2].y",
-        "g.tick-group-y:nth-child(4) use": "$.dataset[0].series[1].records[3].y",
-        "g.tick-group-y:nth-child(5) use": "$.dataset[0].series[1].records[4].y",
-        "g.tick-group-y:nth-child(6) use": "$.dataset[0].series[1].records[5].y",
-        "g.tick-group-y:nth-child(7) use": "$.dataset[0].series[1].records[6].y",
-        "#datapoint-rainfall_inches-Mar-4 .chart-point": "$.dataset[0].series[0].records[0].*",
-        "#datapoint-rainfall_inches-Apr-350 .chart-point": "$.dataset[0].series[0].records[1].*",
-        "#datapoint-rainfall_inches-May-450 .chart-point": "$.dataset[0].series[0].records[2].*",
-        "#datapoint-rainfall_inches-Jun-4 .chart-point": "$.dataset[0].series[0].records[3].*",
-        "#datapoint-rainfall_inches-Jul-550 .chart-point": "$.dataset[0].series[0].records[4].*",
-        "#datapoint-rainfall_inches-Aug-6 .chart-point": "$.dataset[0].series[0].records[5].*",
-        "#datapoint-rainfall_inches-Sep-5 .chart-point": "$.dataset[0].series[0].records[6].*",
-        "#datapoint-rainfall_inches-Oct-250 .chart-point": "$.dataset[0].series[0].records[7].*",
-        "g.tick-group-x:nth-child(1) text": "$.dataset[0].series[0].records[0].x",
-        "g.tick-group-x:nth-child(2) text": "$.dataset[0].series[0].records[1].x",
-        "g.tick-group-x:nth-child(3) text": "$.dataset[0].series[0].records[2].x",
-        "g.tick-group-x:nth-child(4) text": "$.dataset[0].series[0].records[3].x",
-        "g.tick-group-x:nth-child(5) text": "$.dataset[0].series[0].records[4].x",
-        "g.tick-group-x:nth-child(6) text": "$.dataset[0].series[0].records[5].x",
-        "g.tick-group-x:nth-child(7) text": "$.dataset[0].series[0].records[6].x",
-        "g.tick-group-x:nth-child(8) text": "$.dataset[0].series[0].records[7].x"
+        "chart-title": {
+          "dom": "#chart-title",
+          "json": "$.datasets[0].title",
+          "note": "Chart title element"
+        },
+        "y-Rainfall_inches_": {
+          "dom": "#y-Rainfall_inches_",
+          "json": "$.datasets[0].facets.y.label",
+          "note": "Y-axis label element"
+        },
+        "#x-Month": {
+          "dom": "#x-Month",
+          "json": "$.datasets[0].facets.x.label",
+          "note": "X-axis label element"
+        },
+        "#x-axis-line": {
+          "dom": "#x-axis-line",
+          "json": "$.datasets[0].series[1].records[0].y",
+          "note": "X-axis line element"
+        },
+        "g.tick-group-y:nth-child(1) use": {
+          "dom": "g.tick-group-y:nth-child(1) use",
+          "json": "$.datasets[0].series[1].records[0].y",
+          "note": "Y-axis tick 1 element"
+        },
+        "g.tick-group-y:nth-child(2) use": {
+          "dom": "g.tick-group-y:nth-child(2) use",
+          "json": "$.datasets[0].series[1].records[1].y",
+          "note": "Y-axis tick 2 element"
+        },
+        "g.tick-group-y:nth-child(3) use": {
+          "dom": "g.tick-group-y:nth-child(3) use",
+          "json": "$.datasets[0].series[1].records[2].y",
+          "note": "Y-axis tick 3 element"
+        },
+        "g.tick-group-y:nth-child(4) use": {
+          "dom": "g.tick-group-y:nth-child(4) use",
+          "json": "$.datasets[0].series[1].records[3].y",
+          "note": "Y-axis tick 4 element"
+        },
+        "g.tick-group-y:nth-child(5) use": {
+          "dom": "g.tick-group-y:nth-child(5) use",
+          "json": "$.datasets[0].series[1].records[4].y",
+          "note": "Y-axis tick 5 element"
+        },
+        "g.tick-group-y:nth-child(6) use": {
+          "dom": "g.tick-group-y:nth-child(6) use",
+          "json": "$.datasets[0].series[1].records[5].y",
+          "note": "Y-axis tick 6 element"
+        },
+        "g.tick-group-y:nth-child(7) use": {
+          "dom": "g.tick-group-y:nth-child(7) use",
+          "json": "$.datasets[0].series[1].records[6].y",
+          "note": "Y-axis tick 7 element"
+        },
+        "#datapoint-rainfall_inches-Mar-4 .chart-point": {
+          "dom": "#datapoint-rainfall_inches-Mar-4 .chart-point",
+          "json": "$.datasets[0].series[0].records[0].*"
+        },
+        "#datapoint-rainfall_inches-Apr-350 .chart-point": {
+          "dom": "#datapoint-rainfall_inches-Apr-350 .chart-point",
+          "json": "$.datasets[0].series[0].records[1].*"
+        },
+        "#datapoint-rainfall_inches-May-450 .chart-point": {
+          "dom": "#datapoint-rainfall_inches-May-450 .chart-point",
+          "json": "$.datasets[0].series[0].records[2].*"
+        },
+        "#datapoint-rainfall_inches-Jun-4 .chart-point": {
+          "dom": "#datapoint-rainfall_inches-Jun-4 .chart-point",
+          "json": "$.datasets[0].series[0].records[3].*"
+        },
+        "#datapoint-rainfall_inches-Jul-550 .chart-point": {
+          "dom": "#datapoint-rainfall_inches-Jul-550 .chart-point",
+          "json": "$.datasets[0].series[0].records[4].*"
+        },
+        "#datapoint-rainfall_inches-Aug-6 .chart-point": {
+          "dom": "#datapoint-rainfall_inches-Aug-6 .chart-point",
+          "json": "$.datasets[0].series[0].records[5].*"
+        },
+        "#datapoint-rainfall_inches-Sep-5 .chart-point": {
+          "dom": "#datapoint-rainfall_inches-Sep-5 .chart-point",
+          "json": "$.datasets[0].series[0].records[6].*"
+        },
+        "#datapoint-rainfall_inches-Oct-250 .chart-point": {
+          "dom": "#datapoint-rainfall_inches-Oct-250 .chart-point",
+          "json": "$.datasets[0].series[0].records[7].*"
+        },
+        "g.tick-group-x:nth-child(1) text": {
+          "dom": "g.tick-group-x:nth-child(1) text",
+          "json": "$.datasets[0].series[0].records[0].x"
+        },
+        "g.tick-group-x:nth-child(2) text": {
+          "dom": "g.tick-group-x:nth-child(2) text",
+          "json": "$.datasets[0].series[0].records[1].x"
+        },
+        "g.tick-group-x:nth-child(3) text": {
+          "dom": "g.tick-group-x:nth-child(3) text",
+          "json": "$.datasets[0].series[0].records[2].x"
+        },
+        "g.tick-group-x:nth-child(4) text": {
+          "dom": "g.tick-group-x:nth-child(4) text",
+          "json": "$.datasets[0].series[0].records[3].x"
+        },
+        "g.tick-group-x:nth-child(5) text": {
+          "dom": "g.tick-group-x:nth-child(5) text",
+          "json": "$.datasets[0].series[0].records[4].x"
+        },
+        "g.tick-group-x:nth-child(6) text": {
+          "dom": "g.tick-group-x:nth-child(6) text",
+          "json": "$.datasets[0].series[0].records[5].x"
+        },
+        "g.tick-group-x:nth-child(7) text": {
+          "dom": "g.tick-group-x:nth-child(7) text",
+          "json": "$.datasets[0].series[0].records[6].x"
+        },
+        "g.tick-group-x:nth-child(8) text": {
+          "dom": "g.tick-group-x:nth-child(8) text",
+          "json": "$.datasets[0].series[0].records[7].x"
+        }
       },
       "behaviors": [
       {
-        "region": {
+        "target": {
           "selector": "#datapoint-rainfall_inches-Mar-4 .data-line"
         },
-          "haptic_pattern": "[0, 300, 100] 0",
+        "enter": {
+          "haptic": {
+            "durations": [0, 300, 100],
+            "repeatInterval": 0
+          },
           "notes": "longer, steady vibration to indicate the line"
+        }
       },
       {
-        "region": {
+        "target": {
           "selector": "#datapoint-rainfall_inches-Mar-4 .chart-point"
         },
-          "audio": "Blop"
+        "enter": {
+          "audio": "blop.mp3"
+        }
       },
       {
-        "region": {
+        "target": {
           "selector": "#datapoint-rainfall_inches-Apr-350 .chart-point"
         },
-          "audio": "Blop"
+        "enter": {
+          "audio": "blop.mp3"
+        }
       },
       {
-        "region": {
+        "target": {
           "selector": "#datapoint-rainfall_inches-May-450 .chart-point"
         },
-          "audio": "Blop"
+        "enter": {
+          "audio": "blop.mp3"
+        }
       },
       {
-        "region": {
+        "target": {
           "selector": "#datapoint-rainfall_inches-Jun-4 .chart-point"
         },
-          "audio": "Blop"
+        "enter": {
+          "audio": "blop.mp3"
+        }
       },
       {
-        "region": {
+        "target": {
           "selector": "#datapoint-rainfall_inches-Jul-550 .chart-point"
         },
-          "audio": "Blop"
+        "enter": {
+          "audio": "blop.mp3"
+        }
       },
       {
-        "region": {
+        "target": {
           "selector": "#datapoint-rainfall_inches-Aug-6 .chart-point"
         },
-          "audio": "Blop"
+        "enter": {
+          "audio": "blop.mp3"
+        }
       },
       {
-        "region": {
+        "target": {
           "selector": "#datapoint-rainfall_inches-Sep-5 .chart-point"
         },
-          "audio": "Blop"
+        "enter": {
+          "audio": "blop.mp3"
+        }
       },
       {
-        "region": {
+        "target": {
           "selector": "#datapoint-rainfall_inches-Oct-250 .chart-point"
         },
-          "audio": "Blop"
+        "enter": {
+          "audio": "blop.mp3"
+        }
       },
       {
-        "region": {
+        "target": {
           "selector": "#datapoint-rainfall_inches-Apr-350 .data-line"
         },
-          "haptic_pattern": "[0, 300, 100] 0",
+        "enter": {
+          "haptic": {
+            "durations": [0, 300, 100],
+            "repeatInterval": 0
+          },
           "notes": "longer, steady vibration to indicate the line"
+        }
       },
       {
-        "region": {
+        "target": {
           "selector": "#datapoint-rainfall_inches-May-450 .data-line"
         },
-          "haptic_pattern": "[0, 300, 100] 0",
+        "enter": {
+          "haptic": {
+            "durations": [0, 300, 100],
+            "repeatInterval": 0
+          },
           "notes": "longer, steady vibration to indicate the line"
+        }
       },
       {
-        "region": {
+        "target": {
           "selector": "#datapoint-rainfall_inches-Jun-4 .data-line"
         },
-          "haptic_pattern": "[0, 300, 100] 0",
+        "enter": {
+          "haptic": {
+            "durations": [0, 300, 100],
+            "repeatInterval": 0
+          },
           "notes": "longer, steady vibration to indicate the line"
+        }
       },
       {
-        "region": {
+        "target": {
           "selector": "#datapoint-rainfall_inches-Jul-550 .data-line"
         },
-          "haptic_pattern": "[0, 300, 100] 0",
+        "enter": {
+          "haptic": {
+            "durations": [0, 300, 100],
+            "repeatInterval": 0
+          },
           "notes": "longer, steady vibration to indicate the line"
+        }
       },
       {
-        "region": {
+        "target": {
           "selector": "#datapoint-rainfall_inches-Aug-6 .data-line"
         },
-          "haptic_pattern": "[0, 300, 100] 0",
+        "enter": {
+          "haptic": {
+            "durations": [0, 300, 100],
+            "repeatInterval": 0
+          },
           "notes": "longer, steady vibration to indicate the line"
+        }
       },
       {
-        "region": {
+        "target": {
           "selector": "#datapoint-rainfall_inches-Sep-5 .data-line"
         },
-          "haptic_pattern": "[0, 300, 100] 0",
+        "enter": {
+          "haptic": {
+            "durations": [0, 300, 100],
+            "repeatInterval": 0
+          },
           "notes": "longer, steady vibration to indicate the line"
+        }
       },
       {
-        "region": {
+        "target": {
           "selector": "#datapoint-rainfall_inches-Oct-250 .data-line"
         },
-          "haptic_pattern": "[0, 300, 100] 0",
+        "enter": {
+          "haptic": {
+            "durations": [0, 300, 100],
+            "repeatInterval": 0
+          },
           "notes": "longer, steady vibration to indicate the line"
+        }
       }
     ],
     "status": {
@@ -234,7 +386,7 @@
         "announcement"
       ]
     }
-    }
+  }
   </metadata>
   <rect id="frame" fill="none" pointer-events="all" x="0" y="0" width="579.5" height="585.1"/>
   <rect width="100%" height="100%" stroke="gainsboro" fill="none"/>
