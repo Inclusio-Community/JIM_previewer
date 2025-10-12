@@ -465,7 +465,9 @@
             cross: `<svg class="status-icon" width="14" height="14" viewBox="0 0 24 24" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg"><path fill="currentColor" d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>`,
             warn: `<svg class="status-icon" width="14" height="14" viewBox="0 0 24 24" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg"><path fill="currentColor" d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg>`,
             idea: `<svg class="status-icon" width="14" height="14" viewBox="0 0 24 24" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg"><path fill="currentColor" d="M9 21h6v-1H9v1zm3-19C8.48 2 5 5.48 5 9c0 2.5 1.5 4.66 3.79 5.5.21.09.36.29.36.52V17h6V15.02c0-.23.15-.43.36-.52C17.5 13.66 19 11.5 19 9c0-3.52-3.48-7-7-7z"/></svg>`,
-            group: `<svg class="status-icon" width="14" height="14" viewBox="0 0 24 24" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg"><path fill="currentColor" d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5s-3 1.34-3 3 1.34 3 3 3zM8 11c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5C15 14.17 10.33 13 8 13zm8 0c-.29 0-.62.02-.97.05C16.22 13.78 18 14.84 18 16v3h6v-2.5C24 14.17 19.33 13 16 13z"/></svg>`
+            group: `<svg class="status-icon" width="14" height="14" viewBox="0 0 24 24" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg"><path fill="currentColor" d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5s-3 1.34-3 3 1.34 3 3 3zM8 11c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5C15 14.17 10.33 13 8 13zm8 0c-.29 0-.62.02-.97.05C16.22 13.78 18 14.84 18 16v3h6v-2.5C24 14.17 19.33 13 16 13z"/></svg>`,
+            info: `<svg class="status-icon" width="14" height="14" viewBox="0 0 24 24" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg"><path fill="currentColor" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>`,
+            arrowdown: `<svg class="status-icon" width="14" height="14" viewBox="0 0 24 24" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg"><path fill="currentColor" d="M7 10l5 5 5-5z"/></svg>`
         };
     </script>
 </head>
@@ -1560,12 +1562,44 @@
                 });
             }
 
+            // NEW: count behaviors that target DOM elements but have no corresponding selectors[] entry
+            // Note: match by DOM elements, not by exact selector string equality. This ensures
+            // class-based, wildcard, and comma-joined selectors are properly recognized as
+            // covering declared selectors when their targeted elements overlap.
+            let behaviorsWithoutSelectors = 0;
+            if (svg && Array.isArray(behaviors) && behaviors.length) {
+                behaviors.forEach(b => {
+                    const tgtSelector = b?.target?.selector;
+                    if (!tgtSelector) return;
+
+                    // Get elements this behavior targets (skip invalid selectors)
+                    let behaviorElements = [];
+                    try { behaviorElements = Array.from(svg.querySelectorAll(tgtSelector)); } catch (e) { return; }
+                    if (!behaviorElements.length) return;
+
+                    // Does ANY targeted element match a declared selectors[].dom? Use element.matches
+                    // to handle classes, wildcards and comma-lists correctly.
+                    const matchesDeclaredSelector = behaviorElements.some(el => {
+                        try {
+                            return selectorKeys.some(k => {
+                                const declared = selectors[k] && selectors[k].dom;
+                                if (!declared) return false;
+                                try { return el.matches(declared); } catch { return false; }
+                            });
+                        } catch (e) { return false; }
+                    });
+
+                    if (!matchesDeclaredSelector) behaviorsWithoutSelectors++;
+                });
+            }
+
             results.behaviorSummary = {
                 total: selectorKeys.length,
                 mapped: mapped.size,
                 missing: missing,
                 shapeBehaviors: shapeBehaviors,
-                behaviorCount: Array.isArray(behaviors) ? behaviors.length : 0
+                behaviorCount: Array.isArray(behaviors) ? behaviors.length : 0,
+                behaviorsWithoutSelectors: behaviorsWithoutSelectors
             };
         }
         // --- Add synthetic inventory items for behavior.target.shapes so they appear in Analysis panel ---
@@ -1599,10 +1633,32 @@
             }
             if (svg) {
                 const jimSelectors = Object.values(selectors).map(s => s.dom);
+                // Also consider behaviors' target.selector values when deciding whether
+                // an element is JIM-mapped. This ensures behavior-only mappings (e.g. class
+                // or group selectors) mark inventory items as having JIM mappings.
+                const behaviorSelectors = (behaviors || []).map(b => b?.target?.selector).filter(Boolean);
+
+                const hasJIMMapping = (el) => {
+                    if (!el) return false;
+                    try {
+                        for (let i = 0; i < jimSelectors.length; i++) {
+                            const sel = jimSelectors[i];
+                            if (!sel) continue;
+                            try { if (el.matches(sel)) return true; } catch (e) { /* ignore invalid selector */ }
+                        }
+                    } catch (e) { /* ignore overall */ }
+                    try {
+                        for (let i = 0; i < behaviorSelectors.length; i++) {
+                            const sel = behaviorSelectors[i];
+                            if (!sel) continue;
+                            try { if (el.matches(sel)) return true; } catch (e) { /* ignore invalid selector */ }
+                        }
+                    } catch (e) { /* ignore overall */ }
+                    return false;
+                };
                 // text nodes
                 svg.querySelectorAll('text').forEach(el => {
-                    const hasJIM = jimSelectors.some(sel => { try { return el.matches(sel); } catch { return false; } });
-                    results.svgInventory.push(this.createInventoryItem(el, hasJIM, 'text'));
+                    results.svgInventory.push(this.createInventoryItem(el, hasJIMMapping(el), 'text'));
                 });
                 // interactive (non-text with a11y attrs OR elements that have JIM mappings)
                 // Treating JIM-mapped elements as interactive helps authors find mapped datapoints
@@ -1613,7 +1669,7 @@
                     if (tag === 'text' || tag === 'g') return;
                     const hasA11y = el.hasAttribute('tabindex') || el.hasAttribute('role') ||
                                     el.hasAttribute('aria-label') || el.hasAttribute('aria-labelledby') || el.hasAttribute('aria-describedby');
-                    const hasJIM = jimSelectors.some(sel => { try { return el.matches(sel); } catch { return false; } });
+                    const hasJIM = hasJIMMapping(el);
                     if (hasA11y || hasJIM) {
                         results.svgInventory.push(this.createInventoryItem(el, hasJIM, 'interactive'));
                     }
@@ -1621,8 +1677,7 @@
                 // groups
                 svg.querySelectorAll('g').forEach(el => {
                     if (!el.id && !(el.className && el.className.baseVal)) return;
-                    const hasJIM = jimSelectors.some(sel => { try { return el.matches(sel); } catch { return false; } });
-                    results.svgInventory.push(this.createInventoryItem(el, hasJIM, 'group'));
+                    results.svgInventory.push(this.createInventoryItem(el, hasJIMMapping(el), 'group'));
                 });
 
                 // Other elements: basic shapes not already categorized (catch-all)
@@ -1631,7 +1686,7 @@
                 shapeTags.forEach(tag => {
                     svg.querySelectorAll(tag).forEach(el => {
                         if (categorizedSet.has(el)) return;
-                        const hasJIM = jimSelectors.some(sel => { try { return el.matches(sel); } catch { return false; } });
+                        const hasJIM = hasJIMMapping(el);
                         results.svgInventory.push(this.createInventoryItem(el, hasJIM, 'other'));
                         categorizedSet.add(el);
                     });
@@ -2037,19 +2092,29 @@
                     for (var bj = 0; bj < behaviors.length; bj++) {
                         var tgtSelector = behaviors[bj].target && behaviors[bj].target.selector;
                         if (!tgtSelector) continue;
-                        // Does this behavior selector match any declared selectors[].dom exactly?
+
+                        // Get elements this behavior targets (skip invalid selectors)
+                        var B = [];
+                        try { B = Array.from(svg.querySelectorAll(tgtSelector)); } catch (e) { continue; }
+                        if (!B.length) continue;
+
+                        // Does ANY targeted element match a declared selectors[].dom? Use element.matches
+                        // to ensure class/wildcard/comma selectors are handled correctly.
                         var matchesDeclaredSelector = false;
-                        for (var dk = 0; dk < selectorKeys.length; dk++) {
-                            var declaredKey = selectorKeys[dk];
-                            var declaredDom = this.jimData.selectors[declaredKey].dom;
-                            if (tgtSelector === declaredDom) { matchesDeclaredSelector = true; break; }
-                        }
-                        if (!matchesDeclaredSelector) {
-                            var B = [];
-                            try { B = Array.from(svg.querySelectorAll(tgtSelector)); } catch (e) {}
-                            if (B.length > 0) {
-                                behaviorsWithoutSelectors.push({ selector: tgtSelector, elementCount: B.length, behavior: behaviors[bj] });
+                        for (var bi = 0; bi < B.length && !matchesDeclaredSelector; bi++) {
+                            var el = B[bi];
+                            for (var dk = 0; dk < selectorKeys.length && !matchesDeclaredSelector; dk++) {
+                                var declaredKey = selectorKeys[dk];
+                                var declaredDom = this.jimData.selectors[declaredKey].dom;
+                                if (!declaredDom) continue;
+                                try {
+                                    if (el.matches(declaredDom)) { matchesDeclaredSelector = true; break; }
+                                } catch (e) { /* per-declared selector match failure ignored */ }
                             }
+                        }
+
+                        if (!matchesDeclaredSelector) {
+                            behaviorsWithoutSelectors.push({ selector: tgtSelector, elementCount: B.length, behavior: behaviors[bj] });
                         }
                     }
 
@@ -3132,31 +3197,40 @@
                     const missing = validation.behaviorSummary.missing || [];
                     const shapeBehaviors = validation.behaviorSummary.shapeBehaviors || 0;
                     const behaviorCount = typeof validation.behaviorSummary.behaviorCount === 'number' ? validation.behaviorSummary.behaviorCount : 0;
+                    const behaviorsWithoutSelectors = typeof validation.behaviorSummary.behaviorsWithoutSelectors === 'number' ? validation.behaviorSummary.behaviorsWithoutSelectors : 0;
 
-                    if (totalSelectors) {
-                        html += `<div class="status-success-line"><span class="sr-only">Success: </span>${ICONS.check} ${totalSelectors} selectors found with ${mappedCount} mapped selectors and ${missing.length} unmapped selectors</div>`;
-                    }
-                    // If selectors are missing behavior definitions, surface as a warning
-                    if (missing.length) {
-                        html += `<div class="status-warning-line"><span class="sr-only">Warning: </span>${ICONS.warn} ${missing.length} selector(s) lack behavior definitions: ${missing.join(', ')}</div>`;
-                    } else if (totalSelectors > 0) {
-                        html += `<div class="status-success-line"><span class="sr-only">Success: </span>${ICONS.check} All ${totalSelectors} selector(s) have behavior definitions</div>`;
-                    }
-
-                    // Show how many behavior definitions exist (always present, even 0)
-                    html += `<div class="status-success-line"><span class="sr-only">Info: </span>${ICONS.check} ${behaviorCount} behavior(s) defined</div>`;
-                    // If there are shape-only behaviors, show a small breakdown
-                    if (shapeBehaviors > 0) {
-                        const selectorBased = Math.max(0, behaviorCount - shapeBehaviors);
-                        html += `<div class="status-success-line"><span class="sr-only">Info: </span>${ICONS.check} ${selectorBased} selector-based, ${shapeBehaviors} shape-based (overlays)</div>`;
+                    // Selector coverage summary
+                    if (totalSelectors > 0) {
+                        if (mappedCount === totalSelectors) {
+                            html += `<div class="status-success-line"><span class="sr-only">Success: </span>${ICONS.check} All ${totalSelectors} selector(s) covered by behaviors</div>`;
+                        } else if (mappedCount > 0) {
+                            html += `<div class="status-success-line"><span class="sr-only">Info: </span>${ICONS.check} ${mappedCount} of ${totalSelectors} selector(s) covered by behaviors</div>`;
+                        } else {
+                            html += `<div class="status-success-line"><span class="sr-only">Info: </span>${ICONS.check} ${totalSelectors} selector(s) found, none covered by behaviors</div>`;
+                        }
                     }
 
-                    // Clarify mapping: how many declared selectors actually matched behaviors
-                    html += `<div class="status-success-line"><span class="sr-only">Info: </span>${ICONS.check} Selectors with matching behavior(s): ${mappedCount} of ${totalSelectors}</div>`;
-
-                    // Success line for behaviors mapped by selector (explicit mapping)
-                    html += `<div class="status-success-line"><span class="sr-only">Success: </span>${ICONS.check} ${mappedCount} behavior(s) mapped by selector</div>`;
+                    // Behavior count
+                    if (behaviorCount === 0) {
+                        html += `<div class="status-success-line"><span class="sr-only">Info: </span>${ICONS.info} No behaviors defined</div>`;
+                    } else {
+                        html += `<div class="status-success-line"><span class="sr-only">Info: </span>${ICONS.check} ${behaviorCount} behavior(s) defined</div>`;
+                        
+                        // Breakdown when there are multiple behavior types
+                        const selectorBased = behaviorCount - shapeBehaviors - behaviorsWithoutSelectors;
+                        const needsBreakdown = (shapeBehaviors > 0 || behaviorsWithoutSelectors > 0);
+                        
+                        if (needsBreakdown) {
+                            const parts = [];
+                            if (selectorBased > 0) parts.push(`${selectorBased} selector-based`);
+                            if (shapeBehaviors > 0) parts.push(`${shapeBehaviors} shape-based`);
+                            if (behaviorsWithoutSelectors > 0) parts.push(`${behaviorsWithoutSelectors} targeting non-selector elements`);
+                            html += `<div class="status-success-line" style="margin-left:24px;">↳ ${parts.join(', ')}</div>`;
+//                            html += `<div class="status-success-line" style="margin-left:24px;">${ICONS.arrowdown} ${parts.join(', ')}</div>`;
+                        }
+                    }
                 }
+
                 // Selector/DOM validation
                 if (validation.selectorSummary) {
                     html += `<div class="status-success-line"><span class="sr-only">Success: </span>${ICONS.check} ${validation.selectorSummary.domValid} DOM selector(s) valid</div>`;
