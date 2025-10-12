@@ -44,6 +44,9 @@ An interactive tool for analyzing and validating JSON for Interactive Media (JIM
 	- `Number_of_Xbox_Live_MAU_Q1_2016___Q4_2019.svg`
 	- `Unemployment_rate_in_Greece_1999_2019.svg`
 	- `JLGjim-photosynthesis-vav-monarch-approved.pdf.svg`
+	- `JLGjim-us-midwest-map-monarch-approved.pdf.svg`
+	- `E001-Vertical_Bar_Chart.svg`
+	- `E004-Number_Line.svg`
 
 ## Running accessibility checks
 
@@ -74,6 +77,7 @@ This project demonstrates how to preview, validate, and inspect SVG files that i
 - Robust selector handling: selectors that do not match any DOM element are skipped during rendering (avoids TypeError).
 - Inventory extended: "Other Elements" category now includes basic SVG shapes (polygon, rect, circle, ellipse, line, polyline, path).
 - Dev tokens & styles consolidated: color tokens and repeated inline styles were centralized to improve contrast and make future CSS refactors easier.
+- Viewer improvements: behavior-target overlays are now rendered and toggleable, selector-to-behavior mapping is more tolerant of legacy and group selectors (e.g., class and comma-separated selectors), and inventory/validation now surface behaviors that target DOM elements even when no declared selector entry exists.
 
 ## Contributors & Credits
 

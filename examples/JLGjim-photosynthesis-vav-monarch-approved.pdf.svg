@@ -25,8 +25,8 @@
         "series": []
       }
     ],
-  "selectors": {},
-  "behaviors": [
+    "selectors": {},
+    "behaviors": [
     {
       "target": {
         "shapes": [
@@ -312,8 +312,8 @@
         }
       }
     }
-  ]
-}
+    ]
+  }
 </metadata>
 
 
