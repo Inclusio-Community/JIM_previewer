@@ -64,14 +64,15 @@
 
   <metadata data-type="text/jim+json">
     {
+      "version": {
+        "document": "1.0.1",
+        "jim": "0.4.1"
+      },
       "datasets": [
         {
           "title": "Right Triangle",
           "description": "A right triangle with vertices A, B, and C",
-          "source": {
-            "url": "https://inclusioproject.com/graphics/exemplars/right-triangle.svg",
-            "name": "Inclusio Project accessible graphic examplar: Right Triangle"
-          },
+          "series": [],
           "items": {
             "shape": {
               "right_triangle": {
@@ -110,23 +111,65 @@
         }
       ],
       "selectors": {
-        "#diagram-title": "$.datasets[0].title",
-        
-        "#triangle": "$.datasets[0].items.shape.right_triangle.label",
+        "triangle": {
+          "dom": "#triangle",
+          "json": "$.datasets[0].items.shape.right_triangle.label",
+          "note": "The triangle shape"
+        },
 
-        "#side-A-C": "$.datasets[0].items.shape.side_A_C.label",
-        "#side-B-C": "$.datasets[0].items.shape.side_B_C.label",
-        "#side-A-B": "$.datasets[0].items.shape.side_A_B.label",
+        "side-A-C": {
+          "dom": "#side-A-C",
+          "json": "$.datasets[0].items.shape.side_A_C.label",
+          "note": "Side A-C"
+        },
 
-        "#vertex-A": "$.datasets[0].items.vertices.angle_a.label",
-        "#vertex-B": "$.datasets[0].items.vertices.angle_b.label",
-        "#vertex-C": "$.datasets[0].items.vertices.angle_c.label",
+        "side-B-C": {
+          "dom": "#side-B-C",
+          "json": "$.datasets[0].items.shape.side_B_C.label",
+          "note": "Side B-C"
+        },
 
-        "#vertex-label-A": "$.datasets[0].items.vertices.angle_a.label",
-        "#vertex-label-B": "$.datasets[0].items.vertices.angle_b.label",
-        "#vertex-label-C": "$.datasets[0].items.vertices.angle_c.label",
+        "side-A-B": {
+          "dom": "#side-A-B",
+          "json": "$.datasets[0].items.shape.side_A_B.label",
+          "note": "Side A-B"
+        },
 
-        "#right-angle-marker": "$.datasets[0].items.markers.right_angle.label"
+        "vertex-A": {
+          "dom": "#vertex-A",
+          "json": "$.datasets[0].items.vertices.angle_a.label",
+          "note": "Vertex A"
+        },
+
+        "vertex-B": {
+          "dom": "#vertex-B",
+          "json": "$.datasets[0].items.vertices.angle_b.label",
+          "note": "Vertex B"
+        },
+
+        "vertex-C": {
+          "dom": "#vertex-C",
+          "json": "$.datasets[0].items.vertices.angle_c.label",
+          "note": "Vertex C"
+        },
+
+        "vertex-label-A": {
+          "dom": "#vertex-label-A",
+          "json": "$.datasets[0].items.vertices.angle_a.label"
+        },
+        "vertex-label-B": {
+          "dom": "#vertex-label-B",
+          "json": "$.datasets[0].items.vertices.angle_b.label"
+        },
+        "vertex-label-C": {
+          "dom": "#vertex-label-C",
+          "json": "$.datasets[0].items.vertices.angle_c.label"
+        },
+
+        "right-angle-marker": {
+          "dom": "#right-angle-marker",
+          "json": "$.datasets[0].items.markers.right_angle.label"
+        }
       }
     }
   </metadata>

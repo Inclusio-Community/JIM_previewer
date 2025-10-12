@@ -562,11 +562,10 @@
                         errors.push("Missing required property: version.jim (string)");
                     }
 
-                    // — Normalize datasets
-                    if (!jim.datasets && jim.dataset) {
-                        jim.datasets = [jim.dataset];
-                        warnings.push("Found 'dataset' (singular); normalized to 'datasets[]'.");
-                        fixesApplied.push("dataset→datasets[]");
+                    // — Datasets: require 'datasets' array; treat singular 'dataset' as an authoring error
+                    // Do NOT silently normalize a top-level 'dataset' property — authors must use 'datasets' (array).
+                    if (rawJim && Object.prototype.hasOwnProperty.call(rawJim, 'dataset')) {
+                        errors.push("Invalid top-level key 'dataset' (singular). Use 'datasets' (array) instead.");
                     }
                     if (jim.datasets && !Array.isArray(jim.datasets)) {
                         jim.datasets = [jim.datasets];
@@ -622,6 +621,21 @@
                                 errors.push(`Selector '${key}' 'json' must be a non-empty string or array of non-empty strings.`);
                             }
                         }
+
+                        // Heuristic: detect common selector.json typo that references '$.dataset['
+                        // (authors frequently omit the plural 's'). This is a non-fatal warning
+                        // to give an early hint before full validation runs.
+                        try {
+                            if (rawJim && rawJim.selectors) {
+                                for (const [k, s] of Object.entries(rawJim.selectors)) {
+                                    try {
+                                        if (s && typeof s.json === 'string' && s.json.includes('$.dataset[')) {
+                                            warnings.push(`Selector '${k}' JSON path appears to use '$.dataset[' — did you mean '$.datasets['?`);
+                                        }
+                                    } catch (e) { /* ignore malformed selector */ }
+                                }
+                            }
+                        } catch (e) { /* ignore */ }
                     }
                         // Warn if there are records but no facets defined
                         const hasFacets = jim.datasets && Array.isArray(jim.datasets) && jim.datasets[0] && jim.datasets[0].facets && Object.keys(jim.datasets[0].facets).length > 0;
@@ -923,7 +937,6 @@
                     const allowedTop = new Set([
                         'version',
                         'datasets',
-                        'dataset',
                         'selectors',
                         'behaviors',
                         'metadata',
@@ -1086,24 +1099,27 @@
             this.showError('No SVG found in document');
             return;
         }
-        // Clone the SVG to avoid modifying the original document
-        const svgClone = svg.cloneNode(true);
-        const selectors = this.jimData.selectors || {};
-        const behaviors = this.jimData.behaviors || [];
+    // Clone the SVG to avoid modifying the original document
+    const svgClone = svg.cloneNode(true);
+    // Be defensive: this.jimData may be null when viewing SVG-only files
+    const selectors = this.jimData?.selectors || {};
+    const behaviors = this.jimData?.behaviors || [];
 
         // Attach JIM behaviors to elements that have selectors (legacy direct mapping)
-        Object.entries(selectors).forEach(([key, selector]) => {
-            let element = null;
-            try {
-                element = svgClone.querySelector(selector.dom);
-            } catch (e) {
-                console.warn(`[JIMViewer] Invalid selector for key '${key}' in renderVisualization: '${selector.dom}'`, e);
-                return; // skip this selector
-            }
-            if (element) {
-                this.attachJIMBehavior(element, key);
-            }
-        });
+        if (selectors && Object.keys(selectors).length) {
+            Object.entries(selectors).forEach(([key, selector]) => {
+                let element = null;
+                try {
+                    if (selector && selector.dom) element = svgClone.querySelector(selector.dom);
+                } catch (e) {
+                    console.warn(`[JIMViewer] Invalid selector for key '${key}' in renderVisualization: '${selector && selector.dom}'`, e);
+                    return; // skip this selector
+                }
+                if (element) {
+                    this.attachJIMBehavior(element, key);
+                }
+            });
+        }
 
         // Attach behaviors using target.selector (supports wildcards/classes)
         behaviors.forEach((behavior, i) => {
@@ -1187,7 +1203,7 @@
             // Ensure inventoryData exists and is in-sync
             if (!this.inventoryData) this.inventoryData = [];
             // For each behavior, create overlays and attach handlers
-            (this.jimData.behaviors || []).forEach((behavior, bi) => {
+            behaviors.forEach((behavior, bi) => {
                 const shapes = Array.isArray(behavior?.target?.shapes) ? behavior.target.shapes : [];
                 shapes.forEach((shapeObj, si) => {
                     if (!shapeObj || typeof shapeObj !== 'object') return;
@@ -1417,6 +1433,7 @@
             warnings: [],
             passed: [],
             orphanedSelectors: [],
+            invalidJsonPaths: [],
             facetSummary: null,
             behaviorSummary: null,
             selectorSummary: null
@@ -1443,8 +1460,15 @@
                 } else {
                     domValid++;
                 }
-                if (this.getDataFromJSONPath(sel.json) !== null) {
+
+                // Resolve JSON path and track invalid/unresolved paths so authors know
+                // exactly which selector.json entries failed to match data.
+                let jsonData = null;
+                try { jsonData = this.getDataFromJSONPath(sel.json); } catch (e) { jsonData = null; }
+                if (jsonData !== null && !(Array.isArray(jsonData) && jsonData.length === 0)) {
                     jsonValid++;
+                } else {
+                    results.invalidJsonPaths.push({ key, selector: sel.dom, jsonPath: sel.json });
                 }
             });
             results.selectorSummary = {
@@ -2037,8 +2061,8 @@
                 const hasSelectors = !!(this.jimData && this.jimData.selectors && Object.keys(this.jimData.selectors).length);
                 const hasShapeBehaviors = !!((this.jimData && Array.isArray(this.jimData.behaviors) && this.jimData.behaviors.some(b => Array.isArray(b?.target?.shapes) && b.target.shapes.length > 0)));
                 if (hasSelectors || hasShapeBehaviors) {
-                    var selectorKeys = Object.keys(this.jimData.selectors);
-                    var behaviors = this.jimData.behaviors || [];
+                    var selectorKeys = Object.keys(this.jimData?.selectors || {});
+                    var behaviors = this.jimData?.behaviors || [];
                     var selectorPanelHtml = "<div class='selector-panel'>";
                     selectorPanelHtml += "<h2 class='panel__heading'>Selectors</h2>";
                     
@@ -3258,6 +3282,22 @@
                                 <div class="meta-text">Selector: <code>${orphan.selector}</code></div>
                                 <div class="meta-text">JSON Path: <code>${orphan.jsonPath}</code></div>
                                 ${orphan.data ? `<div class="muted-note"><strong>Data:</strong> <code>${JSON.stringify(orphan.data)}</code></div>` : ''}
+                            </li>`;
+                    });
+                    html += '</ul>';
+                }
+                // Invalid JSON Paths: show which selectors' json paths did not resolve
+                if (validation.invalidJsonPaths && validation.invalidJsonPaths.length) {
+                    html += '<h4 id="invalid-json-paths-heading" class="spec-heading" role="heading" aria-level="2">Invalid JSON Paths</h4>';
+                    html += '<div class="sr-only" id="invalid-json-paths-sr-help">Selectors with JSON paths that do not resolve to data. Check for typos in path expressions (for example: $.datasets vs $.dataset).</div>';
+                    html += '<ul aria-labelledby="invalid-json-paths-heading invalid-json-paths-sr-help" class="orphaned-list">';
+                    validation.invalidJsonPaths.forEach(item => {
+                        html += `
+                            <li class="orphaned-item">
+                                <div><strong>${item.key}</strong></div>
+                                <div class="meta-text">Selector: <code>${item.selector}</code></div>
+                                <div class="meta-text" style="color:var(--status-warning);">JSON Path: <code>${item.jsonPath}</code></div>
+                                <div class="muted-note">This path did not resolve to any data in the JIM metadata.</div>
                             </li>`;
                     });
                     html += '</ul>';
