@@ -1086,24 +1086,27 @@
             this.showError('No SVG found in document');
             return;
         }
-        // Clone the SVG to avoid modifying the original document
-        const svgClone = svg.cloneNode(true);
-        const selectors = this.jimData.selectors || {};
-        const behaviors = this.jimData.behaviors || [];
+    // Clone the SVG to avoid modifying the original document
+    const svgClone = svg.cloneNode(true);
+    // Be defensive: this.jimData may be null when viewing SVG-only files
+    const selectors = this.jimData?.selectors || {};
+    const behaviors = this.jimData?.behaviors || [];
 
         // Attach JIM behaviors to elements that have selectors (legacy direct mapping)
-        Object.entries(selectors).forEach(([key, selector]) => {
-            let element = null;
-            try {
-                element = svgClone.querySelector(selector.dom);
-            } catch (e) {
-                console.warn(`[JIMViewer] Invalid selector for key '${key}' in renderVisualization: '${selector.dom}'`, e);
-                return; // skip this selector
-            }
-            if (element) {
-                this.attachJIMBehavior(element, key);
-            }
-        });
+        if (selectors && Object.keys(selectors).length) {
+            Object.entries(selectors).forEach(([key, selector]) => {
+                let element = null;
+                try {
+                    if (selector && selector.dom) element = svgClone.querySelector(selector.dom);
+                } catch (e) {
+                    console.warn(`[JIMViewer] Invalid selector for key '${key}' in renderVisualization: '${selector && selector.dom}'`, e);
+                    return; // skip this selector
+                }
+                if (element) {
+                    this.attachJIMBehavior(element, key);
+                }
+            });
+        }
 
         // Attach behaviors using target.selector (supports wildcards/classes)
         behaviors.forEach((behavior, i) => {
@@ -1187,7 +1190,7 @@
             // Ensure inventoryData exists and is in-sync
             if (!this.inventoryData) this.inventoryData = [];
             // For each behavior, create overlays and attach handlers
-            (this.jimData.behaviors || []).forEach((behavior, bi) => {
+            behaviors.forEach((behavior, bi) => {
                 const shapes = Array.isArray(behavior?.target?.shapes) ? behavior.target.shapes : [];
                 shapes.forEach((shapeObj, si) => {
                     if (!shapeObj || typeof shapeObj !== 'object') return;
@@ -2037,8 +2040,8 @@
                 const hasSelectors = !!(this.jimData && this.jimData.selectors && Object.keys(this.jimData.selectors).length);
                 const hasShapeBehaviors = !!((this.jimData && Array.isArray(this.jimData.behaviors) && this.jimData.behaviors.some(b => Array.isArray(b?.target?.shapes) && b.target.shapes.length > 0)));
                 if (hasSelectors || hasShapeBehaviors) {
-                    var selectorKeys = Object.keys(this.jimData.selectors);
-                    var behaviors = this.jimData.behaviors || [];
+                    var selectorKeys = Object.keys(this.jimData?.selectors || {});
+                    var behaviors = this.jimData?.behaviors || [];
                     var selectorPanelHtml = "<div class='selector-panel'>";
                     selectorPanelHtml += "<h2 class='panel__heading'>Selectors</h2>";
                     
