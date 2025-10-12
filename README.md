@@ -35,6 +35,7 @@ An interactive tool for analyzing and validating JSON for Interactive Media (JIM
 ## Files
 
 - `jim-viewer.html`: Interactive HTML viewer for SVGs with JIM metadata
+- `tests/auto-load.html`: Test harness that loads all examples files and allows AXE testing, also used by axe-playwright.yml with a subset of tests for pull requests
 - `examples/`: Example SVG files for testing and demonstration:
 	- `triangle-complete-with-jim-metadata.svg`
 	- `testimage_0.svg`, `testimage_1.svg`, `testimage_2.svg`, `testimage_3.svg`, `testimage_4.svg`
@@ -47,6 +48,8 @@ An interactive tool for analyzing and validating JSON for Interactive Media (JIM
 	- `JLGjim-us-midwest-map-monarch-approved.pdf.svg`
 	- `E001-Vertical_Bar_Chart.svg`
 	- `E004-Number_Line.svg`
+	- `right_triangle.svg`
+	- `E002-Line_Graph-Monthly_Rainfall.svg`
 
 ## Running accessibility checks
 
@@ -78,6 +81,7 @@ This project demonstrates how to preview, validate, and inspect SVG files that i
 - Inventory extended: "Other Elements" category now includes basic SVG shapes (polygon, rect, circle, ellipse, line, polyline, path).
 - Dev tokens & styles consolidated: color tokens and repeated inline styles were centralized to improve contrast and make future CSS refactors easier.
 - Viewer improvements: behavior-target overlays are now rendered and toggleable, selector-to-behavior mapping is more tolerant of legacy and group selectors (e.g., class and comma-separated selectors), and inventory/validation now surface behaviors that target DOM elements even when no declared selector entry exists.
+- Validation tracking: validateJIMStructure() now includes invalidJsonPaths: [] in the returned results and populates it for any selector whose JSON path resolves to null or an empty array. UI rendering: renderValidationResults() now renders an "Invalid JSON Paths" section listing each failing selector key, its dom and the problematic json path with a short explanatory note.
 
 ## Contributors & Credits
 
