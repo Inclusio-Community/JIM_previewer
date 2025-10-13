@@ -2403,16 +2403,20 @@
                         ${dataset ? `
                             <div class="metadata-item">
                                 <span class="key">Title:</span>
-                                <span class="value">${dataset.title || 'Untitled'}</span>
+                                <span class="value">${this.escapeHtml(dataset.title || 'Untitled')}</span>
                             </div>
+                            ${dataset.subtitle ? `<div class="metadata-item"><span class="key">Subtitle:</span><span class="value">${this.escapeHtml(dataset.subtitle)}</span></div>` : ''}
+                            ${dataset.description ? `<div class="metadata-item"><span class="key">Description:</span><span class="value">${dataset.description && dataset.description.length > 180 ? `<details class="details--spaced"><summary class="details-summary">Show description</summary><div class="muted-note">${this.escapeHtml(dataset.description)}</div></details>` : this.escapeHtml(dataset.description)}</span></div>` : ''}
                             <div class="metadata-item">
                                 <span class="key">Type:</span>
-                                <span class="value">${dataset.representation?.chartType || 'Unknown'}</span>
+                                <span class="value">${this.escapeHtml(dataset.representation?.chartType || 'Unknown')}</span>
                             </div>
-                            <div class="metadata-item">
-                                <span class="key">Series:</span>
-                                <span class="value">${dataset.series?.length || 0}</span>
-                            </div>
+                            ${dataset.facets && Object.keys(dataset.facets).length ? `<div class="metadata-item"><span class="key">Facets:</span><span class="value">${Object.entries(dataset.facets).map(([k,f])=> `${this.escapeHtml(k)}${f && f.label ? ` (${this.escapeHtml(f.label)})` : ''}`).join(', ')}</span></div>` : ''}
+                            ${Array.isArray(dataset.series) ? `<div class="metadata-item"><span class="key">Series:</span><span class="value">${dataset.series.length} ${dataset.series.length === 1 ? 'series' : 'series'}${dataset.series.some(s=>s && s.name) ? ` — ${dataset.series.map(s=>this.escapeHtml(s?.name||'')).filter(Boolean).join(', ')}` : ''}</span></div>` : `<div class="metadata-item"><span class="key">Series:</span><span class="value warning-text">Not present</span></div>`}
+                            ${dataset.items && typeof dataset.items === 'object' ? `<div class="metadata-item"><span class="key">Items:</span><span class="value">${Object.keys(dataset.items).length} item(s)</span></div>` : ''}
+                            ${dataset.source ? `<div class="metadata-item"><span class="key">Source:</span><span class="value">${this.escapeHtml(typeof dataset.source === 'string' ? dataset.source : (dataset.source.name || dataset.source.url || JSON.stringify(dataset.source)))}</span></div>` : ''}
+                            ${Array.isArray(dataset.href) && dataset.href.length ? `<div class="metadata-item"><span class="key">Links:</span><span class="value">${dataset.href.map(h=> typeof h === 'string' ? `<a href="${this.escapeHtml(h)}" target="_blank" rel="noopener">${this.escapeHtml(h)}</a>` : (h && (h.href || h.url) ? `<a href="${this.escapeHtml(h.href||h.url)}" target="_blank" rel="noopener">${this.escapeHtml(h.href||h.url)}</a>` : this.escapeHtml(JSON.stringify(h)))).join(', ')}</span></div>` : ''}
+                            ${dataset.license ? `<div class="metadata-item"><span class="key">License:</span><span class="value">${this.escapeHtml(typeof dataset.license === 'string' ? dataset.license : (dataset.license.name || JSON.stringify(dataset.license)))}</span></div>` : ''}
                         ` : `
                             <div class="metadata-item">
                                 <span class="key">Datasets:</span>
@@ -2423,6 +2427,36 @@
                             <span class="key">JIM Version:</span>
                             <span class="value">${this.jimData.version?.jim || 'Unknown'}</span>
                         </div>
+                        ${this.jimData.version && this.jimData.version.document ? `
+                        <div class="metadata-item">
+                            <span class="key">Doc Version:</span>
+                            <span class="value">${this.jimData.version.document}</span>
+                        </div>
+                        ` : ''}
+                        ${this.jimData.provenance ? `
+                        <div class="metadata-item">
+                            <span class="key">Provenance:</span>
+                            <span class="value">
+                                ${Array.isArray(this.jimData.provenance.notes) && this.jimData.provenance.notes.length ? `<span class="muted">${this.jimData.provenance.notes.slice(0,3).join('; ')}${this.jimData.provenance.notes.length>3? '…':''}</span>` : ''}
+                                ${this.jimData.provenance.author ? `<div>Author: ${this.jimData.provenance.author}</div>` : ''}
+                                ${this.jimData.provenance.authors ? `<div>Authors: ${Array.isArray(this.jimData.provenance.authors)? this.jimData.provenance.authors.join(', '): this.jimData.provenance.authors}</div>` : ''}
+                                ${this.jimData.provenance.creator ? `<div>Creator: ${this.jimData.provenance.creator}</div>` : ''}
+                                ${this.jimData.provenance.publisher ? `<div>Publisher: ${this.jimData.provenance.publisher}</div>` : ''}
+                                ${this.jimData.provenance.source ? `<div>Source: ${this.jimData.provenance.source}</div>` : ''}
+                                ${this.jimData.provenance.created ? `<div>Created: ${this.jimData.provenance.created}</div>` : ''}
+                                ${this.jimData.provenance.modified ? `<div>Modified: ${this.jimData.provenance.modified}</div>` : ''}
+                            </span>
+                        </div>
+                        ` : ''}
+                        ${this.jimData.tags ? `
+                        <div class="metadata-item">
+                            <span class="key">Tags:</span>
+                            <span class="value">
+                                ${Array.isArray(this.jimData.tags?.keywords) && this.jimData.tags.keywords.length ? `<span class="tag-list">${this.jimData.tags.keywords.map(k=>`<code class="tag">${k}</code>`).join(' ')}</span>` : ''}
+                                ${this.jimData.tags && this.jimData.tags.capabilities ? `<div class="muted">Capabilities: ${Object.keys(this.jimData.tags.capabilities).map(c=> `${c}(${(this.jimData.tags.capabilities[c]||[]).length})`).join(', ')}</div>` : ''}
+                            </span>
+                        </div>
+                        ` : ''}
                         <h3 class="section-heading">JIM Validation</h3>
                         ${this.renderValidationResults(validation)}
                     </div>
