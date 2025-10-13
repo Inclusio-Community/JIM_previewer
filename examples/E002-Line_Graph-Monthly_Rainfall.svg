@@ -5,7 +5,7 @@
     {
       "version": {
         "document": "1.0.1",
-        "jim": "0.4.1"
+        "jim": "0.4.2"
       },
       "datasets": [
         {
@@ -108,112 +108,112 @@
           "json": "$.datasets[0].facets.y.label",
           "note": "Y-axis label element"
         },
-        "#x-Month": {
+        "x-Month": {
           "dom": "#x-Month",
           "json": "$.datasets[0].facets.x.label",
           "note": "X-axis label element"
         },
-        "#x-axis-line": {
+        "x-axis-line": {
           "dom": "#x-axis-line",
           "json": "$.datasets[0].series[1].records[0].y",
           "note": "X-axis line element"
         },
-        "g.tick-group-y:nth-child(1) use": {
+        "g_tick-group-y-nth-child_1_": {
           "dom": "g.tick-group-y:nth-child(1) use",
           "json": "$.datasets[0].series[1].records[0].y",
           "note": "Y-axis tick 1 element"
         },
-        "g.tick-group-y:nth-child(2) use": {
+        "g_tick-group-y-nth-child_2_": {
           "dom": "g.tick-group-y:nth-child(2) use",
           "json": "$.datasets[0].series[1].records[1].y",
           "note": "Y-axis tick 2 element"
         },
-        "g.tick-group-y:nth-child(3) use": {
+        "g_tick-group-y-nth-child_3_": {
           "dom": "g.tick-group-y:nth-child(3) use",
           "json": "$.datasets[0].series[1].records[2].y",
           "note": "Y-axis tick 3 element"
         },
-        "g.tick-group-y:nth-child(4) use": {
+        "g_tick-group-y-nth-child_4_": {
           "dom": "g.tick-group-y:nth-child(4) use",
           "json": "$.datasets[0].series[1].records[3].y",
           "note": "Y-axis tick 4 element"
         },
-        "g.tick-group-y:nth-child(5) use": {
+        "g_tick-group-y-nth-child_5_": {
           "dom": "g.tick-group-y:nth-child(5) use",
           "json": "$.datasets[0].series[1].records[4].y",
           "note": "Y-axis tick 5 element"
         },
-        "g.tick-group-y:nth-child(6) use": {
+        "g_tick-group-y-nth-child_6_": {
           "dom": "g.tick-group-y:nth-child(6) use",
           "json": "$.datasets[0].series[1].records[5].y",
           "note": "Y-axis tick 6 element"
         },
-        "g.tick-group-y:nth-child(7) use": {
+        "g_tick-group-y-nth-child_7_": {
           "dom": "g.tick-group-y:nth-child(7) use",
           "json": "$.datasets[0].series[1].records[6].y",
           "note": "Y-axis tick 7 element"
         },
-        "#datapoint-rainfall_inches-Mar-4 .chart-point": {
+        "datapoint-rainfall_inches-Mar-4": {
           "dom": "#datapoint-rainfall_inches-Mar-4 .chart-point",
           "json": "$.datasets[0].series[0].records[0].*"
         },
-        "#datapoint-rainfall_inches-Apr-350 .chart-point": {
+        "datapoint-rainfall_inches-Apr-350": {
           "dom": "#datapoint-rainfall_inches-Apr-350 .chart-point",
           "json": "$.datasets[0].series[0].records[1].*"
         },
-        "#datapoint-rainfall_inches-May-450 .chart-point": {
+        "datapoint-rainfall_inches-May-450": {
           "dom": "#datapoint-rainfall_inches-May-450 .chart-point",
           "json": "$.datasets[0].series[0].records[2].*"
         },
-        "#datapoint-rainfall_inches-Jun-4 .chart-point": {
+        "datapoint-rainfall_inches-Jun-4": {
           "dom": "#datapoint-rainfall_inches-Jun-4 .chart-point",
           "json": "$.datasets[0].series[0].records[3].*"
         },
-        "#datapoint-rainfall_inches-Jul-550 .chart-point": {
+        "datapoint-rainfall_inches-Jul-550": {
           "dom": "#datapoint-rainfall_inches-Jul-550 .chart-point",
           "json": "$.datasets[0].series[0].records[4].*"
         },
-        "#datapoint-rainfall_inches-Aug-6 .chart-point": {
+        "datapoint-rainfall_inches-Aug-6": {
           "dom": "#datapoint-rainfall_inches-Aug-6 .chart-point",
           "json": "$.datasets[0].series[0].records[5].*"
         },
-        "#datapoint-rainfall_inches-Sep-5 .chart-point": {
+        "datapoint-rainfall_inches-Sep-5": {
           "dom": "#datapoint-rainfall_inches-Sep-5 .chart-point",
           "json": "$.datasets[0].series[0].records[6].*"
         },
-        "#datapoint-rainfall_inches-Oct-250 .chart-point": {
+        "datapoint-rainfall_inches-Oct-250": {
           "dom": "#datapoint-rainfall_inches-Oct-250 .chart-point",
           "json": "$.datasets[0].series[0].records[7].*"
         },
-        "g.tick-group-x:nth-child(1) text": {
+        "g_tick-group-x-nth-child_1_": {
           "dom": "g.tick-group-x:nth-child(1) text",
           "json": "$.datasets[0].series[0].records[0].x"
         },
-        "g.tick-group-x:nth-child(2) text": {
+        "g_tick-group-x-nth-child_2_": {
           "dom": "g.tick-group-x:nth-child(2) text",
           "json": "$.datasets[0].series[0].records[1].x"
         },
-        "g.tick-group-x:nth-child(3) text": {
+        "g_tick-group-x-nth-child_3_": {
           "dom": "g.tick-group-x:nth-child(3) text",
           "json": "$.datasets[0].series[0].records[2].x"
         },
-        "g.tick-group-x:nth-child(4) text": {
+        "g_tick-group-x-nth-child_4_": {
           "dom": "g.tick-group-x:nth-child(4) text",
           "json": "$.datasets[0].series[0].records[3].x"
         },
-        "g.tick-group-x:nth-child(5) text": {
+        "g_tick-group-x-nth-child_5_": {
           "dom": "g.tick-group-x:nth-child(5) text",
           "json": "$.datasets[0].series[0].records[4].x"
         },
-        "g.tick-group-x:nth-child(6) text": {
+        "g_tick-group-x-nth-child_6_": {
           "dom": "g.tick-group-x:nth-child(6) text",
           "json": "$.datasets[0].series[0].records[5].x"
         },
-        "g.tick-group-x:nth-child(7) text": {
+        "g_tick-group-x-nth-child_7_": {
           "dom": "g.tick-group-x:nth-child(7) text",
           "json": "$.datasets[0].series[0].records[6].x"
         },
-        "g.tick-group-x:nth-child(8) text": {
+        "g_tick-group-x-nth-child_8_": {
           "dom": "g.tick-group-x:nth-child(8) text",
           "json": "$.datasets[0].series[0].records[7].x"
         }
