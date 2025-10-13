@@ -580,6 +580,18 @@
                     if (!jim.selectors || typeof jim.selectors !== 'object' || Array.isArray(jim.selectors)) {
                         errors.push("Missing required property: selectors (object).");
                     } else {
+                        // Validate selector keys against spec: allow ASCII letters, digits, '_' and '-' only (no whitespace)
+                        try {
+                            const selectorKeyRe = /^[A-Za-z0-9_-]+$/;
+                            for (const k of Object.keys(jim.selectors)) {
+                                if (!selectorKeyRe.test(k)) {
+                                    errors.push(`Invalid selector key '${k}'. Selector keys must only contain ASCII letters, digits, '_' or '-' with no whitespace (per JIM spec).`);
+                                }
+                            }
+                        } catch (e) {
+                            // ignore any unexpected issues iterating selector keys
+                        }
+
                         for (const [key, sel] of Object.entries(jim.selectors)) {
                             if (!sel || typeof sel !== 'object') {
                                 errors.push(`Selector '${key}' is not an object (found type: ${typeof sel}).`);
