@@ -648,7 +648,6 @@
                                 }
                             }
                         } catch (e) { /* ignore */ }
-                    }
                         // Warn if there are records but no facets defined
                         const hasFacets = jim.datasets && Array.isArray(jim.datasets) && jim.datasets[0] && jim.datasets[0].facets && Object.keys(jim.datasets[0].facets).length > 0;
                         const hasSeries = jim.datasets && Array.isArray(jim.datasets) && jim.datasets[0] && Array.isArray(jim.datasets[0].series) && jim.datasets[0].series.length > 0;
@@ -1009,6 +1008,7 @@
 
                     return { ok: errors.length === 0, errors, warnings, fixesApplied, normalizedJim: jim };
                 }
+                }
 
                 class JIMViewer {
     // Robust JSONPath lookup for JIM metadata (supports $.foo[0].bar)
@@ -1035,8 +1035,13 @@
             wildcard = true;
             pathStr = path.slice(0, -2);
         }
-        // Remove leading $. and convert [n] to .n for easier splitting
-        const parts = pathStr.replace(/^\$\./, '').replace(/\[(\d+)\]/g, '.$1').split('.');
+    // Normalize path: support bracket-string access (['key'] or ["key"]) and numeric [n]
+    // Convert bracket-string to .key and [n] to .n for splitting
+    let normalized = pathStr.replace(/^\$\./, '');
+    normalized = normalized.replace(/\[\s*'([^']+)'\s*\]/g, '.$1');
+    normalized = normalized.replace(/\[\s*"([^"]+)"\s*\]/g, '.$1');
+    normalized = normalized.replace(/\[(\d+)\]/g, '.$1');
+    const parts = normalized.split('.');
         for (const key of parts) {
             if (val && key in val) val = val[key];
             else if (Array.isArray(val) && !isNaN(Number(key))) val = val[Number(key)];
@@ -1064,12 +1069,13 @@
             try {
                 const viz = container;
                 if (viz && Array.isArray(this.inventoryData) && this.inventoryData.length) {
+                    const usedMapped = new Set();
                     this.inventoryData.forEach(item => {
                         try {
                             if (!item || !item.domElement) return;
-                            // Prefer mapping by element ID when available
                             let mapped = null;
                             const original = item.domElement;
+                            // Prefer mapping by element ID when available
                             if (original && original.id) {
                                 try {
                                     if (typeof CSS !== 'undefined' && typeof CSS.escape === 'function') {
@@ -1078,25 +1084,43 @@
                                         mapped = viz.querySelector('#' + original.id);
                                     }
                                 } catch (e) { mapped = null; }
+                                if (mapped && usedMapped.has(mapped)) mapped = null;
                             }
-                            // Next try any stored selector string
+                            // Next try any stored selector string; pick the first unused match
                             if (!mapped && item.selector) {
-                                try { mapped = viz.querySelector(item.selector); } catch (e) { mapped = null; }
-                            }
-                            // Fallback: try basic tag+class matching
-                            if (!mapped && original && original.tagName) {
                                 try {
-                                    const tag = original.tagName.toLowerCase();
-                                    const cls = (original.classList && original.classList.length) ? Array.from(original.classList) : [];
-                                    const candidates = Array.from(viz.querySelectorAll(tag));
-                                    if (cls.length) {
-                                        mapped = candidates.find(c => cls.every(cn => c.classList && c.classList.contains(cn)));
-                                    } else if (candidates.length === 1) {
-                                        mapped = candidates[0];
+                                    const all = Array.from(viz.querySelectorAll(item.selector));
+                                    for (let i = 0; i < all.length; i++) {
+                                        if (!usedMapped.has(all[i])) { mapped = all[i]; break; }
                                     }
                                 } catch (e) { mapped = null; }
                             }
-                            if (mapped) item.domElement = mapped;
+                            // Fallback: try basic tag+class matching and prefer unused candidate
+                            if (!mapped && original && original.tagName) {
+                                try {
+                                    const tag = (original.tagName || '').toLowerCase();
+                                    const cls = original.getAttribute && original.getAttribute('class') ? String(original.getAttribute('class')).split(/\s+/).filter(Boolean) : [];
+                                    const candidates = Array.from(viz.querySelectorAll(tag));
+                                    let chosen = null;
+                                    if (cls.length) {
+                                        for (let c of candidates) {
+                                            try {
+                                                const cClasses = c.getAttribute && c.getAttribute('class') ? String(c.getAttribute('class')).split(/\s+/).filter(Boolean) : [];
+                                                const allMatch = cls.every(cn => cClasses.indexOf(cn) !== -1);
+                                                if (allMatch && !usedMapped.has(c)) { chosen = c; break; }
+                                            } catch (e) { /* ignore */ }
+                                        }
+                                    } else {
+                                        for (let c of candidates) { if (!usedMapped.has(c)) { chosen = c; break; } }
+                                    }
+                                    mapped = chosen;
+                                } catch (e) { mapped = null; }
+                            }
+                            if (mapped) {
+                                item.domElement = mapped;
+                                try { if (item._invId) mapped.setAttribute && mapped.setAttribute('data-inv-id', item._invId); } catch (e) { /* ignore */ }
+                                usedMapped.add(mapped);
+                            }
                         } catch (e) { /* per-item mapping failures are non-fatal */ }
                     });
                 }
@@ -1149,7 +1173,11 @@
                         this.showElementInfoByBehavior(behavior, 'focus', el);
                     });
                     el.addEventListener('click', (e) => {
-                        e.stopPropagation();
+                        // Mark the event as handled by a JIM handler to prevent
+                        // generic SVG handlers from overwriting the JIM info panel.
+                        try { if (e && typeof e.stopImmediatePropagation === 'function') e.stopImmediatePropagation(); } catch (err) { /* ignore */ }
+                        try { if (e) e.jimHandled = true; } catch (err) { /* ignore */ }
+                        try { if (e && typeof e.stopPropagation === 'function') e.stopPropagation(); } catch (err) { /* ignore */ }
                         this.showElementInfoByBehavior(behavior, 'click', el);
                     });
                 });
@@ -1161,6 +1189,9 @@
         svgClone.addEventListener('click', (e) => {
             const targetElement = e.target;
             if (!(targetElement instanceof SVGElement) || targetElement === svgClone) return;
+
+            // If another handler already claimed this event (JIM handler), respect it
+            try { if (e && e.jimHandled) return; } catch (err) { /* ignore */ }
 
             // First: check if any behavior selector matches the target or its ancestors up to the svgClone
             let matched = false;
@@ -1176,7 +1207,9 @@
                         try {
                             if (current.matches && current.matches(tgtSelector)) {
                                 // Found a parent (or the element itself) that the behavior targets
-                                e.stopPropagation();
+                                try { if (e && typeof e.stopImmediatePropagation === 'function') e.stopImmediatePropagation(); } catch(_){}
+                                try { if (e) e.jimHandled = true; } catch(_){}
+                                try { if (e && typeof e.stopPropagation === 'function') e.stopPropagation(); } catch(_){}
                                 try { this.showElementInfoByBehavior(behavior, 'click', current); } catch (err) { this.showBehaviorInfo(behavior, 'click', current); }
                                 matched = true;
                                 break;
@@ -1194,8 +1227,27 @@
 
             if (matched) return;
 
-            // If no behavior selector matched, fall back to showing non-JIM element info when appropriate
+            // If no behavior selector matched, attempt to map the clicked element to any JIM selector (direct or ancestor)
             const selectors = this.jimData?.selectors || {};
+            try {
+                let mappedKey = null;
+                for (const [key, sel] of Object.entries(selectors)) {
+                    try { if (targetElement.matches(sel.dom)) { mappedKey = key; break; } } catch {}
+                }
+                if (!mappedKey && targetElement.closest) {
+                    for (const [key, sel] of Object.entries(selectors)) {
+                        try { if (targetElement.closest(sel.dom)) { mappedKey = key; break; } } catch {}
+                    }
+                }
+                if (mappedKey) {
+                    try { if (e && typeof e.stopImmediatePropagation === 'function') e.stopImmediatePropagation(); } catch(_){}
+                    try { if (e) e.jimHandled = true; } catch(_){}
+                    this.showElementInfo(mappedKey, 'click', targetElement);
+                    return;
+                }
+            } catch (err) { /* ignore */ }
+
+            // Otherwise, show non-JIM element info
             const hasJIM = Object.values(selectors).some(s => {
                 try { return targetElement.matches(s.dom); } catch { return false; }
             });
@@ -1318,14 +1370,22 @@
                     overlayEl.dataset.behaviorIndex = String(bi);
                     overlayEl.dataset.shapeIndex = String(si);
                     // Event handlers show behavior info
-                    overlayEl.addEventListener('click', (ev) => { ev.stopPropagation(); this.showBehaviorInfo(behavior, 'click', overlayEl); });
+                    overlayEl.addEventListener('click', (ev) => { 
+                        try { if (ev && typeof ev.stopImmediatePropagation === 'function') ev.stopImmediatePropagation(); } catch(_){}
+                        try { if (ev) ev.jimHandled = true; } catch(_){}
+                        try { if (ev && typeof ev.stopPropagation === 'function') ev.stopPropagation(); } catch(_){}
+                        this.showBehaviorInfo(behavior, 'click', overlayEl);
+                    });
                     overlayEl.addEventListener('focus', () => this.showBehaviorInfo(behavior, 'focus', overlayEl));
                     overlayGroup.appendChild(overlayEl);
 
                     // Wire overlay DOM back to inventoryData if a synthetic overlay item was created
                     try {
                         const invItem = this.inventoryData.find(it => it.category === 'overlay' && it.behaviorIndex === bi && it.shapeIndex === si);
-                        if (invItem) invItem.domElement = overlayEl;
+                        if (invItem) {
+                            invItem.domElement = overlayEl;
+                            try { if (invItem._invId) overlayEl.setAttribute && overlayEl.setAttribute('data-inv-id', invItem._invId); } catch (e) { /* ignore */ }
+                        }
                     } catch (e) { /* ignore */ }
                 });
             });
@@ -1409,11 +1469,15 @@
         // First, try to match by selector dom (e.g., #edge-AB)
         for (const [key, sel] of Object.entries(selectors)) {
             try {
-                if (element.matches(sel.dom)) {
+                const dom = sel && sel.dom;
+                const direct = !!(dom && element.matches && element.matches(dom));
+                if (direct) {
                     selectorKey = key;
                     break;
                 }
-            } catch {}
+            } catch (err) {
+                console.warn('[JIMViewer] selector.matches error', { key, dom: sel && sel.dom, error: err && err.message });
+            }
         }
         // If not found, try to match by element ID to selector dom value
         if (!selectorKey && element.id) {
@@ -1423,9 +1487,31 @@
                     break;
                 }
             }
+            if (!selectorKey) {
+                try { console.debug('[JIMViewer] diagnostic: id-eq attempt failed', { id: element.id }); } catch (e) {}
+            }
+        }
+        // Also try ancestor matching: if the event target is a child (e.g. <path>)
+        // check whether any ancestor up to svg matches a declared selector.dom
+        if (!selectorKey && element.closest) {
+            try {
+                for (const [key, sel] of Object.entries(selectors)) {
+                    try {
+                        // Use closest to find an ancestor that matches the selector
+                        const dom = sel && sel.dom;
+                        const anc = dom && element.closest ? element.closest(dom) : null;
+                        if (anc) {
+                            selectorKey = key;
+                            break;
+                        }
+                    } catch (e) { /* ignore invalid selector syntax */ }
+                }
+            } catch (e) { /* ignore overall failures */ }
         }
         // Fallback: use behavior target.selector as a hint if no declared selectorKey found
-        if (!selectorKey) selectorKey = behavior.target?.selector || null;
+        if (!selectorKey) {
+            selectorKey = behavior.target?.selector || null;
+        }
     // console.trace info removed
 
         // If selectorKey corresponds to a declared JIM selector key, show element info for that key.
@@ -1896,13 +1982,18 @@
                 // Delegated click/keyboard handlers for inventory and selector buttons
                 document.addEventListener('click', (e) => {
                     const btn = e.target.closest && e.target.closest('.inventory-button, .selector-button');
+                    if (btn) {
+                        // delegated click log removed
+                    }
                     if (!btn) return;
                     if (btn.classList.contains('inventory-button')) {
                         const category = btn.dataset.category;
-                        const idx = Number(btn.dataset.idx);
-                        if (!Number.isNaN(idx)) {
+                        // Prefer stable inv-id, fall back to legacy idx for backward-compat
+                        const invId = btn.dataset.invId || btn.dataset.idx;
+                        if (invId !== undefined) {
                             // Special case: group-preview elements rendered inside group behavior info
                             if (category === 'group-preview') {
+                                const idx = Number(invId);
                                 const el = this._groupPreviewElements && this._groupPreviewElements[idx];
                                 if (el) {
                                     // Inspect the actual element from the visualization
@@ -1910,18 +2001,18 @@
                                 }
                             // Special case: shape behavior inspect buttons rendered in the Selectors panel
                             } else if (category === 'shape-behavior') {
-                                const behavior = this._shapeBehaviors && this._shapeBehaviors[idx];
+                                const behavior = this._shapeBehaviors && this._shapeBehaviors[invId];
                                 if (behavior) {
                                     this.showBehaviorInfo(behavior, 'select', null);
                                 }
                             } else if (category === 'behavior-without-selector') {
-                                const behavior = this._behaviorsWithoutSelectors && this._behaviorsWithoutSelectors[idx];
+                                const behavior = this._behaviorsWithoutSelectors && this._behaviorsWithoutSelectors[invId];
                                 if (behavior) {
                                     this.showBehaviorInfo(behavior, 'select', null);
                                 }
                             } else {
                                 // Use global handler for inventory items
-                                window.handleInventoryItemClick && window.handleInventoryItemClick(category, idx);
+                                window.handleInventoryItemClick && window.handleInventoryItemClick(category, invId);
                             }
                         }
                     } else if (btn.classList.contains('selector-button')) {
@@ -2843,10 +2934,9 @@
                         const jimBadge = item.hasJIM
                             ? '<span class="badge badge--jim" aria-label="JIM mapped" role="status">JIM</span>'
                             : '<span class="badge badge--nojim" aria-label="No JIM mapping" role="status">No JIM</span>';
-                        // Find the actual index within the underlying inventory ordering for this category
-                        const actualIdx = actualItems.indexOf(item);
+                        // Use stable inv-id so clicks map reliably regardless of display sorting
                         out += `
-                            <button class="inventory-button" data-category="${category}" data-idx="${actualIdx}" aria-label="SVG element ${item.selector}${item.hasJIM ? ', JIM mapped' : ', No JIM mapping'}" role="button">
+                            <button class="inventory-button" data-category="${category}" data-inv-id="${item._invId}" aria-label="SVG element ${item.selector}${item.hasJIM ? ', JIM mapped' : ', No JIM mapping'}" role="button">
                                 <div class="inline-row"><code class="inline-code">${item.selector}</code>${jimBadge}</div>
                                 ${item.textContent ? `<div class="inline-text">Text: \"${item.textContent}\"</div>` : ''}
                                 ${item.suggestions?.length ? `<div class="muted-note"><span class="sr-only">Suggestion: </span>${ICONS.idea} ${item.suggestions.join('; ')}</div>` : ''}
@@ -2869,6 +2959,8 @@
                 this.infoContent = document.getElementById('info-content');
                 this.inventoryData = [];
                 this.detailedAnalysis = '';
+                // stable sequence for inventory item ids
+                this._invSeq = 0;
                 this.setupEventListeners();
             }
 
@@ -3002,8 +3094,17 @@
             }
 
             attachJIMBehavior(element, selectorKey) {
-                element.addEventListener('focus', () => this.showElementInfo(selectorKey, 'focus', element));
-                element.addEventListener('click', () => this.showElementInfo(selectorKey, 'click', element));
+                element.addEventListener('focus', (e) => {
+                    try { if (e && typeof e.stopImmediatePropagation === 'function') e.stopImmediatePropagation(); } catch(_){}
+                    try { if (e) e.jimHandled = true; } catch(_){}
+                    this.showElementInfo(selectorKey, 'focus', element);
+                });
+                element.addEventListener('click', (e) => {
+                    try { if (e && typeof e.stopImmediatePropagation === 'function') e.stopImmediatePropagation(); } catch(_){}
+                    try { if (e) e.jimHandled = true; } catch(_){}
+                    try { if (e && typeof e.stopPropagation === 'function') e.stopPropagation(); } catch(_){}
+                    this.showElementInfo(selectorKey, 'click', element);
+                });
             }
 
             showElementInfo(selectorKey, eventType, element) {
@@ -3074,9 +3175,9 @@
         if (defaultAnnouncement && (!explicitAnn || (typeof explicitAnn === 'object' ? explicitAnn.description : explicitAnn) !== defaultAnnouncement)) {
             let facetNote = '';
             const facetsExist = !!this.jimData?.datasets?.[0]?.facets && Object.keys(this.jimData.datasets[0].facets).length > 0;
-            if (facetsExist) {
+//            if (facetsExist) {
                 facetNote = `<div class="muted-note italic"><i>Note: Italicized fields are not covered by facet definitions.</i></div>`;
-            }
+//            }
             html += `<div class="announcement announcement-note">
                 <strong>Default Announcement:</strong><br>${defaultAnnouncement}
                 ${facetNote}
@@ -3192,24 +3293,34 @@
                 let selector = `${tag}${id}${classes}`;
                 
                 // For elements without unique IDs, add position-based specificity
-                if (!element.id) {
-                    const siblings = Array.from(element.parentNode.children).filter(el => 
-                        el.tagName === element.tagName && 
-                        el.className === element.className
-                    );
-                    
+                if (!element.id && element.parentNode && element.parentNode.children) {
+                    // For SVG, element.className may be an object (SVGAnimatedString). Use getAttribute('class') for stable comparison.
+                    const myClass = element.getAttribute && element.getAttribute('class') ? String(element.getAttribute('class')) : '';
+                    const myTag = element.tagName.toLowerCase();
+                    const siblings = Array.from(element.parentNode.children).filter(el => {
+                        try {
+                            const et = (el.tagName || '').toLowerCase();
+                            const ec = el.getAttribute && el.getAttribute('class') ? String(el.getAttribute('class')) : '';
+                            return et === myTag && ec === myClass;
+                        } catch (e) { return false; }
+                    });
+
                     if (siblings.length > 1) {
                         const index = siblings.indexOf(element);
-                        selector = `${tag}${classes}:nth-of-type(${index + 1})`;
+                        // Use nth-of-type against the lowercase tag to be robust in cloned SVG
+                        selector = `${myTag}${classes}:nth-of-type(${index + 1})`;
                     }
                 }
                 
+                // stable unique id for this inventory item so UI buttons can reference it
+                const invId = `inv-${++this._invSeq}`;
                 const item = {
                     category,
                     selector,
                     element: tag,
                     hasJIM,
                     domElement: element, // Store reference to actual element
+                    _invId: invId,
                     accessibility: {
                         tabindex: element.getAttribute('tabindex'),
                         role: element.getAttribute('role'),
@@ -3714,12 +3825,46 @@
         })();
 
         // Global function to handle inventory item clicks
-        window.handleInventoryItemClick = function (category, idx) {
+        window.handleInventoryItemClick = function (category, idxOrId) {
+            // handleInventoryItemClick call log removed
             if (!window.jimViewer || !window.jimViewer.inventoryData) return;
-            // Find the item in the inventory by category and index
-            const items = window.jimViewer.inventoryData.filter(i => i.category === category);
-            const item = items[idx];
+            let item = null;
+            // If idxOrId looks like an inv-id, first try to find the mapped element in the live viz by data attribute,
+            // falling back to inventoryData lookup. This ensures we use the actual cloned element when available.
+            if (typeof idxOrId === 'string' && idxOrId.startsWith('inv-')) {
+                try {
+                    const viz = document.getElementById('visualization');
+                    if (viz) {
+                        const el = viz.querySelector(`[data-inv-id="${idxOrId}"]`);
+                        if (el) {
+                            // Attempt to resolve to the inventoryData item referencing this element
+                            item = window.jimViewer.inventoryData.find(it => it._invId === idxOrId) || null;
+                            if (item) item.domElement = el;
+                        }
+                    }
+                } catch (e) { /* ignore DOM lookup failures */ }
+                if (!item) item = window.jimViewer.inventoryData.find(it => it._invId === idxOrId);
+            } else {
+                const idx = Number(idxOrId);
+                const items = window.jimViewer.inventoryData.filter(i => i.category === category);
+                item = items[idx];
+            }
+            // resolved inventory item log removed
             if (!item) return;
+            // Diagnostic: report the element's path and nearest selector candidates
+            try {
+                if (item.domElement) {
+                    const el = item.domElement;
+                    const path = [];
+                    let cur = el;
+                    while (cur && cur !== svgClone && cur.nodeType === Node.ELEMENT_NODE) {
+                        const desc = cur.tagName.toLowerCase() + (cur.id ? '#' + cur.id : '') + (cur.className ? '.' + cur.className.replace(/\s+/g, '.') : '');
+                        path.push(desc);
+                        cur = cur.parentElement;
+                    }
+                    console.debug('[JIMViewer] diagnostic: inventory item DOM path', { path: path.join(' > ') });
+                }
+            } catch (e) { /* ignore diagnostics */ }
             // If this is an overlay synthetic item, show behavior info
             if (category === 'overlay') {
                 try {
@@ -3758,6 +3903,17 @@
                         } catch { }
                     }
                     if (selectorKey) {
+                        // diagnostic: inventory->selector resolved log removed
+                        // Extra diagnostics: enumerate nodes in the live visualization that match this selectorDom
+                        try {
+                            const viz = document.getElementById('visualization');
+                            const selectorDom = selectors[selectorKey] && selectors[selectorKey].dom;
+                            if (viz && selectorDom) {
+                                let matches = [];
+                                try { matches = Array.from(viz.querySelectorAll(selectorDom)); } catch (e) { matches = []; }
+                                // selectorDom matches diagnostic logs removed
+                            }
+                        } catch (e) { /* ignore */ }
                         window.jimViewer.showElementInfo(selectorKey, 'click', item.domElement);
                         return;
                     }
