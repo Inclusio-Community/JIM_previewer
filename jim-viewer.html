@@ -1342,6 +1342,8 @@
                         for (const k of Object.keys(map)) {
                             if (payload[k] !== undefined && payload[k] !== null) {
                                 const attr = map[k];
+                                // Skip pointer-events - it's always forced to visibleStroke below
+                                if (attr === 'pointer-events') continue;
                                 const raw = String(payload[k]);
                                 // Special-case fill: map explicit 'none' to 'transparent' to preserve pointer interactions
                                     if (attr === 'fill') {
@@ -1366,6 +1368,17 @@
                         }
                     } catch (e) { /* ignore */ }
                     overlayEl.setAttribute('fill', overlayEl.getAttribute('fill') || 'transparent');
+                    // Remove any pointer-events that may have been set from JIM metadata
+                    try {
+                        overlayEl.removeAttribute('pointer-events');
+                        overlayEl.style.removeProperty('pointer-events');
+                    } catch (e) { /* ignore */ }
+                    // IMPORTANT: Always force pointer-events to visibleStroke for overlay shapes
+                    // This ensures overlays only capture events on their stroke, not their fill area,
+                    // preventing them from blocking clicks to underlying interactive elements.
+                    // Any pointer-events value from JIM metadata is intentionally ignored.
+                    overlayEl.setAttribute('pointer-events', 'visibleStroke');
+                    overlayEl.style.setProperty('pointer-events', 'visibleStroke', 'important');
                     overlayEl.setAttribute('tabindex', '0');
                     overlayEl.dataset.behaviorIndex = String(bi);
                     overlayEl.dataset.shapeIndex = String(si);
