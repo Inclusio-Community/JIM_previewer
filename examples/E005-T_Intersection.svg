@@ -73,9 +73,9 @@
           },
           "enter": {
             "haptic": {
-              "durations": [0, 300, 100],
-              "repeatInterval": 0
-            },  
+              "durations": [0, 1000, 0, 1000],
+              "repeatInterval": 1000
+            },
             "notes": "longer, steady vibration to indicate sidewalk"
           },
           "details": {
@@ -84,8 +84,8 @@
           },
           "exit": {
             "haptic": {
-              "durations": [0, 200],
-              "repeatInterval": 0
+              "durations": [0, 125, 125, 125, 125, 125, 125, 125],
+              "repeatInterval": 125
             },
             "notes": "short, sharp vibration to indicate crack in sidewalk"
           }
@@ -96,10 +96,10 @@
           },
           "enter": {
             "haptic": {
-              "durations": [0, 200, 50],
-              "repeatInterval": 0
+              "durations": [0, 100, 30, 100, 30, 100, 200, 200, 30, 200, 30, 200, 200, 100, 30, 100, 30, 100],
+              "repeatInterval": 100
             },
-            "notes": "sharp, steady vibration to indicate danger of street"
+            "notes": "urgent warning vibration to indicate danger of street"
           },
           "details": {
           },

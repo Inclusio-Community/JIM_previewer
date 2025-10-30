@@ -249,7 +249,7 @@
         } ]
       },
       "enter": {
-        "haptic": { "durations": [0, 1000, 0, 1000], "repeatIndex": 0 }
+        "haptic": { "durations": [0, 1000, 0, 1000], "repeatInterval": 1000 }
       }
     },
     {
@@ -264,7 +264,7 @@
         } ]
       },
       "enter": {
-        "haptic": { "durations": [0, 1000, 0, 1000], "repeatIndex": 0 }
+        "haptic": { "durations": [0, 1000, 0, 1000], "repeatInterval": 1000 }
       }
     },
     {
@@ -279,7 +279,7 @@
         } ]
       },
       "enter": {
-        "haptic": { "durations": [0, 1000, 0, 1000], "repeatIndex": 0 }
+        "haptic": { "durations": [0, 1000, 0, 1000], "repeatInterval": 1000 }
       }
 
     },
@@ -295,7 +295,7 @@
         } ]
       },
       "enter": {
-        "haptic": { "durations": [0, 1000, 0, 1000], "repeatIndex": 0 }
+        "haptic": { "durations": [0, 1000, 0, 1000], "repeatInterval": 1000 }
       }
     },
     {
@@ -310,7 +310,7 @@
         } ]
       },
       "enter": {
-        "haptic": { "durations": [0, 1000, 0, 1000], "repeatIndex": 0 }
+        "haptic": { "durations": [0, 1000, 0, 1000], "repeatInterval": 1000 }
       }
     },
     {

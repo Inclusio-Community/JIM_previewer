@@ -126,8 +126,8 @@
               "description": "A number line from -10 to 10"
             },
             "haptic": {
-              "durations": [0, 300, 100],
-              "repeatInterval": 0
+              "durations": [0, 1000, 0, 1000],
+              "repeatInterval": 1000
             },
             "note": "longer, steady vibration to indicate the line"
           }
