@@ -347,7 +347,7 @@
         "selector": "#datapoint-Sunday_2000, #datapoint-Monday_2000, #datapoint-Tuesday_2000, #datapoint-Wednesday_2000, #datapoint-Thursday_2000, #datapoint-Friday_2000, #datapoint-Saturday_2000"
       },
       "enter": {
-        "haptic": { "durations": [0, 300, 100], "repeatIndex": 0 },
+        "haptic": { "durations": [0, 1000, 0, 1000], "repeatInterval": 1000 },
         "note": "longer, steady vibration to indicate the line",
         "audio": { "href": "blop.mp3", "repeat": "none" }
       }
@@ -357,7 +357,7 @@
         "selector": "#datapoint-Sunday_2015, #datapoint-Monday_2015, #datapoint-Tuesday_2015, #datapoint-Wednesday_2015, #datapoint-Thursday_2015, #datapoint-Friday_2015, #datapoint-Saturday_2015"
       },
       "enter": {
-        "haptic": { "durations": [0, 50, 50], "repeatIndex": 0 },
+        "haptic": { "durations": [0, 1000, 0, 1000], "repeatInterval": 1000 },
         "note": "longer, steady vibration to indicate the line",
         "audio": { "href": "blop.mp3", "repeat": "none" }
       }

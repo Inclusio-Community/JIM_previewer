@@ -144,8 +144,8 @@
           },
           "enter": {
             "haptic": {
-              "durations": [0, 300, 100],
-              "repeatInterval": 0
+              "durations": [0, 1000, 0, 1000],
+              "repeatInterval": 1000
             },
             "notes": "longer, steady vibration to indicate shape lines"
           },
@@ -162,8 +162,8 @@
           },
           "enter": {
             "haptic": {
-              "durations": [0, 100, 100],
-              "repeatInterval": 100
+              "durations": [0, 75, 75, 75, 75, 75, 225],
+              "repeatInterval": 75
             },
             "notes": "sharp, steady vibration to indicate right angle"
           }
@@ -174,8 +174,8 @@
           },
           "enter": {
             "haptic": {
-              "durations": [0, 100, 50, 50],
-              "repeatInterval": 50
+              "durations": [0, 125, 125, 125, 125, 125, 125, 125],
+              "repeatInterval": 125
             },
             "notes": "sharp, snappy vibration, heavy on the first beat, to indicate acute angle"
           }
@@ -186,10 +186,10 @@
           },
           "enter": {
             "haptic": {
-              "durations": [0, 50, 50, 200],
+              "durations": [0, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50],
               "repeatInterval": 50
             },
-            "notes": "slower discordant vibration, heavy on the second beat, to indicate obtuse angle"
+            "notes": "rapid buzzing vibration to indicate obtuse angle"
           }
         },
         {
@@ -198,8 +198,8 @@
           },
           "enter": {
             "haptic": {
-              "durations": [50, 100, 150],
-              "repeatInterval": 250
+              "durations": [0, 75, 75, 75, 75, 75, 225],
+              "repeatInterval": 75
             },
             "notes": "sharp, steady vibration to indicate right angle"
           }

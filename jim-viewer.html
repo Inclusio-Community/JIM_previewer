@@ -877,6 +877,26 @@
                                                         errors.push(`Behavior[${i}] ${eventName}.haptic missing required 'durations' key.`);
                                                     } else if (!Array.isArray(haptic.durations)) {
                                                         errors.push(`Behavior[${i}] ${eventName}.haptic.durations is not an array.`);
+                                                    } else {
+                                                        // Validate against approved haptic patterns
+                                                        const approvedPatterns = [
+                                                            { name: 'Pew pew', durations: [0, 125, 125, 125, 125, 125, 125, 125], repeatInterval: 125 },
+                                                            { name: 'Vroom vroom', durations: [0, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50], repeatInterval: 50 },
+                                                            { name: 'Zap', durations: [0, 1000, 0, 1000], repeatInterval: 1000 },
+                                                            { name: 'Take cover', durations: [0, 100, 30, 100, 30, 100, 200, 200, 30, 200, 30, 200, 200, 100, 30, 100, 30, 100], repeatInterval: 100 },
+                                                            { name: 'Coarse and pebbly', durations: [0, 75, 75, 75, 75, 75, 225], repeatInterval: 75 }
+                                                        ];
+
+                                                        const matchesPattern = approvedPatterns.some(pattern => {
+                                                            if (haptic.durations.length !== pattern.durations.length) return false;
+                                                            if (haptic.repeatInterval !== pattern.repeatInterval) return false;
+                                                            return haptic.durations.every((val, idx) => val === pattern.durations[idx]);
+                                                        });
+
+                                                        if (!matchesPattern) {
+                                                            const patternList = approvedPatterns.map(p => `"${p.name}"`).join(', ');
+                                                            warnings.push(`Behavior[${i}] ${eventName}.haptic does not match any approved haptic pattern. Approved patterns: ${patternList}. See JIM specification for approved haptic patterns.`);
+                                                        }
                                                     }
                                                 }
                                             }
@@ -1342,6 +1362,8 @@
                         for (const k of Object.keys(map)) {
                             if (payload[k] !== undefined && payload[k] !== null) {
                                 const attr = map[k];
+                                // Skip pointer-events - it's always forced to visibleStroke below
+                                if (attr === 'pointer-events') continue;
                                 const raw = String(payload[k]);
                                 // Special-case fill: map explicit 'none' to 'transparent' to preserve pointer interactions
                                     if (attr === 'fill') {
@@ -1366,6 +1388,17 @@
                         }
                     } catch (e) { /* ignore */ }
                     overlayEl.setAttribute('fill', overlayEl.getAttribute('fill') || 'transparent');
+                    // Remove any pointer-events that may have been set from JIM metadata
+                    try {
+                        overlayEl.removeAttribute('pointer-events');
+                        overlayEl.style.removeProperty('pointer-events');
+                    } catch (e) { /* ignore */ }
+                    // IMPORTANT: Always force pointer-events to visibleStroke for overlay shapes
+                    // This ensures overlays only capture events on their stroke, not their fill area,
+                    // preventing them from blocking clicks to underlying interactive elements.
+                    // Any pointer-events value from JIM metadata is intentionally ignored.
+                    overlayEl.setAttribute('pointer-events', 'visibleStroke');
+                    overlayEl.style.setProperty('pointer-events', 'visibleStroke', 'important');
                     overlayEl.setAttribute('tabindex', '0');
                     overlayEl.dataset.behaviorIndex = String(bi);
                     overlayEl.dataset.shapeIndex = String(si);
@@ -2749,6 +2782,27 @@
             }
         }
 
+        // Identify haptic pattern name if it matches an approved pattern
+        getHapticPatternName(haptic) {
+            if (!haptic || typeof haptic !== 'object') return null;
+            const approvedPatterns = [
+                { name: 'Pew pew', durations: [0, 125, 125, 125, 125, 125, 125, 125], repeatInterval: 125 },
+                { name: 'Vroom vroom', durations: [0, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50], repeatInterval: 50 },
+                { name: 'Zap', durations: [0, 1000, 0, 1000], repeatInterval: 1000 },
+                { name: 'Take cover', durations: [0, 100, 30, 100, 30, 100, 200, 200, 30, 200, 30, 200, 200, 100, 30, 100, 30, 100], repeatInterval: 100 },
+                { name: 'Coarse and pebbly', durations: [0, 75, 75, 75, 75, 75, 225], repeatInterval: 75 }
+            ];
+
+            const matchedPattern = approvedPatterns.find(pattern => {
+                if (!Array.isArray(haptic.durations)) return false;
+                if (haptic.durations.length !== pattern.durations.length) return false;
+                if (haptic.repeatInterval !== pattern.repeatInterval) return false;
+                return haptic.durations.every((val, idx) => val === pattern.durations[idx]);
+            });
+
+            return matchedPattern ? matchedPattern.name : null;
+        }
+
         // Show a panel for a single behavior (used by overlays)
         showBehaviorInfo(behavior, eventType, overlayEl) {
             if (!behavior) return;
@@ -2762,6 +2816,16 @@
                 const tgt = behavior.target;
                 if (tgt.selector) html += `<div><strong>Selector:</strong> <code>${this.escapeHtml(String(tgt.selector))}</code></div>`;
                 else if (tgt.shapes) html += `<div><strong>Shapes:</strong> <code>${tgt.shapes.length} shape(s)</code></div>`;
+            }
+            // Display haptic pattern name if present
+            const eventKeys = ['enter', 'details', 'activate', 'exit'];
+            for (const eventKey of eventKeys) {
+                if (behavior[eventKey] && behavior[eventKey].haptic) {
+                    const patternName = this.getHapticPatternName(behavior[eventKey].haptic);
+                    if (patternName) {
+                        html += `<div class="announcement announcement-success" style="margin-top:8px"><strong>Haptic Pattern:</strong> "${this.escapeHtml(patternName)}" (${eventKey})</div>`;
+                    }
+                }
             }
             // Explicit announcement (show name then description if present)
             const explicit = this.getExplicitAnnouncement(behavior);

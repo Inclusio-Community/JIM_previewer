@@ -462,8 +462,8 @@
                     "description": "Isosceles acute triangle with area 9375 square units and perimeter 441.5 units."
                 },
                 "haptic": {
-                    "durations": [0, 200, 100, 200],
-                    "repeatInterval": 500
+                    "durations": [0, 75, 75, 75, 75, 75, 225],
+                    "repeatInterval": 75
                 }
             }
         },
@@ -474,7 +474,7 @@
                     "name": "Vertex A",
                     "description": "Vertex A at position 75 by 200 with interior angle 59 degrees."
                 },
-                "haptic": { "durations": [0, 200] }
+                "haptic": { "durations": [0, 125, 125, 125, 125, 125, 125, 125], "repeatInterval": 125 }
             }
         },
         {
@@ -484,7 +484,7 @@
                     "name": "Vertex B",
                     "description": "Vertex B at position 150 by 75 with interior angle 62 degrees."
                 },
-                "haptic": { "durations": [0, 200] }
+                "haptic": { "durations": [0, 125, 125, 125, 125, 125, 125, 125], "repeatInterval": 125 }
             }
         },
         {
@@ -494,7 +494,7 @@
                     "name": "Vertex C",
                     "description": "Vertex C at position 225 by 200 with interior angle 59 degrees."
                 },
-                "haptic": { "durations": [0, 200] }
+                "haptic": { "durations": [0, 125, 125, 125, 125, 125, 125, 125], "repeatInterval": 125 }
             }
         },
         {
@@ -504,7 +504,7 @@
                     "name": "Side AB",
                     "description": "Side AB with length 145.8 units."
                 },
-                "haptic": { "durations": [0, 150] }
+                "haptic": { "durations": [0, 1000, 0, 1000], "repeatInterval": 1000 }
             }
         },
         {
@@ -514,7 +514,7 @@
                     "name": "Side BC",
                     "description": "Side BC with length 145.8 units."
                 },
-                "haptic": { "durations": [0, 150] }
+                "haptic": { "durations": [0, 1000, 0, 1000], "repeatInterval": 1000 }
             }
         },
         {
@@ -524,7 +524,7 @@
                     "name": "Side CA",
                     "description": "Side CA with length 150.0 units."
                 },
-                "haptic": { "durations": [0, 150] }
+                "haptic": { "durations": [0, 1000, 0, 1000], "repeatInterval": 1000 }
             }
         }
     ],

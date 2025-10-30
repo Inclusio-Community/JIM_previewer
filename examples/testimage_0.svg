@@ -103,8 +103,8 @@ Spec compliance
       },
       "enter": {
         "haptic": {
-          "durations": [0, 300, 100],
-          "repeatInterval": 0
+          "durations": [0, 1000, 0, 1000],
+          "repeatInterval": 1000
         },
         "announcement": {
           "name": "compose({target.id}, .label)"

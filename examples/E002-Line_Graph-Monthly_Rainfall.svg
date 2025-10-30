@@ -225,8 +225,8 @@
         },
         "enter": {
           "haptic": {
-            "durations": [0, 300, 100],
-            "repeatInterval": 0
+            "durations": [0, 1000, 0, 1000],
+            "repeatInterval": 1000
           },
           "notes": "longer, steady vibration to indicate the line"
         }
@@ -301,8 +301,8 @@
         },
         "enter": {
           "haptic": {
-            "durations": [0, 300, 100],
-            "repeatInterval": 0
+            "durations": [0, 1000, 0, 1000],
+            "repeatInterval": 1000
           },
           "notes": "longer, steady vibration to indicate the line"
         }
@@ -313,8 +313,8 @@
         },
         "enter": {
           "haptic": {
-            "durations": [0, 300, 100],
-            "repeatInterval": 0
+            "durations": [0, 1000, 0, 1000],
+            "repeatInterval": 1000
           },
           "notes": "longer, steady vibration to indicate the line"
         }
@@ -325,8 +325,8 @@
         },
         "enter": {
           "haptic": {
-            "durations": [0, 300, 100],
-            "repeatInterval": 0
+            "durations": [0, 1000, 0, 1000],
+            "repeatInterval": 1000
           },
           "notes": "longer, steady vibration to indicate the line"
         }
@@ -337,8 +337,8 @@
         },
         "enter": {
           "haptic": {
-            "durations": [0, 300, 100],
-            "repeatInterval": 0
+            "durations": [0, 1000, 0, 1000],
+            "repeatInterval": 1000
           },
           "notes": "longer, steady vibration to indicate the line"
         }
@@ -349,8 +349,8 @@
         },
         "enter": {
           "haptic": {
-            "durations": [0, 300, 100],
-            "repeatInterval": 0
+            "durations": [0, 1000, 0, 1000],
+            "repeatInterval": 1000
           },
           "notes": "longer, steady vibration to indicate the line"
         }
@@ -361,8 +361,8 @@
         },
         "enter": {
           "haptic": {
-            "durations": [0, 300, 100],
-            "repeatInterval": 0
+            "durations": [0, 1000, 0, 1000],
+            "repeatInterval": 1000
           },
           "notes": "longer, steady vibration to indicate the line"
         }
@@ -373,8 +373,8 @@
         },
         "enter": {
           "haptic": {
-            "durations": [0, 300, 100],
-            "repeatInterval": 0
+            "durations": [0, 1000, 0, 1000],
+            "repeatInterval": 1000
           },
           "notes": "longer, steady vibration to indicate the line"
         }
