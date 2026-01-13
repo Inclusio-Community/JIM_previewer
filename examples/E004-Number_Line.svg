@@ -1,11 +1,11 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 170">
   <title id="diagram-title">Number Line</title>
 
-  <metadata data-type="text/jim+json">
+  <metadata data-type="application/jim+json">
     {
       "version": {
         "document": "1.0.1",
-        "jim": "0.4.2"
+        "jim": "1.0.0"
       },
       "datasets": [
         {
@@ -120,11 +120,11 @@
           "target": {
             "selector": ".number-line"
           },
+          "announcement": {
+            "name": "Number line",
+            "description": "A number line from -10 to 10"
+          },
           "enter": {
-            "announcement": {
-              "name": "Number line",
-              "description": "A number line from -10 to 10"
-            },
             "haptic": {
               "durations": [0, 1000, 0, 1000],
               "repeatInterval": 1000

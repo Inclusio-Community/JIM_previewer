@@ -129,7 +129,7 @@ use.visited-mark { pointer-events: none; }
 .debug-grid-territory { fill: lightblue; stroke: blue; stroke-width: 2; opacity: 0.5; }</style>
         <defs>
         </defs>
-        <metadata data-type="text/jim+json">
+        <metadata data-type="application/jim+json">
           {
   "datasets": [
     {
@@ -216,7 +216,7 @@ use.visited-mark { pointer-events: none; }
     }
   },
   "version": {
-    "jim": "0.4.2"
+    "jim": "1.0.0"
   }
 }
         </metadata>

@@ -13,11 +13,11 @@
    xmlns:xlink="http://www.w3.org/1999/xlink"
    xmlns="http://www.w3.org/2000/svg"
    xmlns:svg="http://www.w3.org/2000/svg">
-<metadata data-type="text/jim+json">
+<metadata data-type="application/jim+json">
   {
     "version": {
       "document": "1.0.1",
-      "jim": "0.4.2"
+      "jim": "1.0.0"
     },
     "datasets": [
       {
@@ -154,10 +154,8 @@
           }
         ]
       },
-      "enter": {
-        "announcement": {
-          "name": "Sun"
-        }
+      "announcement": {
+        "name": "Sun"
       }
     },
     {
@@ -173,10 +171,8 @@
           }
         ]
       },
-      "enter": {
-        "announcement": {
-          "name": "Photosynthesis"
-        }
+      "announcement": {
+        "name": "Photosynthesis"
       }
     },
     {
@@ -192,10 +188,8 @@
           }
         ]
       },
-      "enter": {
-        "announcement": {
-          "name": "Flower"
-        }
+      "announcement": {
+        "name": "Flower"
       }
     },
     {
@@ -211,10 +205,8 @@
           }
         ]
       },
-      "enter": {
-        "announcement": {
-          "name": "Oxygen"
-        }
+      "announcement": {
+        "name": "Oxygen"
       }
     },
     {
@@ -230,10 +222,8 @@
           }
         ]
       },
-      "enter": {
-        "announcement": {
-          "name": "Roots"
-        }
+      "announcement": {
+        "name": "Roots"
       }
     },
     {
@@ -249,10 +239,8 @@
           }
         ]
       },
-      "enter": {
-        "announcement": {
-          "name": "Water"
-        }
+      "announcement": {
+        "name": "Water"
       }
     },
     {
@@ -268,10 +256,8 @@
           }
         ]
       },
-      "enter": {
-        "announcement": {
-          "name": "Carbon Dioxide"
-        }
+      "announcement": {
+        "name": "Carbon Dioxide"
       }
     },
     {
@@ -287,10 +273,8 @@
           }
         ]
       },
-      "enter": {
-        "announcement": {
-          "name": "Light Energy"
-        }
+      "announcement": {
+        "name": "Light Energy"
       }
     },
     {
@@ -306,10 +290,8 @@
           }
         ]
       },
-      "enter": {
-        "announcement": {
-          "name": "Leaf"
-        }
+      "announcement": {
+        "name": "Leaf"
       }
     }
     ]

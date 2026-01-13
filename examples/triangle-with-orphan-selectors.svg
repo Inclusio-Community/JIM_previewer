@@ -113,10 +113,10 @@
             
 
         <!-- JIM Metadata -->
-        <metadata data-type="text/jim+json">
+        <metadata data-type="application/jim+json">
 {
     "version": {
-        "jim": "0.4.2",
+        "jim": "1.0.0",
         "document": "1.0.0"
     },
     "datasets": [
@@ -386,11 +386,11 @@
     "behaviors": [
         {
             "target": { "selector": "#triangle-001" },
+            "announcement": {
+                "name": "Triangle ABC",
+                "description": "Isosceles acute triangle with area 9375 square units and perimeter 441.5 units."
+            },
             "enter": {
-                "announcement": {
-                    "name": "Triangle ABC",
-                    "description": "Isosceles acute triangle with area 9375 square units and perimeter 441.5 units."
-                },
                 "haptic": {
                     "durations": [0, 75, 75, 75, 75, 75, 225],
                     "repeatInterval": 75
@@ -399,61 +399,61 @@
         },
         {
             "target": { "selector": "#vertex-a" },
+            "announcement": {
+                "name": "Vertex A",
+                "description": "Vertex A at position 75 by 200 with interior angle 59 degrees."
+            },
             "enter": {
-                "announcement": {
-                    "name": "Vertex A",
-                    "description": "Vertex A at position 75 by 200 with interior angle 59 degrees."
-                },
                 "haptic": { "durations": [0, 125, 125, 125, 125, 125, 125, 125], "repeatInterval": 125 }
             }
         },
         {
             "target": { "selector": "#vertex-b" },
+            "announcement": {
+                "name": "Vertex B",
+                "description": "Vertex B at position 150 by 75 with interior angle 62 degrees."
+            },
             "enter": {
-                "announcement": {
-                    "name": "Vertex B",
-                    "description": "Vertex B at position 150 by 75 with interior angle 62 degrees."
-                },
                 "haptic": { "durations": [0, 125, 125, 125, 125, 125, 125, 125], "repeatInterval": 125 }
             }
         },
         {
             "target": { "selector": "#vertex-c" },
+            "announcement": {
+                "name": "Vertex C",
+                "description": "Vertex C at position 225 by 200 with interior angle 59 degrees."
+            },
             "enter": {
-                "announcement": {
-                    "name": "Vertex C",
-                    "description": "Vertex C at position 225 by 200 with interior angle 59 degrees."
-                },
                 "haptic": { "durations": [0, 125, 125, 125, 125, 125, 125, 125], "repeatInterval": 125 }
             }
         },
         {
             "target": { "selector": "#side-ab" },
+            "announcement": {
+                "name": "Side AB",
+                "description": "Side AB with length 145.8 units."
+            },
             "enter": {
-                "announcement": {
-                    "name": "Side AB",
-                    "description": "Side AB with length 145.8 units."
-                },
                 "haptic": { "durations": [0, 1000, 0, 1000], "repeatInterval": 1000 }
             }
         },
         {
             "target": { "selector": "#side-bc" },
+            "announcement": {
+                "name": "Side BC",
+                "description": "Side BC with length 145.8 units."
+            },
             "enter": {
-                "announcement": {
-                    "name": "Side BC",
-                    "description": "Side BC with length 145.8 units."
-                },
                 "haptic": { "durations": [0, 1000, 0, 1000], "repeatInterval": 1000 }
             }
         },
         {
             "target": { "selector": "#side-ca" },
+            "announcement": {
+                "name": "Side CA",
+                "description": "Side CA with length 150.0 units."
+            },
             "enter": {
-                "announcement": {
-                    "name": "Side CA",
-                    "description": "Side CA with length 150.0 units."
-                },
                 "haptic": { "durations": [0, 1000, 0, 1000], "repeatInterval": 1000 }
             }
         }
