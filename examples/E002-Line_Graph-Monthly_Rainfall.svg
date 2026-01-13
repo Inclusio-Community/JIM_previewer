@@ -1,11 +1,11 @@
 <svg tabindex="0" xmlns="http://www.w3.org/2000/svg" aria-charttype="line" viewBox="0 0 579.5 635.1"
   aria-label="Monthly Rainfall in Chestnut City" role="application" tabIndex="0">
   <title>Monthly Rainfall in Chestnut City: Line Chart</title>
-  <metadata data-type="text/jim+json">
+  <metadata data-type="application/jim+json">
     {
       "version": {
         "document": "1.0.1",
-        "jim": "0.4.2"
+        "jim": "1.0.0"
       },
       "datasets": [
         {

@@ -136,7 +136,7 @@ use.visited-mark { pointer-events: none; }
               </rect>
             </clipPath>
         </defs>
-        <metadata data-type="text/jim+json">
+        <metadata data-type="application/jim+json">
           {
   "datasets": [
     {
@@ -557,7 +557,7 @@ use.visited-mark { pointer-events: none; }
     }
   },
   "version": {
-    "jim": "0.4.2"
+    "jim": "1.0.0"
   }
 }
         </metadata>

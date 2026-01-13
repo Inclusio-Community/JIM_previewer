@@ -27,9 +27,9 @@
       <text id="label-angle-B" x="160" y="160" font-family="sans-serif" font-size="10px" fill="hsl(229, 4%, 7%)">90°</text>
     </g>
   </g>
-<metadata data-type="text/jim+json">{
+<metadata data-type="application/jim+json">{
   "version": {
-    "jim": "0.4.2"
+    "jim": "1.0.0"
   },
   "datasets": [
     {
@@ -97,13 +97,13 @@
       "target": {
         "selector": ".line"
       },
+      "announcement": {
+        "name": "compose({target.id}, .label)"
+      },
       "enter": {
         "haptic": {
           "durations": [0, 1000, 0, 1000],
           "repeatInterval": 1000
-        },
-        "announcement": {
-          "name": "compose({target.id}, .label)"
         }
       }
     },

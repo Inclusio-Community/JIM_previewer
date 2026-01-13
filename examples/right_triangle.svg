@@ -62,11 +62,11 @@
   <text id="vertex-label-C" x="195" y="115" font-family="Verdana" font-size="20">C</text> <!-- C -->
 
 
-  <metadata data-type="text/jim+json">
+  <metadata data-type="application/jim+json">
     {
       "version": {
         "document": "1.0.1",
-        "jim": "0.4.2"
+        "jim": "1.0.0"
       },
       "datasets": [
         {

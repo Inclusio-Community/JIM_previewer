@@ -676,8 +676,8 @@
                         // — Validate behaviors structure and keys
                         if (Array.isArray(jim.behaviors)) {
                             // JIM spec event keys
-                            const allowedBehaviorKeys = new Set(["target", "enter", "details", "activate", "exit", "note", "description", "id", "name"]);
-                            const allowedEventKeys = new Set(["haptic", "haptic_pattern", "announcement", "notes", "note", "description", "id", "name", "audio"]);
+                            const allowedBehaviorKeys = new Set(["target", "enter", "details", "activate", "exit", "note", "description", "id", "name", "announcement"]);
+                            const allowedEventKeys = new Set(["haptic", "haptic_pattern", "notes", "note", "description", "id", "name", "audio"]);
                             const eventKeysSpec = ["enter", "details", "activate", "exit"];
                             jim.behaviors.forEach((b, i) => {
                                 if (typeof b !== "object" || b === null) {
@@ -798,6 +798,37 @@
                                         }
                                     }
                                 }
+                                // Announcement block validation at behavior level (JIM 1.0.0+)
+                                if ('announcement' in b) {
+                                    if (typeof b.announcement === 'string') {
+                                        errors.push(`Behavior[${i}].announcement uses deprecated string syntax; must be an object.`);
+                                    } else if (typeof b.announcement === 'object' && b.announcement !== null) {
+                                        const ann = b.announcement;
+                                        const annKeys = Object.keys(ann);
+                                        if (annKeys.length === 0) {
+                                            warnings.push(`Behavior[${i}].announcement block is present but empty.`);
+                                        } else {
+                                            const allowedAnnKeys = new Set(['name', 'description', 'details', 'hint']);
+                                            const unknownAnnKeys = annKeys.filter(k => !allowedAnnKeys.has(k));
+                                            if (unknownAnnKeys.length) {
+                                                warnings.push(`Behavior[${i}].announcement has unknown/non-standard key(s): ${unknownAnnKeys.join(", ")}`);
+                                            }
+                                            annKeys.forEach(k => {
+                                                if (!allowedAnnKeys.has(k)) return;
+                                                const v = ann[k];
+                                                if (typeof v !== 'string' || !v.trim()) {
+                                                    errors.push(`Behavior[${i}].announcement.${k} must be a non-empty string.`);
+                                                }
+                                                // Warn if value looks like a template (contains curly braces)
+                                                if (typeof v === 'string' && /\{.*\}/.test(v)) {
+                                                    warnings.push(`Behavior[${i}].announcement.${k} appears to use dynamic/template syntax ('${v}'), which is not currently supported by the JIM spec.`);
+                                                }
+                                            });
+                                        }
+                                    } else {
+                                        errors.push(`Behavior[${i}].announcement must be an object.`);
+                                    }
+                                }
                                 // Check event blocks (enter, details, activate, exit)
                                 eventKeysSpec.forEach(eventName => {
                                     const block = b[eventName];
@@ -809,32 +840,6 @@
                                         if ('haptic_pattern' in block && typeof block.haptic_pattern === 'string') {
                                             warnings.push(`Behavior[${i}] ${eventName}.haptic_pattern uses deprecated string syntax; should be an object.`);
                                         }
-                                        if ('announcement' in block && typeof block.announcement === 'string') {
-                                            warnings.push(`Behavior[${i}] ${eventName}.announcement uses deprecated string syntax; should be an object.`);
-                                        }
-                                            // Announcement block validation (JIM spec)
-                                            if ('announcement' in block && typeof block.announcement === 'object' && block.announcement !== null) {
-                                                const ann = block.announcement;
-                                                const annKeys = Object.keys(ann);
-                                                const allowedAnnKeys = new Set(['name', 'description', 'details', 'hint']);
-                                                const unknownAnnKeys = annKeys.filter(k => !allowedAnnKeys.has(k));
-                                                if (unknownAnnKeys.length) {
-                                                    warnings.push(`Behavior[${i}] ${eventName}.announcement has unknown/non-standard key(s): ${unknownAnnKeys.join(", ")}`);
-                                                }
-                                                annKeys.forEach(k => {
-                                                    if (!allowedAnnKeys.has(k)) return;
-                                                    const v = ann[k];
-                                                    if (typeof v !== 'string' || !v.trim()) {
-                                                        errors.push(`Behavior[${i}] ${eventName}.announcement.${k} must be a non-empty string.`);
-                                                    }
-                                                    // Warn if value looks like a template (contains curly braces)
-                                                    if (typeof v === 'string' && /\{.*\}/.test(v)) {
-                                                        warnings.push(`Behavior[${i}] ${eventName}.announcement.${k} appears to use dynamic/template syntax ('${v}'), which is not currently supported by the JIM spec.`);
-                                                    }
-                                                });
-                                            } else if ('announcement' in block && typeof block.announcement === 'object' && block.announcement !== null && Object.keys(block.announcement).length === 0) {
-                                                warnings.push(`Behavior[${i}] ${eventName}.announcement block is present but empty.`);
-                                            }
                                         // Check for unknown keys in event block
                                         const eventKeys = Object.keys(block);
                                         const unknownEventKeys = eventKeys.filter(k => !allowedEventKeys.has(k));
@@ -1944,9 +1949,10 @@
             .replace(/'/g, '&#39;');
     }
     // Returns the announcement object (name/description) from a behavior, or null if not present
+    // JIM 1.0.0+: announcement is at behavior top level, not inside event blocks
     getExplicitAnnouncement(behavior) {
-        if (behavior && behavior.enter && behavior.enter.announcement) {
-            return behavior.enter.announcement;
+        if (behavior && behavior.announcement) {
+            return behavior.announcement;
         }
         return null;
     }
@@ -2112,9 +2118,9 @@
                         const meta = doc.querySelector('metadata#jim');
                         if (meta) jimText = meta.textContent;
                     }
-                    // <metadata data-type="text/jim+json">
+                    // <metadata data-type="application/jim+json">
                     if (!jimText) {
-                        const metaType = doc.querySelector('metadata[data-type="text/jim+json"]');
+                        const metaType = doc.querySelector('metadata[data-type="application/jim+json"]');
                         if (metaType) jimText = metaType.textContent;
                     }
                 } else if (ext === 'html' || ext === 'htm') {
@@ -2157,7 +2163,7 @@
                     console.warn('[JIMViewer] No JIM metadata found in file.');
                     const errorHtml = `<div class="error-box">` +
                         `<strong class="error-text"><span class="sr-only">Error: </span>${ICONS.cross} No JIM metadata found in file</strong><br>` +
-                        `<div class='muted-note' style='color:var(--status-error);'>JIM metadata must be in a &lt;script type="application/json+jim"&gt; or &lt;metadata data-type="text/jim+json"&gt; block.</div>` +
+                        `<div class='muted-note' style='color:var(--status-error);'>JIM metadata must be in a &lt;script type="application/json+jim"&gt; or &lt;metadata data-type="application/jim+json"&gt; block.</div>` +
                         `<div class='muted-note'>Tip: Check your SVG for a valid JIM metadata block.</div>` +
                         `</div>`;
                     document.getElementById('metadata-summary').innerHTML = errorHtml;
@@ -2717,8 +2723,8 @@
             if (behaviors.length) {
                 const matchLabel = behaviors.length === 1 ? '1 behavior' : `${behaviors.length} behaviors`;
                 html += `<div style='margin-top:8px; margin-bottom:8px;'><strong>Behavior(s):</strong> ${matchLabel}</div>`;
-                // Show any explicit announcements (enter) for the group behavior
-                const explicitAnns = behaviors.map(b => b.enter?.announcement).filter(Boolean);
+                // Show any explicit announcements for the group behavior (JIM 1.0.0+: at behavior top level)
+                const explicitAnns = behaviors.map(b => b.announcement).filter(Boolean);
                 if (explicitAnns.length) {
                     explicitAnns.forEach((ann, i) => {
                         // Prefer human-friendly fields: description then name, fallback to serialized keys
