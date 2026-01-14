@@ -4,6 +4,7 @@
   'use strict';
 
   const defaultExamples = [
+    '/fixtures/golden.svg',
     '/examples/testimage_0.svg',
     '/examples/simple_svg_triangle.svg',
     '/examples/triangle-complete-with-jim-metadata.svg',

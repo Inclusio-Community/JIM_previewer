@@ -125,14 +125,14 @@
                          - .jim-overlays-visible on #visualization forces overlays visible (stroke shown)
                          - .jim-overlays-hidden on #visualization forces overlays hidden except on hover/focus
                 */
-                .jim-shape-overlay { fill: transparent; stroke-opacity: 0; pointer-events: all; cursor: pointer; transition: stroke-opacity .12s ease, filter .12s ease; }
-                .jim-shape-overlay:focus, .jim-shape-overlay:hover { stroke-opacity: 0.95; filter: drop-shadow(0 1px 4px rgba(0,0,0,0.12)); outline: none; }
+                .jim-shape-overlay { fill-opacity: 0; stroke-opacity: 0; pointer-events: all; cursor: pointer; transition: stroke-opacity .12s ease, fill-opacity .12s ease, filter .12s ease; }
+                .jim-shape-overlay:focus, .jim-shape-overlay:hover { stroke-opacity: 0.95; fill-opacity: 0.5; filter: drop-shadow(0 1px 4px rgba(0,0,0,0.12)); outline: none; }
                 /* Visible state: force overlays visible */
-                .jim-overlays-visible .jim-shape-overlay { stroke-opacity: 0.95; }
+                .jim-overlays-visible .jim-shape-overlay { stroke-opacity: 0.95; fill-opacity: 0.5; }
                 /* Hidden state: keep overlays visually hidden but allow hover/focus to show them */
-                .jim-overlays-hidden .jim-shape-overlay { stroke-opacity: 0; }
+                .jim-overlays-hidden .jim-shape-overlay { stroke-opacity: 0; fill-opacity: 0; }
                 .jim-overlays-hidden .jim-shape-overlay:hover,
-                .jim-overlays-hidden .jim-shape-overlay:focus { stroke-opacity: 0.95; filter: drop-shadow(0 1px 4px rgba(0,0,0,0.12)); }
+                .jim-overlays-hidden .jim-shape-overlay:focus { stroke-opacity: 0.95; fill-opacity: 0.5; filter: drop-shadow(0 1px 4px rgba(0,0,0,0.12)); }
     .badge--muted { background:#e0e7ef; color:#1e293b; padding:2px 6px; margin-right:4px; }
     .muted-note.italic { font-style: italic; color: var(--muted-contrast); }
     .orphaned-list { padding-left:0; margin:8px 0; list-style:none; }
@@ -1398,12 +1398,20 @@
                         overlayEl.removeAttribute('pointer-events');
                         overlayEl.style.removeProperty('pointer-events');
                     } catch (e) { /* ignore */ }
-                    // IMPORTANT: Always force pointer-events to visibleStroke for overlay shapes
-                    // This ensures overlays only capture events on their stroke, not their fill area,
-                    // preventing them from blocking clicks to underlying interactive elements.
-                    // Any pointer-events value from JIM metadata is intentionally ignored.
-                    overlayEl.setAttribute('pointer-events', 'visibleStroke');
-                    overlayEl.style.setProperty('pointer-events', 'visibleStroke', 'important');
+                    // Set pointer-events based on whether shape has stroke, fill, or both
+                    // - stroke-only: visibleStroke (only stroke is clickable)
+                    // - fill-only: visibleFill (only fill is clickable)
+                    // - both: visible (both are clickable)
+                    const hasStroke = payload.stroke && payload.stroke !== 'none' && payload.stroke !== 'transparent';
+                    const hasFill = payload.fill && payload.fill !== 'none' && payload.fill !== 'transparent';
+                    let pointerEventsValue = 'visible';
+                    if (hasStroke && !hasFill) {
+                        pointerEventsValue = 'visibleStroke';
+                    } else if (hasFill && !hasStroke) {
+                        pointerEventsValue = 'visibleFill';
+                    }
+                    overlayEl.setAttribute('pointer-events', pointerEventsValue);
+                    overlayEl.style.setProperty('pointer-events', pointerEventsValue, 'important');
                     overlayEl.setAttribute('tabindex', '0');
                     overlayEl.dataset.behaviorIndex = String(bi);
                     overlayEl.dataset.shapeIndex = String(si);
@@ -1938,6 +1946,26 @@
         }
         const result = flatten(data);
         return result && result.trim() ? result : null;
+    }
+    // Returns the implicit name from data (first label-role field, or 'label' field, or first string field)
+    getImplicitName(data) {
+        if (!data || typeof data !== 'object') return null;
+        const facets = this.jimData?.datasets?.[0]?.facets || {};
+        // Find field with role: label
+        for (const [key, facet] of Object.entries(facets)) {
+            if (facet.role === 'label' && data[key] !== undefined && data[key] !== null) {
+                return String(data[key]).trim();
+            }
+        }
+        // Fallback to 'label' field if present
+        if (data.label !== undefined && data.label !== null) {
+            return String(data.label).trim();
+        }
+        // Fallback to 'name' field if present
+        if (data.name !== undefined && data.name !== null) {
+            return String(data.name).trim();
+        }
+        return null;
     }
     // Simple HTML escaper for injection-safe display
     escapeHtml(str) {
@@ -2739,6 +2767,7 @@
                                 const parts = [];
                                 if (ann.name) parts.push(`Name: ${ann.name}`);
                                 if (ann.description) parts.push(`Description: ${ann.description}`);
+                                if (ann.details) parts.push(`Details: ${ann.details}`);
                                 if (ann.hint) parts.push(`Hint: ${ann.hint}`);
                                 desc = parts.length ? parts.join(' — ') : JSON.stringify(ann);
                             }
@@ -2833,6 +2862,16 @@
                     }
                 }
             }
+            // Get data for implicit name fallback and default announcement
+            let behaviorData = null;
+            let defaultAnn = null;
+            try {
+                const jsonPath = behavior.target?.json;
+                if (jsonPath) {
+                    behaviorData = this.getDataFromJSONPath(jsonPath);
+                    defaultAnn = behaviorData ? this.getDefaultAnnouncement(behaviorData) : null;
+                }
+            } catch (e) { /* ignore */ }
             // Explicit announcement (show name then description if present)
             const explicit = this.getExplicitAnnouncement(behavior);
             if (explicit) {
@@ -2840,25 +2879,26 @@
                 if (typeof explicit === 'string') {
                     html += `<div class="announcement announcement-success"><strong>Explicit Announcement</strong><br>${this.escapeHtml(explicit)}</div>`;
                 } else if (typeof explicit === 'object') {
-                    const name = explicit.name ? String(explicit.name).trim() : null;
+                    let name = explicit.name ? String(explicit.name).trim() : null;
                     const desc = explicit.description ? String(explicit.description).trim() : null;
-                    if (name || desc) {
+                    const details = explicit.details ? String(explicit.details).trim() : null;
+                    // Fallback to implicit name from data if explicit name is missing
+                    const implicitName = this.getImplicitName(behaviorData);
+                    const usedImplicitFallback = !name && implicitName && (desc || details);
+                    if (usedImplicitFallback) name = implicitName;
+                    if (name || desc || details) {
                         html += `<div class="announcement announcement-success"><strong>Explicit Announcement</strong><br>`;
-                        if (name) html += `${this.escapeHtml(name)}`;
+                        if (name) {
+                            html += `${this.escapeHtml(name)}`;
+                            if (usedImplicitFallback) html += ` <span class="muted-note">(from data)</span>`;
+                        }
                         if (desc) html += `<div class="muted-note" style="margin-top:6px">${this.escapeHtml(desc)}</div>`;
+                        if (details) html += `<div class="muted-note" style="margin-top:6px;font-style:italic">${this.escapeHtml(details)}</div>`;
                         html += `</div>`;
                     }
                 }
             }
             // Default announcement from JSON if available
-            let defaultAnn = null;
-            try {
-                const jsonPath = behavior.target?.json;
-                if (jsonPath) {
-                    const data = this.getDataFromJSONPath(jsonPath);
-                    defaultAnn = data ? this.getDefaultAnnouncement(data) : null;
-                }
-            } catch (e) { /* ignore */ }
             if (defaultAnn) html += `<div class="announcement announcement-note"><strong>Default Announcement</strong><br>${this.escapeHtml(defaultAnn)}</div>`;
 
             html += `<details open class="details--spaced"><summary class="details-summary">Behavior JSON</summary><pre class="pre-meta meta-text">${this.escapeHtml(JSON.stringify(behavior, null, 2))}</pre></details>`;
@@ -3231,13 +3271,36 @@
                     <strong>Explicit Announcement:</strong><br>${this.escapeHtml(explicitAnn)}
                 </div>`;
             } else if (typeof explicitAnn === 'object') {
-                const name = explicitAnn.name ? String(explicitAnn.name).trim() : null;
+                let name = explicitAnn.name ? String(explicitAnn.name).trim() : null;
                 const desc = explicitAnn.description ? String(explicitAnn.description).trim() : null;
-                if (name || desc) {
+                const details = explicitAnn.details ? String(explicitAnn.details).trim() : null;
+                // Fallback to implicit name from data if explicit name is missing
+                const implicitName = this.getImplicitName(data);
+                const usedImplicitFallback = !name && implicitName && (desc || details);
+                if (usedImplicitFallback) name = implicitName;
+                if (name || desc || details) {
                     html += `<div class="announcement announcement-success"><strong>Explicit Announcement:</strong><br>`;
-                    if (name) html += `${this.escapeHtml(name)}`;
+                    if (name) {
+                        html += `${this.escapeHtml(name)}`;
+                        if (usedImplicitFallback) html += ` <span class="muted-note">(from data)</span>`;
+                    }
                     if (desc) html += `<div class="muted-note" style="margin-top:6px">${this.escapeHtml(desc)}</div>`;
+                    if (details) html += `<div class="muted-note" style="margin-top:6px;font-style:italic">${this.escapeHtml(details)}</div>`;
                     html += `</div>`;
+                }
+            }
+        }
+        // Show haptic pattern if present in matched behaviors
+        if (matchedBehaviors.length) {
+            const eventKeys = ['enter', 'details', 'activate', 'exit'];
+            for (const behavior of matchedBehaviors) {
+                for (const eventKey of eventKeys) {
+                    if (behavior[eventKey] && behavior[eventKey].haptic) {
+                        const patternName = this.getHapticPatternName(behavior[eventKey].haptic);
+                        if (patternName) {
+                            html += `<div class="announcement announcement-success" style="margin-top:8px"><strong>Haptic Pattern:</strong> "${this.escapeHtml(patternName)}" (${eventKey})</div>`;
+                        }
+                    }
                 }
             }
         }
