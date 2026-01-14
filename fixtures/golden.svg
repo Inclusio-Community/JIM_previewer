@@ -1,0 +1,307 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 350">
+  <title>Golden Test Fixture</title>
+  <desc>Canonical fixture for JIM Previewer unit testing. Covers all requirements from Testing.md.</desc>
+
+  <metadata data-type="application/jim+json">
+{
+  "version": {
+    "jim": "1.0.0",
+    "document": "1.0.0"
+  },
+  "datasets": [
+    {
+      "title": "Golden Test Data",
+      "description": "Test data for implicit announcement generation",
+      "facets": {
+        "label": { "type": "categorical", "role": "label" },
+        "x": { "type": "quantitative", "role": "independent" },
+        "y": { "type": "quantitative", "role": "dependent" }
+      },
+      "series": [
+        {
+          "name": "Test Series",
+          "records": [
+            { "label": "Open Path Value", "x": 10, "y": 20 },
+            { "label": "Closed Shape Value", "x": 30, "y": 40 },
+            { "label": "Transformed Rect Value", "x": 50, "y": 60 },
+            { "label": "Implicit Name Fallback", "x": 70, "y": 80 }
+          ]
+        }
+      ]
+    }
+  ],
+  "selectors": {
+    "targetSet": { "dom": "#selector-set-a, #selector-set-b", "json": "$.datasets[0].series[0].records[0]" },
+    "openPathSvg": { "dom": "#open-path-svg", "json": "$.datasets[0].series[0].records[0]" },
+    "transformedRect": { "dom": "#transformed-rect", "json": "$.datasets[0].series[0].records[2]" },
+    "implicitNameTest": { "dom": "#implicit-name-test", "json": "$.datasets[0].series[0].records[3]" }
+  },
+  "behaviors": [
+    {
+      "target": { "selector": "#open-path-svg" },
+      "announcement": {
+        "name": "Open Path (SVG only)",
+        "description": "Thin 2px stroke - tests SVG element hit detection"
+      },
+      "enter": {
+        "haptic": {
+          "durations": [0, 1000, 0, 1000],
+          "repeatInterval": 1000
+        }
+      }
+    },
+    {
+      "target": {
+        "shapes": [
+          {
+            "path": {
+              "d": "M 20,90 L 60,60 L 100,90 L 140,60",
+              "stroke": "#ff6600",
+              "stroke-width": 20,
+              "fill": "none"
+            }
+          }
+        ]
+      },
+      "announcement": {
+        "name": "Open Path (with overlay)",
+        "description": "Thin 2px visual stroke with 20px hit area overlay"
+      },
+      "enter": {
+        "haptic": {
+          "durations": [0, 75, 75, 75, 75, 75, 225],
+          "repeatInterval": 75
+        }
+      }
+    },
+    {
+      "target": {
+        "shapes": [
+          {
+            "polygon": {
+              "points": "180,30 260,30 260,90 180,90",
+              "stroke": "#336699",
+              "stroke-width": 15,
+              "fill": "none"
+            }
+          }
+        ]
+      },
+      "announcement": {
+        "name": "Closed Shape (edge-only)",
+        "description": "SVG has stroke+fill, but overlay is stroke-only for edge-only hit detection"
+      },
+      "enter": {
+        "haptic": {
+          "durations": [0, 75, 75, 75, 75, 75, 225],
+          "repeatInterval": 75
+        }
+      },
+      "details": {
+        "haptic": {
+          "durations": [0, 125, 125, 125, 125, 125, 125, 125],
+          "repeatInterval": 125
+        }
+      },
+      "exit": {
+        "haptic": {
+          "durations": [0, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50],
+          "repeatInterval": 50
+        }
+      }
+    },
+    {
+      "target": { "selector": "#transformed-rect" },
+      "enter": {
+        "haptic": {
+          "durations": [0, 1000, 0, 1000],
+          "repeatInterval": 1000
+        }
+      }
+    },
+    {
+      "target": { "selector": "#selector-set-a, #selector-set-b" },
+      "announcement": {
+        "name": "Selector Set Target"
+      },
+      "enter": {
+        "haptic": {
+          "durations": [0, 75, 75, 75, 75, 75, 225],
+          "repeatInterval": 75
+        }
+      }
+    },
+    {
+      "target": { "selector": "#concurrent-target" },
+      "announcement": {
+        "name": "Concurrent Target",
+        "description": "Tests haptic and audio firing together"
+      },
+      "enter": {
+        "haptic": {
+          "durations": [0, 125, 125, 125, 125, 125, 125, 125],
+          "repeatInterval": 125
+        },
+        "audio": {
+          "href": "blop.mp3"
+        }
+      },
+      "activate": {
+        "haptic": {
+          "durations": [0, 1000, 0, 1000],
+          "repeatInterval": 1000
+        }
+      }
+    },
+    {
+      "target": {
+        "shapes": [
+          {
+            "line": {
+              "x1": 20,
+              "y1": 300,
+              "x2": 120,
+              "y2": 300,
+              "stroke": "#ff0000",
+              "stroke-width": 20,
+              "fill": "none"
+            }
+          }
+        ]
+      },
+      "announcement": {
+        "name": "Stroke-Only Overlay",
+        "description": "Should only trigger on stroke, not fill"
+      },
+      "enter": {
+        "haptic": {
+          "durations": [0, 75, 75, 75, 75, 75, 225],
+          "repeatInterval": 75
+        }
+      }
+    },
+    {
+      "target": {
+        "shapes": [
+          {
+            "rect": {
+              "x": 150,
+              "y": 270,
+              "width": 80,
+              "height": 60,
+              "stroke": "none",
+              "stroke-width": 0,
+              "fill": "#00ff00"
+            }
+          }
+        ]
+      },
+      "announcement": {
+        "name": "Fill-Only Overlay",
+        "description": "Should only trigger on fill, not stroke",
+        "details": "This overlay tests fill-only pointer-events. It has all three announcement layers: name, description, and details."
+      },
+      "enter": {
+        "haptic": {
+          "durations": [0, 1000, 0, 1000],
+          "repeatInterval": 1000
+        }
+      }
+    },
+    {
+      "target": { "selector": "#repeat-target" },
+      "announcement": {
+        "name": "Repeat Target",
+        "description": "Tests repeatInterval and repeatIndex"
+      },
+      "enter": {
+        "haptic": {
+          "durations": [0, 100, 30, 100, 30, 100, 200, 200, 30, 200, 30, 200, 200, 100, 30, 100, 30, 100],
+          "repeatInterval": 100,
+          "repeatIndex": 2
+        }
+      }
+    },
+    {
+      "target": { "selector": "#implicit-name-test" },
+      "announcement": {
+        "description": "This element tests implicit name fallback - explicit announcement has description but no name"
+      },
+      "enter": {
+        "haptic": {
+          "durations": [0, 75, 75, 75, 75, 75, 225],
+          "repeatInterval": 75
+        }
+      }
+    }
+  ],
+  "status": {
+    "features": ["haptic", "audio", "announcement"]
+  }
+}
+  </metadata>
+
+  <style>
+    .thin-stroke { stroke: #333; stroke-width: 2; fill: none; }
+    .filled-shape { stroke: #336699; stroke-width: 2; fill: #6699cc; }
+    .transform-element { stroke: #996633; stroke-width: 2; fill: #ffcc99; }
+    .concurrent-element { stroke: #993399; stroke-width: 2; fill: #cc99ff; }
+    .repeat-element { stroke: #339966; stroke-width: 2; fill: #99ffcc; }
+    .selector-set-element { stroke: #ff6600; stroke-width: 2; fill: #ffcc99; }
+    .implicit-name-element { stroke: #666699; stroke-width: 2; fill: #9999cc; }
+  </style>
+
+  <!-- Test Element 1a: Open path with SVG-only hit detection (thin 2px stroke) -->
+  <path id="open-path-svg" class="thin-stroke"
+        d="M 20,50 L 60,20 L 100,50 L 140,20"
+        stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- Test Element 1b: Open path with shape overlay hit enhancement (thin 2px visual, 20px hit area) -->
+  <path id="open-path-overlay" class="thin-stroke"
+        d="M 20,90 L 60,60 L 100,90 L 140,60"
+        stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- Test Element 2: Closed shape with stroke+fill visual, but stroke-only overlay for edge-only hit testing -->
+  <polygon id="closed-shape" class="filled-shape"
+           points="180,30 260,30 260,90 180,90"/>
+
+  <!-- Test Element 3: Rectangle under transform for transform correctness -->
+  <g transform="translate(300,20) rotate(15)">
+    <rect id="transformed-rect" class="transform-element"
+          x="0" y="0" width="60" height="40"/>
+  </g>
+
+  <!-- Test Element 4: Circle for concurrent haptic + audio -->
+  <circle id="concurrent-target" class="concurrent-element"
+          cx="70" cy="170" r="30"/>
+
+  <!-- Test Element 5: Rectangle for repeat testing -->
+  <rect id="repeat-target" class="repeat-element"
+        x="140" y="140" width="70" height="50"/>
+
+  <!-- Test Elements 6 & 7: Selector set targets for multi-selector testing -->
+  <circle id="selector-set-a" class="selector-set-element"
+          cx="280" cy="200" r="20"/>
+  <circle id="selector-set-b" class="selector-set-element"
+          cx="340" cy="200" r="20"/>
+
+  <!-- Test Element 8: Ellipse for implicit name fallback testing (explicit has description but no name) -->
+  <ellipse id="implicit-name-test" class="implicit-name-element"
+           cx="310" cy="300" rx="40" ry="25"/>
+
+  <!-- Labels for visual reference (not part of hit testing) -->
+  <g font-family="sans-serif" font-size="9" fill="#666">
+    <text x="20" y="12">open-path-svg (2px, SVG hit)</text>
+    <text x="20" y="115">open-path-overlay (2px visual, 20px hit)</text>
+    <text x="175" y="105">closed-shape (edge-only hit)</text>
+    <text x="290" y="90">transformed-rect</text>
+    <text x="50" y="215">concurrent</text>
+    <text x="145" y="205">repeat</text>
+    <text x="255" y="240">selector-set-a</text>
+    <text x="315" y="240">selector-set-b</text>
+    <text x="275" y="340">implicit-name-test</text>
+    <text x="20" y="330">stroke-only overlay</text>
+    <text x="155" y="345">fill-only overlay</text>
+  </g>
+
+</svg>
