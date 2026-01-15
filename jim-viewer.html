@@ -494,6 +494,47 @@
                     </div>
                     <div id="file-help" class="file-help">Supported: SVG files (with or without JIM metadata) and HTML files containing SVG elements.</div>
                 </div>
+                <div class="example-loader-wrapper" style="margin-top: 12px;">
+                    <label for="example-select">Or load an example:</label>
+                    <select id="example-select" style="margin-left: 8px; padding: 4px 8px; font-size: 14px;">
+                        <option value="">-- Select an example --</option>
+                        <optgroup label="Fixtures">
+                            <option value="fixtures/golden.svg">Golden Test Fixture</option>
+                        </optgroup>
+                        <optgroup label="Charts">
+                            <option value="examples/E001-Vertical_Bar_Chart.svg">E001 - Vertical Bar Chart</option>
+                            <option value="examples/E002-Line_Graph-Monthly_Rainfall.svg">E002 - Line Graph (Rainfall)</option>
+                            <option value="examples/bar-chart-metadata-jsonpath.svg">Bar Chart (JSONPath)</option>
+                            <option value="examples/College_enrollment_in_public_and_private_institutions_in_the_U_S__1965_to_2028.svg">College Enrollment Chart</option>
+                            <option value="examples/Number_of_Xbox_Live_MAU_Q1_2016___Q4_2019.svg">Xbox Live MAU Chart</option>
+                            <option value="examples/Unemployment_rate_in_Greece_1999_2019.svg">Unemployment Rate (Greece)</option>
+                            <option value="examples/Distribution_of_the_workforce_across_economic_sectors_in_India_2019.svg">Workforce Distribution (India)</option>
+                            <option value="examples/Division_of_energy_in_the_Universe.svg">Energy in the Universe</option>
+                        </optgroup>
+                        <optgroup label="Geometry">
+                            <option value="examples/simple_svg_triangle.svg">Simple Triangle</option>
+                            <option value="examples/right_triangle.svg">Right Triangle</option>
+                            <option value="examples/triangle-complete-with-jim-metadata.svg">Triangle with JIM Metadata</option>
+                            <option value="examples/triangle-with-orphan-selectors.svg">Triangle with Orphan Selectors</option>
+                            <option value="examples/E003-Trapezoid-haptic-experimental.svg">E003 - Trapezoid (Haptic)</option>
+                            <option value="examples/E004-Number_Line.svg">E004 - Number Line</option>
+                        </optgroup>
+                        <optgroup label="Educational">
+                            <option value="examples/E005-T_Intersection.svg">E005 - T Intersection</option>
+                            <option value="examples/E006-Plant_Cell_Structure-experimental.svg">E006 - Plant Cell Structure</option>
+                            <option value="examples/JLGjim-photosynthesis-vav-monarch-approved.pdf.svg">Photosynthesis Diagram</option>
+                            <option value="examples/JLGjim-us-midwest-map-monarch-approved.pdf.svg">US Midwest Map</option>
+                            <option value="examples/oregon-custom-projection.svg">Oregon Map (Custom Projection)</option>
+                        </optgroup>
+                        <optgroup label="Test Images">
+                            <option value="examples/testimage_0.svg">Test Image 0</option>
+                            <option value="examples/testimage_1.svg">Test Image 1</option>
+                            <option value="examples/testimage_2.svg">Test Image 2</option>
+                            <option value="examples/testimage_3.svg">Test Image 3</option>
+                            <option value="examples/testimage_4.svg">Test Image 4</option>
+                        </optgroup>
+                    </select>
+                </div>
                 <div id="metadata-summary" aria-live="polite"></div>
                 <div id="status-messages" aria-live="polite" aria-atomic="true"></div>
             </section>
@@ -2038,6 +2079,39 @@
                             this.handleFileLoad(text, ext);
                         };
                         reader.readAsText(file);
+                    });
+                }
+
+                // Example select dropdown handler
+                const exampleSelect = document.getElementById('example-select');
+                if (exampleSelect) {
+                    exampleSelect.addEventListener('change', async (e) => {
+                        const path = e.target.value;
+                        if (!path) return;
+                        try {
+                            const response = await fetch(path);
+                            if (!response.ok) throw new Error(`Failed to fetch ${path}: ${response.status}`);
+                            const text = await response.text();
+                            const ext = path.split('.').pop().toLowerCase();
+                            // Update the file label
+                            const filename = path.split('/').pop();
+                            if (typeof setCurrentFileLabel === 'function') setCurrentFileLabel(filename);
+                            else {
+                                const label = document.getElementById('current-file');
+                                if (label) label.textContent = filename;
+                            }
+                            // Populate native file input for consistency
+                            if (typeof populateNativeFileInputFromFetch === 'function') {
+                                await populateNativeFileInputFromFetch(path, text, ext);
+                            }
+                            this.handleFileLoad(text, ext);
+                        } catch (err) {
+                            console.error('[JIMViewer] Failed to load example:', err);
+                            const statusEl = document.getElementById('status-messages');
+                            if (statusEl) statusEl.innerHTML = `<div class="status-error-line">Failed to load example: ${err.message}</div>`;
+                        }
+                        // Reset dropdown to placeholder after loading
+                        e.target.value = '';
                     });
                 }
 
