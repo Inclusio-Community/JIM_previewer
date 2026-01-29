@@ -2273,6 +2273,16 @@
                     this.jimData = null;
                 }
 
+                // Detect enveloped form: { jim: { ... }, extensions: { ... } }
+                // Per spec, both root and enveloped forms are valid.
+                if (jim && typeof jim.jim === 'object' && jim.jim !== null) {
+                    console.log('[JIMViewer] Detected enveloped JIM form, unwrapping jim block.');
+                    if (jim.extensions) {
+                        console.log('[JIMViewer] Extensions block present:', Object.keys(jim.extensions));
+                    }
+                    jim = jim.jim;
+                }
+
                 // Preflight and normalize JIM if present
                 if (jim && Object.keys(jim).length > 0) {
                     const preflight = preflightJIM(jim, doc);
