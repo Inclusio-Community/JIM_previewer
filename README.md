@@ -12,7 +12,7 @@ An interactive tool for analyzing and validating JSON for Interactive Media (JIM
 
 ## Features
 
-- **Robust JIM Validation**: Preflight normalization, error/warning reporting, and spec compliance checks for JIM metadata
+- **Robust JIM Validation**: Preflight normalization, error/warning reporting, and spec compliance checks for JIM metadata. Supports both [root and enveloped JIM forms](https://inclusio-community.github.io/json-image-metadata/#jim_structure_forms).
 - **SVG Accessibility Audit**: Analyzes ARIA, roles, labels, keyboard navigation, and accessibility attributes
 - **Interactive Visualization**: Click or focus SVG elements to inspect JIM mappings, behaviors, and accessibility info
 - **Shape behavior overlays**: Renders shapes declared by JIM behavior payloads (rect, circle, ellipse, line, polygon, polyline, path) as focusable, keyboard-accessible overlays. Overlays respect author-provided style hints (stroke, fill, stroke-width, opacity), can be toggled with the Show/Hide overlays control, and are surfaced in the Selectors / Inventory panels as "Shape Behaviors" for quick inspection.
@@ -23,33 +23,32 @@ An interactive tool for analyzing and validating JSON for Interactive Media (JIM
 - **SVG & HTML File Support**: Works with both SVG and HTML files containing SVG elements
 - **SVG-Only Mode**: Provides accessibility audit and inventory for regular SVG files without JIM metadata
 - **Comprehensive Error/Warning Reporting**: Surfaces invalid selectors, behaviors, and metadata structure issues
+- **Built-in Example Loader**: Load example SVGs directly from a categorized dropdown — no download required
 - **Example Files Included**: Ready-to-use SVGs for testing and demonstration
 
 ## Quick Start
 
 1. Open `jim-viewer.html` in your browser, or visit the [JIM Viewer webapp](https://inclusio-community.github.io/JIM_previewer/jim-viewer.html)
-2. Upload an SVG file (with or without JIM metadata)
+2. Upload an SVG file, or select one from the **"Load an example"** dropdown
 3. Click elements in the visualization to inspect their properties
 4. Review validation results and accessibility recommendations
+
+You can also link directly to an example:
+`https://inclusio-community.github.io/JIM_previewer/jim-viewer.html?example=examples/E001-Vertical_Bar_Chart.svg`
 
 ## Files
 
 - `jim-viewer.html`: Interactive HTML viewer for SVGs with JIM metadata
 - `tests/auto-load.html`: Test harness that loads all examples files and allows AXE testing, also used by axe-playwright.yml with a subset of tests for pull requests
+- `fixtures/`: Test fixtures for unit/regression testing (see [fixtures/README.md](fixtures/README.md))
+	- `golden.svg`: Canonical test fixture covering all Testing.md requirements
 - `examples/`: Example SVG files for testing and demonstration:
-	- `triangle-complete-with-jim-metadata.svg`
-	- `testimage_0.svg`, `testimage_1.svg`, `testimage_2.svg`, `testimage_3.svg`, `testimage_4.svg`
-	- `Division_of_energy_in_the_Universe.svg`
-	- `College_enrollment_in_public_and_private_institutions_in_the_U_S__1965_to_2028.svg`
-	- `Distribution_of_the_workforce_across_economic_sectors_in_India_2019.svg`
-	- `Number_of_Xbox_Live_MAU_Q1_2016___Q4_2019.svg`
-	- `Unemployment_rate_in_Greece_1999_2019.svg`
-	- `JLGjim-photosynthesis-vav-monarch-approved.pdf.svg`
-	- `JLGjim-us-midwest-map-monarch-approved.pdf.svg`
-	- `E001-Vertical_Bar_Chart.svg`
-	- `E004-Number_Line.svg`
-	- `right_triangle.svg`
-	- `E002-Line_Graph-Monthly_Rainfall.svg`
+	- `E001-Vertical_Bar_Chart.svg` through `E006-Plant_Cell_Structure-experimental.svg`
+	- `triangle-complete-with-jim-metadata.svg`, `simple_svg_triangle.svg`, `right_triangle.svg`
+	- `testimage_0.svg` through `testimage_4.svg`
+	- `bar-chart-metadata-jsonpath.svg`, `oregon-custom-projection.svg`
+	- Statistical charts (College enrollment, Xbox Live, Unemployment, Workforce, Energy)
+	- Educational diagrams (Photosynthesis, US Midwest Map)
 
 ## Running accessibility checks
 
