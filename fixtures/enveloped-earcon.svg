@@ -1,0 +1,79 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 200">
+  <title>Enveloped Form with Earcon Test</title>
+  <desc>Test fixture for enveloped JIM form, earcon audio keys, and JSONPath behavior targets.</desc>
+
+  <metadata data-type="application/jim+json">
+{
+  "jim": {
+    "version": {
+      "jim": "1.1.0"
+    },
+    "datasets": [
+      {
+        "title": "Enveloped Form Test",
+        "description": "Tests enveloped JIM form with earcon and JSONPath targets",
+        "facets": {
+          "x": { "type": "categorical", "role": "label" },
+          "y": { "type": "quantitative", "role": "dependent" }
+        },
+        "series": [
+          {
+            "name": "Test Series",
+            "records": [
+              { "x": "Item A", "y": 10 },
+              { "x": "Item B", "y": 20 }
+            ]
+          }
+        ]
+      }
+    ],
+    "selectors": {
+      "itemA": {
+        "dom": "#item-a",
+        "json": "$.jim.datasets[0].series[0].records[0]"
+      },
+      "itemB": {
+        "dom": "#item-b",
+        "json": "$.jim.datasets[0].series[0].records[1]"
+      }
+    },
+    "behaviors": [
+      {
+        "target": {
+          "selector": "$.jim.selectors.itemA"
+        },
+        "enter": {
+          "haptic": {
+            "durations": [0, 125, 125, 125, 125, 125, 125, 125],
+            "repeatInterval": 125
+          },
+          "audio": {
+            "earcon": "PewPew",
+            "repeat": "none"
+          }
+        }
+      },
+      {
+        "target": {
+          "selector": "$.jim.selectors.itemB"
+        },
+        "enter": {
+          "haptic": {
+            "durations": [0, 125, 125, 125, 125, 125, 125, 125],
+            "repeatInterval": 125
+          },
+          "audio": {
+            "earcon": "Click",
+            "repeat": "none"
+          }
+        }
+      }
+    ]
+  }
+}
+  </metadata>
+
+  <rect width="400" height="200" fill="#f0f0f0" />
+  <rect id="item-a" x="50" y="50" width="100" height="100" fill="steelblue" role="graphics-symbol" />
+  <rect id="item-b" x="250" y="50" width="100" height="100" fill="coral" role="graphics-symbol" />
+</svg>

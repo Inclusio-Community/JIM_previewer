@@ -34,6 +34,7 @@
   "datasets": [
     {
       "title": "Concave Shape with Right Angle",
+      "representation": { "type": "diagram", "subtype": "other" },
       "subtitle": "Polygon geometry problem",
       "description": "A concave shape with a right angle at vertex B, formed by segments AB and BC.",
       "source": {

@@ -22,6 +22,7 @@
     "datasets": [
       {
         "title": "photosynthesis",
+        "representation": { "type": "diagram", "subtype": "other" },
         "series": []
       }
     ],

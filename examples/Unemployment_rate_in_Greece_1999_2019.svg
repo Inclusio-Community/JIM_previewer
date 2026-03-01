@@ -138,6 +138,7 @@ use.visited-mark { pointer-events: none; }
   "datasets": [
     {
       "title": "Unemployment rate in Greece 1999-2019",
+      "representation": { "type": "chart", "subtype": "bar" },
       "facets": {
         "x": {
           "label": "Year",

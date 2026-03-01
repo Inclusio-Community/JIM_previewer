@@ -124,7 +124,8 @@
             "title": "Triangle ABC",
             "description": "An isosceles acute triangle with labeled vertices, sides, angles, and constructionelements.",
             "representation": {
-                "chartType": "triangle"
+                "type": "diagram",
+                "subtype": "other"
             },
             "facets": {
                 "vertex": {

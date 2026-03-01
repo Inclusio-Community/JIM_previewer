@@ -10,6 +10,7 @@
       "datasets": [
         {
           "title": "T-Instersection",
+          "representation": { "type": "diagram", "subtype": "other" },
           "subtitle": "T-Instersection",
           "description": "Drawing of a 2 intersecting streets bodered by 3 sidewalks, one on each side",
           "source": {

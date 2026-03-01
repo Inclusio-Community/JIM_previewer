@@ -10,6 +10,7 @@
       "datasets": [
         {
           "title": "Plant Cell Structure",
+          "representation": { "type": "diagram", "subtype": "other" },
           "description": "Drawing of a plant cell with details on its internal structures",
           "source": {
             "url": "https://inclusioproject.com/graphics/exemplars/E006-Plant_Cell_Structure.svg",

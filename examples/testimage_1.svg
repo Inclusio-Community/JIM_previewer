@@ -40,6 +40,7 @@ Spec compliance
   "datasets": [
     {
       "title": "Square ABCD",
+      "representation": { "type": "diagram", "subtype": "other" },
       "subtitle": "Polygon geometry problem",
       "description": "A square with vertices A, B, C, D and each side measuring 4 cm.",
       "source": {

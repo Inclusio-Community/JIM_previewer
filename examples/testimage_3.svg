@@ -51,6 +51,7 @@ Spec compliance
   "datasets": [
     {
       "title": "Hexagon ABCDEF",
+      "representation": { "type": "diagram", "subtype": "other" },
       "subtitle": "Polygon geometry problem",
       "description": "A regular hexagon with vertices A, B, C, D, E, F and equal side lengths of 2 cm.",
       "source": {

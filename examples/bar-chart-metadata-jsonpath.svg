@@ -16,7 +16,8 @@
             "name": "Example source"
           },
           "representation": {
-            "chartType": "bar"
+            "type": "chart",
+            "subtype": "bar"
           },
           "description": "Bar chart showing satifaction scores, with most survey respondants in the 'Very Satisfied' or 'Satisfied' categories.",
           "facets": {

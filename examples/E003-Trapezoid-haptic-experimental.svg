@@ -10,6 +10,7 @@
       "datasets": [
         {
           "title": "Trapezoid",
+          "representation": { "type": "diagram", "subtype": "other" },
           "subtitle": "Results of user survey",
           "description": "Drawing of a trapezoid with 3 side lengths labeled and 2 right angles",
           "source": {

@@ -41,6 +41,7 @@
   "datasets": [
     {
       "title": "Temperature in Degrees Fahrenheit",
+      "representation": { "type": "chart", "subtype": "bar" },
       "facets": {
         "x": {
           "label": "Time in Days",
