@@ -134,6 +134,7 @@ use.visited-mark { pointer-events: none; }
   "datasets": [
     {
       "title": "Division of energy in the Universe",
+      "representation": { "type": "chart", "subtype": "pie" },
       "facets": {
         "x": {
           "label": "Kind of energy",

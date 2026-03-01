@@ -139,6 +139,7 @@ use.visited-mark { pointer-events: none; }
   "datasets": [
     {
       "title": "College enrollment in public and private institutions in the U.S. 1965 to 2028",
+      "representation": { "type": "chart", "subtype": "bar" },
       "facets": {
         "x": {
           "label": "Year",

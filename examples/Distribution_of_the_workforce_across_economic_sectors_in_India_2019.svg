@@ -141,6 +141,7 @@ use.visited-mark { pointer-events: none; }
   "datasets": [
     {
       "title": "Distribution of the workforce across economic sectors in India 2019",
+      "representation": { "type": "chart", "subtype": "line" },
       "facets": {
         "x": {
           "label": "Year",

@@ -906,13 +906,17 @@
                                                                 warnings.push(`Behavior[${i}] ${eventName}.audio should be an object with an 'href' property.`);
                                                             } else {
                                                                 const audioKeys = Object.keys(audio);
-                                                                const allowedAudioKeys = new Set(['href', 'repeat', 'loop']);
+                                                                const allowedAudioKeys = new Set(['href', 'repeat', 'loop', 'earcon']);
                                                                 const unknownAudioKeys = audioKeys.filter(k => !allowedAudioKeys.has(k));
                                                                 if (unknownAudioKeys.length) {
                                                                     warnings.push(`Behavior[${i}] ${eventName}.audio has unknown/non-standard key(s): ${unknownAudioKeys.join(', ')}`);
                                                                 }
-                                                                if (!('href' in audio) || typeof audio.href !== 'string' || !audio.href.trim()) {
+                                                                // href is required unless earcon is specified (earcon references a named sound, not a file)
+                                                                if (!('earcon' in audio) && (!('href' in audio) || typeof audio.href !== 'string' || !audio.href.trim())) {
                                                                     warnings.push(`Behavior[${i}] ${eventName}.audio.href should be a non-empty string (filename or URL).`);
+                                                                }
+                                                                if ('earcon' in audio && (typeof audio.earcon !== 'string' || !audio.earcon.trim())) {
+                                                                    warnings.push(`Behavior[${i}] ${eventName}.audio.earcon should be a non-empty string (earcon name).`);
                                                                 }
                                                                 if ('repeat' in audio && typeof audio.repeat !== 'string') {
                                                                     warnings.push(`Behavior[${i}] ${eventName}.audio.repeat should be a string (e.g. 'none' or 'loop').`);
@@ -969,7 +973,43 @@
                                                 if ((tgt.startsWith('"') && tgt.endsWith('"')) || (tgt.startsWith("'") && tgt.endsWith("'"))) {
                                                     tgt = tgt.slice(1, -1).trim();
                                                 }
-                                                // Now test the selector using querySelectorAll to get an accurate match count
+
+                                                // JSONPath selector reference (e.g. $.selectors.dp5 or $.jim.selectors.dp5)
+                                                // Per spec Section 5.1.2, a target selector may be a JSONPath pointing to a selector set
+                                                if (tgt.startsWith('$.')) {
+                                                    // Resolve JSONPath to find the referenced selector set
+                                                    let jsonPathKey = tgt.replace(/^\$\./, '');
+                                                    // Strip 'jim.' prefix if present (enveloped form uses $.jim.selectors.*)
+                                                    if (jsonPathKey.startsWith('jim.')) {
+                                                        jsonPathKey = jsonPathKey.slice(4);
+                                                    }
+                                                    // Walk the jim object to resolve the path
+                                                    let resolved = jim;
+                                                    const pathParts = jsonPathKey.split('.');
+                                                    for (const part of pathParts) {
+                                                        if (resolved && typeof resolved === 'object' && part in resolved) {
+                                                            resolved = resolved[part];
+                                                        } else {
+                                                            resolved = null;
+                                                            break;
+                                                        }
+                                                    }
+                                                    if (resolved && typeof resolved === 'object' && resolved.dom) {
+                                                        // Successfully resolved — now validate the dom selector against SVG
+                                                        const domSelector = resolved.dom;
+                                                        try {
+                                                            const count = Array.from(svg.querySelectorAll(domSelector)).length;
+                                                            if (count === 0) {
+                                                                warnings.push(`Behavior[${i}] target.selector '${rawTgt}' resolved to DOM selector '${domSelector}' which did not match any SVG elements.`);
+                                                            }
+                                                        } catch (e) {
+                                                            warnings.push(`Behavior[${i}] target.selector '${rawTgt}' resolved to invalid DOM selector '${domSelector}': ${e.message}`);
+                                                        }
+                                                    } else {
+                                                        warnings.push(`Behavior[${i}] target.selector '${rawTgt}' is a JSONPath reference that did not resolve to a selector set.`);
+                                                    }
+                                                } else {
+                                                // CSS selector — test using querySelectorAll to get an accurate match count
                                                 try {
                                                     let count = 0;
                                                     // If the selector looks like a comma-separated list of ID selectors
@@ -994,6 +1034,7 @@
                                                 } catch (e) {
                                                     // Invalid selector syntax — surface a clearer message
                                                     warnings.push(`Behavior[${i}] target.selector '${rawTgt}' appears to be invalid CSS selector syntax: ${e.message}`);
+                                                }
                                                 }
                                             }
                                         });
@@ -1104,6 +1145,10 @@
     // Normalize path: support bracket-string access (['key'] or ["key"]) and numeric [n]
     // Convert bracket-string to .key and [n] to .n for splitting
     let normalized = pathStr.replace(/^\$\./, '');
+    // In enveloped form, jimData is already unwrapped — strip leading 'jim.' to avoid double-nesting
+    if (this.isEnvelopedForm && normalized.startsWith('jim.')) {
+        normalized = normalized.slice(4);
+    }
     normalized = normalized.replace(/\[\s*'([^']+)'\s*\]/g, '.$1');
     normalized = normalized.replace(/\[\s*"([^"]+)"\s*\]/g, '.$1');
     normalized = normalized.replace(/\[(\d+)\]/g, '.$1');
@@ -1118,6 +1163,18 @@
             return Object.assign({}, val);
         }
         return val;
+    }
+    // Resolve a behavior target selector to an effective CSS selector.
+    // If the selector is a JSONPath reference (starts with $.), resolve it to
+    // the referenced selector set's dom value. Returns the CSS selector string,
+    // or null if the JSONPath reference could not be resolved.
+    resolveTargetSelector(selector) {
+        if (!selector || typeof selector !== 'string') return null;
+        const s = selector.trim();
+        if (!s.startsWith('$.')) return s;
+        const resolved = this.getDataFromJSONPath(s);
+        if (resolved && typeof resolved === 'object' && resolved.dom) return resolved.dom;
+        return null;
     }
     // Insert the SVG into the visualization container and set up event handlers
     displayVisualization(svgClone) {
@@ -1223,15 +1280,19 @@
             });
         }
 
-        // Attach behaviors using target.selector (supports wildcards/classes)
+        // Attach behaviors using target.selector (supports wildcards/classes and JSONPath references)
         behaviors.forEach((behavior, i) => {
             const tgtSelector = behavior?.target?.selector;
             if (typeof tgtSelector === 'string' && tgtSelector.trim()) {
                 let elements = [];
-                try {
-                    elements = Array.from(svgClone.querySelectorAll(tgtSelector));
-                } catch (e) {
-                    console.warn(`[JIMViewer] Invalid behavior target.selector '${tgtSelector}'`, e);
+                const effectiveSelector = this.resolveTargetSelector(tgtSelector);
+
+                if (effectiveSelector) {
+                    try {
+                        elements = Array.from(svgClone.querySelectorAll(effectiveSelector));
+                    } catch (e) {
+                        console.warn(`[JIMViewer] Invalid behavior target.selector '${tgtSelector}'`, e);
+                    }
                 }
                 elements.forEach((el, idx) => {
                     // Attach behavior event listeners with TRACE logs
@@ -1264,7 +1325,7 @@
             try {
                 for (let bi = 0; bi < behaviors.length && !matched; bi++) {
                     const behavior = behaviors[bi];
-                    const tgtSelector = behavior?.target?.selector;
+                    const tgtSelector = this.resolveTargetSelector(behavior?.target?.selector);
                     if (!tgtSelector) continue;
 
                     // Walk up from the clicked element to the svg root, checking .matches at each step
@@ -1723,7 +1784,7 @@
                     // Check if any behavior targets these elements
                     for (let bi = 0; bi < behaviors.length && !hasMatchingBehavior; bi++) {
                         const b = behaviors[bi];
-                        const targetSelector = b?.target?.selector;
+                        const targetSelector = this.resolveTargetSelector(b?.target?.selector);
                         if (!targetSelector) continue;
 
                         // 1) Try per-element matches() first (handles classes, wildcards, comma-lists)
@@ -1778,7 +1839,7 @@
             let behaviorsWithoutSelectors = 0;
             if (svg && Array.isArray(behaviors) && behaviors.length) {
                 behaviors.forEach(b => {
-                    const tgtSelector = b?.target?.selector;
+                    const tgtSelector = this.resolveTargetSelector(b?.target?.selector);
                     if (!tgtSelector) return;
 
                     // Get elements this behavior targets (skip invalid selectors)
@@ -2275,8 +2336,10 @@
 
                 // Detect enveloped form: { jim: { ... }, extensions: { ... } }
                 // Per spec, both root and enveloped forms are valid.
+                this.isEnvelopedForm = false;
                 if (jim && typeof jim.jim === 'object' && jim.jim !== null) {
                     console.log('[JIMViewer] Detected enveloped JIM form, unwrapping jim block.');
+                    this.isEnvelopedForm = true;
                     if (jim.extensions) {
                         console.log('[JIMViewer] Extensions block present:', Object.keys(jim.extensions));
                     }
@@ -2324,7 +2387,7 @@
                     // Track group behaviors
                     var groupBehaviors = [];
                     for (var j = 0; j < behaviors.length; j++) {
-                        var tgtSelector = behaviors[j].target && behaviors[j].target.selector;
+                        var tgtSelector = this.resolveTargetSelector(behaviors[j].target && behaviors[j].target.selector);
                         if (tgtSelector) {
                             var B = [];
                             try { B = Array.from(svg.querySelectorAll(tgtSelector)); } catch (e) {}
@@ -2368,7 +2431,7 @@
                     var svg = this.currentDoc.querySelector('svg');
                     var behaviorsWithoutSelectors = [];
                     for (var bj = 0; bj < behaviors.length; bj++) {
-                        var tgtSelector = behaviors[bj].target && behaviors[bj].target.selector;
+                        var tgtSelector = this.resolveTargetSelector(behaviors[bj].target && behaviors[bj].target.selector);
                         if (!tgtSelector) continue;
 
                         // Get elements this behavior targets (skip invalid selectors)
@@ -2410,7 +2473,7 @@
 
                         // Check each behavior to see if it targets these elements
                         for (var j = 0; j < behaviors.length; j++) {
-                            var tgtSelector = behaviors[j].target && behaviors[j].target.selector;
+                            var tgtSelector = this.resolveTargetSelector(behaviors[j].target && behaviors[j].target.selector);
                             if (!tgtSelector) continue;
 
                             // Get elements the behavior targets
@@ -2651,7 +2714,7 @@
                             ${dataset.description ? `<div class="metadata-item"><span class="key">Description:</span><span class="value">${dataset.description && dataset.description.length > 180 ? `<details class="details--spaced"><summary class="details-summary">Show description</summary><div class="muted-note">${this.escapeHtml(dataset.description)}</div></details>` : this.escapeHtml(dataset.description)}</span></div>` : ''}
                             <div class="metadata-item">
                                 <span class="key">Type:</span>
-                                <span class="value">${this.escapeHtml(dataset.representation?.chartType || 'Unknown')}</span>
+                                <span class="value">${this.escapeHtml(dataset.representation?.subtype ? `${dataset.representation.type} (${dataset.representation.subtype})` : (dataset.representation?.type || dataset.representation?.chartType || 'Unknown'))}</span>
                             </div>
                             ${dataset.facets && Object.keys(dataset.facets).length ? `<div class="metadata-item"><span class="key">Facets:</span><span class="value">${Object.entries(dataset.facets).map(([k,f])=> `${this.escapeHtml(k)}${f && f.label ? ` (${this.escapeHtml(f.label)})` : ''}`).join(', ')}</span></div>` : ''}
                             ${Array.isArray(dataset.series) ? `<div class="metadata-item"><span class="key">Series:</span><span class="value">${dataset.series.length} ${dataset.series.length === 1 ? 'series' : 'series'}${dataset.series.some(s=>s && s.name) ? ` — ${dataset.series.map(s=>this.escapeHtml(s?.name||'')).filter(Boolean).join(', ')}` : ''}</span></div>` : `<div class="metadata-item"><span class="key">Series:</span><span class="value warning-text">Not present</span></div>`}
@@ -3336,7 +3399,7 @@
         // Show all mapped behaviors for this element (including wildcards)
         const behaviors = this.jimData.behaviors || [];
         const matchedBehaviors = behaviors.filter(b => {
-            const tgtSelector = b?.target?.selector;
+            const tgtSelector = this.resolveTargetSelector(b?.target?.selector);
             try {
                 return tgtSelector && vizElement.matches(tgtSelector);
             } catch {

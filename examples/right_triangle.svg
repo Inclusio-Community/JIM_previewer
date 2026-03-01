@@ -71,6 +71,7 @@
       "datasets": [
         {
           "title": "Right Triangle",
+          "representation": { "type": "diagram", "subtype": "other" },
           "description": "A right triangle with vertices A, B, and C",
           "series": [],
           "items": {

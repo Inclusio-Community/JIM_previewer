@@ -11,6 +11,7 @@
   "datasets": [
     {
       "title": "Golden Test Data",
+      "representation": { "type": "chart", "subtype": "bar" },
       "description": "Test data for implicit announcement generation",
       "facets": {
         "label": { "type": "categorical", "role": "label" },

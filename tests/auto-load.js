@@ -5,6 +5,7 @@
 
   const defaultExamples = [
     '/fixtures/golden.svg',
+    '/fixtures/enveloped-earcon.svg',
     '/examples/testimage_0.svg',
     '/examples/simple_svg_triangle.svg',
     '/examples/triangle-complete-with-jim-metadata.svg',

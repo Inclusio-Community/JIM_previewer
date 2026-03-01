@@ -11,7 +11,8 @@
         {
           "title": "Monthly Rainfall in Chestnut City",
           "representation": {
-            "chartType": "bar"
+            "type": "chart",
+            "subtype": "line"
           },
           "description": "Line chart showing monthly rainfall in Chestnut City, from March to October with a peak in August",
           "facets": {

@@ -50,6 +50,7 @@ Data: {"label":"line-DA","measurement":"undefined"}
   "datasets": [
     {
       "title": "Trapezoid ABCD",
+      "representation": { "type": "diagram", "subtype": "other" },
       "subtitle": "Polygon geometry problem",
       "description": "A trapezoid with vertices A, B, C, D and sides AB = 4 cm, BC = 6 cm, CD = 10 cm",
       "source": {

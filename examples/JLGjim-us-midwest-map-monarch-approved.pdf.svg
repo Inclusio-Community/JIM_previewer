@@ -22,6 +22,7 @@
   "datasets": [
     {
       "title": "US Midwest Map",
+      "representation": { "type": "map" },
       "series": []
     }
   ],
