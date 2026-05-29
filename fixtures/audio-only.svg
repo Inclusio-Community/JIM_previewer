@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <title>Audio-only behavior regression fixture</title>
+  <desc>Regression fixture for the audio-validation-without-haptic bug. The behavior has only an audio block in `enter` (no haptic) and uses the legacy string shorthand. The previewer must flag this as a warning even though haptic is absent.</desc>
+
+  <metadata data-type="application/jim+json">
+{
+  "version": { "jim": "1.1.0" },
+  "datasets": [
+    {
+      "title": "Audio-only fixture",
+      "representation": { "type": "illustration", "subtype": "graphic" },
+      "items": { "shapes": [ { "id": "shape-1", "name": "Test shape" } ] }
+    }
+  ],
+  "selectors": {
+    "shape1": { "dom": "#test-shape", "json": "$.datasets[0].items.shapes[0]" }
+  },
+  "behaviors": [
+    {
+      "target": { "selector": "#test-shape" },
+      "enter": {
+        "audio": "tick.mp3"
+      }
+    },
+    {
+      "target": { "selector": "#test-shape" },
+      "enter": {
+        "audio": { "href": "tick.mp3" }
+      }
+    },
+    {
+      "target": { "selector": "#test-shape" },
+      "enter": {
+        "audio": { "earcon": "PewPew" }
+      }
+    }
+  ]
+}
+  </metadata>
+
+  <rect id="test-shape" x="20" y="20" width="60" height="60" fill="steelblue" tabindex="0"/>
+</svg>
