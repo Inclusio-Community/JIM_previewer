@@ -45,7 +45,7 @@
         ]
       },
       "enter": {
-        "audio": "G4.wav"
+        "audio": { "href": "G4.wav" }
       }
     },
     {
@@ -65,7 +65,7 @@
         ]
       },
       "enter": {
-        "audio": "G4.wav"
+        "audio": { "href": "G4.wav" }
       }
     },
     {
@@ -85,7 +85,7 @@
         ]
       },
       "enter": {
-        "audio": "G4.wav"
+        "audio": { "href": "G4.wav" }
       }
     },
     {

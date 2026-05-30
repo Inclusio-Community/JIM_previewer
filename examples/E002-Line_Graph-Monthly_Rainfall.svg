@@ -237,7 +237,7 @@
           "selector": "#datapoint-rainfall_inches-Mar-4 .chart-point"
         },
         "enter": {
-          "audio": "blop.mp3"
+          "audio": { "href": "blop.mp3" }
         }
       },
       {
@@ -245,7 +245,7 @@
           "selector": "#datapoint-rainfall_inches-Apr-350 .chart-point"
         },
         "enter": {
-          "audio": "blop.mp3"
+          "audio": { "href": "blop.mp3" }
         }
       },
       {
@@ -253,7 +253,7 @@
           "selector": "#datapoint-rainfall_inches-May-450 .chart-point"
         },
         "enter": {
-          "audio": "blop.mp3"
+          "audio": { "href": "blop.mp3" }
         }
       },
       {
@@ -261,7 +261,7 @@
           "selector": "#datapoint-rainfall_inches-Jun-4 .chart-point"
         },
         "enter": {
-          "audio": "blop.mp3"
+          "audio": { "href": "blop.mp3" }
         }
       },
       {
@@ -269,7 +269,7 @@
           "selector": "#datapoint-rainfall_inches-Jul-550 .chart-point"
         },
         "enter": {
-          "audio": "blop.mp3"
+          "audio": { "href": "blop.mp3" }
         }
       },
       {
@@ -277,7 +277,7 @@
           "selector": "#datapoint-rainfall_inches-Aug-6 .chart-point"
         },
         "enter": {
-          "audio": "blop.mp3"
+          "audio": { "href": "blop.mp3" }
         }
       },
       {
@@ -285,7 +285,7 @@
           "selector": "#datapoint-rainfall_inches-Sep-5 .chart-point"
         },
         "enter": {
-          "audio": "blop.mp3"
+          "audio": { "href": "blop.mp3" }
         }
       },
       {
@@ -293,7 +293,7 @@
           "selector": "#datapoint-rainfall_inches-Oct-250 .chart-point"
         },
         "enter": {
-          "audio": "blop.mp3"
+          "audio": { "href": "blop.mp3" }
         }
       },
       {
