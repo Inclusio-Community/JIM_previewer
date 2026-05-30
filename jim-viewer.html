@@ -899,30 +899,6 @@
                                                     if (unknownHapticKeys.length) {
                                                         warnings.push(`Behavior[${i}] ${eventName}.haptic has unknown/non-standard key(s): ${unknownHapticKeys.join(", ")}`);
                                                     }
-                                                        // Audio block validation (object form)
-                                                        if ('audio' in block) {
-                                                            const audio = block.audio;
-                                                            if (!audio || typeof audio !== 'object') {
-                                                                warnings.push(`Behavior[${i}] ${eventName}.audio should be an object with an 'href' property.`);
-                                                            } else {
-                                                                const audioKeys = Object.keys(audio);
-                                                                const allowedAudioKeys = new Set(['href', 'repeat', 'loop', 'earcon']);
-                                                                const unknownAudioKeys = audioKeys.filter(k => !allowedAudioKeys.has(k));
-                                                                if (unknownAudioKeys.length) {
-                                                                    warnings.push(`Behavior[${i}] ${eventName}.audio has unknown/non-standard key(s): ${unknownAudioKeys.join(', ')}`);
-                                                                }
-                                                                // href is required unless earcon is specified (earcon references a named sound, not a file)
-                                                                if (!('earcon' in audio) && (!('href' in audio) || typeof audio.href !== 'string' || !audio.href.trim())) {
-                                                                    warnings.push(`Behavior[${i}] ${eventName}.audio.href should be a non-empty string (filename or URL).`);
-                                                                }
-                                                                if ('earcon' in audio && (typeof audio.earcon !== 'string' || !audio.earcon.trim())) {
-                                                                    warnings.push(`Behavior[${i}] ${eventName}.audio.earcon should be a non-empty string (earcon name).`);
-                                                                }
-                                                                if ('repeat' in audio && typeof audio.repeat !== 'string') {
-                                                                    warnings.push(`Behavior[${i}] ${eventName}.audio.repeat should be a string (e.g. 'none' or 'loop').`);
-                                                                }
-                                                            }
-                                                        }
                                                     if (!('durations' in haptic)) {
                                                         errors.push(`Behavior[${i}] ${eventName}.haptic missing required 'durations' key.`);
                                                     } else if (!Array.isArray(haptic.durations)) {
@@ -947,6 +923,30 @@
                                                             const patternList = approvedPatterns.map(p => `"${p.name}"`).join(', ');
                                                             warnings.push(`Behavior[${i}] ${eventName}.haptic does not match any approved haptic pattern. Approved patterns: ${patternList}. See JIM specification for approved haptic patterns.`);
                                                         }
+                                                    }
+                                                }
+                                            }
+                                            // Audio block validation (object form) — sibling of haptic, not nested inside it
+                                            if ('audio' in block) {
+                                                const audio = block.audio;
+                                                if (!audio || typeof audio !== 'object') {
+                                                    warnings.push(`Behavior[${i}] ${eventName}.audio should be an object with an 'href' property.`);
+                                                } else {
+                                                    const audioKeys = Object.keys(audio);
+                                                    const allowedAudioKeys = new Set(['href', 'repeat', 'loop', 'earcon']);
+                                                    const unknownAudioKeys = audioKeys.filter(k => !allowedAudioKeys.has(k));
+                                                    if (unknownAudioKeys.length) {
+                                                        warnings.push(`Behavior[${i}] ${eventName}.audio has unknown/non-standard key(s): ${unknownAudioKeys.join(', ')}`);
+                                                    }
+                                                    // href is required unless earcon is specified (earcon references a named sound, not a file)
+                                                    if (!('earcon' in audio) && (!('href' in audio) || typeof audio.href !== 'string' || !audio.href.trim())) {
+                                                        warnings.push(`Behavior[${i}] ${eventName}.audio.href should be a non-empty string (filename or URL).`);
+                                                    }
+                                                    if ('earcon' in audio && (typeof audio.earcon !== 'string' || !audio.earcon.trim())) {
+                                                        warnings.push(`Behavior[${i}] ${eventName}.audio.earcon should be a non-empty string (earcon name).`);
+                                                    }
+                                                    if ('repeat' in audio && typeof audio.repeat !== 'string') {
+                                                        warnings.push(`Behavior[${i}] ${eventName}.audio.repeat should be a string (e.g. 'none' or 'loop').`);
                                                     }
                                                 }
                                             }
